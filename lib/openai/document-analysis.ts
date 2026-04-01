@@ -190,7 +190,7 @@ function clipExcerpt(value: string | null) {
     return null;
   }
 
-  return value.length <= 4000 ? value : `${value.slice(0, 3999).trimEnd()}…`;
+  return value.length <= 4000 ? value : `${value.slice(0, 3999).trimEnd()}â€¦`;
 }
 
 function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof processDocumentForAnalysis>>): DocumentAnalysisResult {
@@ -198,17 +198,17 @@ function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof process
     sender: null,
     document_type: "PDF-Dokument",
     subject: null,
-    summary_simple: "Dieses PDF konnte noch nicht zuverlässig gelesen werden.",
-    summary_simple_short: "Dieses PDF konnte noch nicht zuverlässig gelesen werden.",
+    summary_simple: "Dieses PDF konnte noch nicht zuverlÃ¤ssig gelesen werden.",
+    summary_simple_short: "Dieses PDF konnte noch nicht zuverlÃ¤ssig gelesen werden.",
     summary_simple_long:
-      "Das Dokument scheint wenig direkt lesbaren Text zu enthalten, zum Beispiel weil es ein Scan oder Foto im PDF ist. Bitte lade möglichst eine klarere Datei oder ein einzelnes Bild hoch.",
+      "Das Dokument scheint wenig direkt lesbaren Text zu enthalten, zum Beispiel weil es ein Scan oder Foto im PDF ist. Bitte lade mÃ¶glichst eine klarere Datei oder ein einzelnes Bild hoch.",
     is_action_required: null,
     deadline_date: null,
     urgency: null,
-    key_points: ["PDF enthält kaum lesbaren Text", "Analyse deshalb unsicher", "Bitte klarere Datei hochladen"],
+    key_points: ["PDF enthÃ¤lt kaum lesbaren Text", "Analyse deshalb unsicher", "Bitte klarere Datei hochladen"],
     highlight_terms: [],
     difficult_terms: [],
-    next_steps: ["Wenn möglich eine klarere PDF oder ein gut lesbares Bild hochladen"],
+    next_steps: ["Wenn mÃ¶glich eine klarere PDF oder ein gut lesbares Bild hochladen"],
     page_count: Math.max(processed.pageCount, 1),
     page_summaries: [],
     important_references: [],
@@ -220,7 +220,7 @@ function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof process
     source_excerpt: clipExcerpt(processed.extractedText),
     readability: "unreadable",
     readability_reason:
-      "Das PDF enthält zu wenig direkt lesbaren Text. Bitte nutze wenn möglich eine klarere PDF oder lade die Seiten als gut lesbares Bild hoch."
+      "Das PDF enthÃ¤lt zu wenig direkt lesbaren Text. Bitte nutze wenn mÃ¶glich eine klarere PDF oder lade die Seiten als gut lesbares Bild hoch."
   };
 }
 
@@ -230,7 +230,7 @@ export async function analyzeDocumentWithOpenAI(document: DocumentRecord, buffer
   const processed = await processDocumentForAnalysis(document, buffer);
 
   const promptPrefix =
-    "Analysiere dieses Dokument für eine Privatperson in Deutschland. Schreibe in sehr einfachem, ruhigem Deutsch mit echten Umlauten und natürlichem ß. Klinge hilfreich, klar und stressarm. Erfinde nichts. Wenn etwas nicht sicher ist, gib null oder formuliere vorsichtig. summary_simple_short soll 2 bis 3 kurze Sätze enthalten. summary_simple_long darf etwas mehr Kontext geben, aber muss leicht verständlich bleiben. page_count muss die bekannte Seitenanzahl widerspiegeln. page_summaries sollen pro erkannter Seite eine kurze Zusammenfassung liefern. important_references sollen nur sichere Hinweise mit Seitenbezug enthalten, zum Beispiel Frist, Betrag, Termin oder Widerspruchshinweis.";
+    "Analysiere dieses Dokument fÃ¼r eine Privatperson in Deutschland. Schreibe in sehr einfachem, ruhigem Deutsch mit echten Umlauten und natÃ¼rlichem ÃŸ. Klinge hilfreich, klar und stressarm. Erfinde nichts. Wenn etwas nicht sicher ist, gib null oder formuliere vorsichtig. summary_simple_short soll 2 bis 3 kurze SÃ¤tze enthalten. summary_simple_long darf etwas mehr Kontext geben, aber muss leicht verstÃ¤ndlich bleiben. page_count muss die bekannte Seitenanzahl widerspiegeln. page_summaries sollen pro erkannter Seite eine kurze Zusammenfassung liefern. important_references sollen nur sichere Hinweise mit Seitenbezug enthalten, zum Beispiel Frist, Betrag, Termin oder Widerspruchshinweis.";
 
   const content: Array<Record<string, unknown>> = [
     {
@@ -249,7 +249,7 @@ ${processed.extractedText}`
 Bekannte Seitenanzahl: ${processed.pageCount}
 Dokumentname: ${document.original_filename}
 
-Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, setze readability auf partial oder unreadable und erkläre kurz warum.`
+Nutze das beigefÃ¼gte Dokument direkt. Wenn der Text nur teilweise lesbar ist, setze readability auf partial oder unreadable und erklÃ¤re kurz warum.`
     }
   ];
 
@@ -259,9 +259,9 @@ Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, s
 
   try {
     const response = await client.responses.create({
-      model: env.OPENAI_MODEL,
+      model: env.OPENAI_MODEL ?? "gpt-5.4",
       instructions:
-        "Du analysierst offizielle Schreiben für BureauCare. Gib die wichtigsten Fakten zuerst an: Wer schreibt, worum es geht, ob etwas getan werden muss, bis wann und wie dringend es ist. summary_simple ist die Hauptzusammenfassung. key_points müssen sehr kurz sein. next_steps sollen alltagstauglich und konkret sein. difficult_terms sollen schwierige Begriffe mit sehr einfacher Erklärung liefern. action_location_name, action_location_address, action_url und action_mode nur ausfüllen, wenn das verlässlich im Dokument steht.",
+        "Du analysierst offizielle Schreiben fÃ¼r BureauCare. Gib die wichtigsten Fakten zuerst an: Wer schreibt, worum es geht, ob etwas getan werden muss, bis wann und wie dringend es ist. summary_simple ist die Hauptzusammenfassung. key_points mÃ¼ssen sehr kurz sein. next_steps sollen alltagstauglich und konkret sein. difficult_terms sollen schwierige Begriffe mit sehr einfacher ErklÃ¤rung liefern. action_location_name, action_location_address, action_url und action_mode nur ausfÃ¼llen, wenn das verlÃ¤sslich im Dokument steht.",
       input: [
         {
           role: "user",
@@ -281,13 +281,13 @@ Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, s
     const rawText = response.output_text;
 
     if (!rawText) {
-      throw new Error("Die Analyse ist leer zurückgekommen.");
+      throw new Error("Die Analyse ist leer zurÃ¼ckgekommen.");
     }
 
     const parsed = analysisSchema.safeParse(JSON.parse(rawText));
 
     if (!parsed.success) {
-      throw new Error("Die Analyseantwort war unvollständig.");
+      throw new Error("Die Analyseantwort war unvollstÃ¤ndig.");
     }
 
     const pageCount = Math.max(parsed.data.page_count, processed.pageCount || 1);
