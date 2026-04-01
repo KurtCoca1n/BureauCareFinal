@@ -56,9 +56,9 @@ export async function generateReplyWithOpenAI({
   const effectiveTone = [tone, toneDetails].filter(Boolean).join(" + ");
 
   const response = await client.responses.create({
-    model: env.OPENAI_MODEL,
+    model: env.OPENAI_MODEL ?? "gpt-5.4",
     instructions:
-      "Du schreibst für BureauCare eine direkt nutzbare Antwort auf ein offizielles Schreiben. Verwende natürliches Deutsch mit echten Umlauten. Sei höflich, klar und formal brauchbar. Erfinde keine Fakten. Wenn Details fehlen, formuliere allgemein und vorsichtig. Halte den Text eher kurz. Widerspruch oder Einspruch nur allgemein und ohne erfundene Begründungen. Wenn zusätzlich übersetzt wird, muss die Übersetzung natürlich, freundlich und einfach verständlich klingen.",
+      "Du schreibst fÃ¼r BureauCare eine direkt nutzbare Antwort auf ein offizielles Schreiben. Verwende natÃ¼rliches Deutsch mit echten Umlauten. Sei hÃ¶flich, klar und formal brauchbar. Erfinde keine Fakten. Wenn Details fehlen, formuliere allgemein und vorsichtig. Halte den Text eher kurz. Widerspruch oder Einspruch nur allgemein und ohne erfundene BegrÃ¼ndungen. Wenn zusÃ¤tzlich Ã¼bersetzt wird, muss die Ãœbersetzung natÃ¼rlich, freundlich und einfach verstÃ¤ndlich klingen.",
     input: [
       {
         role: "user",
@@ -74,15 +74,15 @@ Dokumenttyp: ${analysis.document_type ?? "unbekannt"}
 Frist: ${analysis.deadline_date ?? "keine klare Frist"}
 Handlungsbedarf: ${analysis.is_action_required === null ? "unklar" : analysis.is_action_required ? "ja" : "nein"}
 Dringlichkeit: ${analysis.urgency ?? "unklar"}
-Kurze Erklärung: ${analysis.summary_simple_short ?? analysis.summary_simple}
-Längere Erklärung: ${analysis.summary_simple_long ?? analysis.summary_simple}
-Nächste Schritte: ${(analysis.next_steps ?? []).join(" | ")}
+Kurze ErklÃ¤rung: ${analysis.summary_simple_short ?? analysis.summary_simple}
+LÃ¤ngere ErklÃ¤rung: ${analysis.summary_simple_long ?? analysis.summary_simple}
+NÃ¤chste Schritte: ${(analysis.next_steps ?? []).join(" | ")}
 Risiken: ${analysis.risks_if_ignored ?? "nicht klar"}
 
-Berücksichtige neben dem Standardton auch diesen zusätzlichen Wunsch: ${toneDetails || "kein zusätzlicher Wunsch"}.
-Die Antwort soll direkt nutzbar sein. Keine Platzhalter für unbekannte Fakten. Wenn etwas nicht belegt ist, bitte allgemein um Prüfung, Fristverlängerung oder Rückmeldung statt Details zu behaupten.
-${includeSignature && profileName ? `Füge am Ende die Signatur "Mit freundlichen Grüßen\\n${profileName}" ein.` : "Nutze keine persönliche Signatur."}
-${shouldTranslate ? `Erstelle zusätzlich eine sinngleiche Übersetzung in ${targetLanguageLabel}.` : "Erstelle keine zusätzliche Übersetzung."}`
+BerÃ¼cksichtige neben dem Standardton auch diesen zusÃ¤tzlichen Wunsch: ${toneDetails || "kein zusÃ¤tzlicher Wunsch"}.
+Die Antwort soll direkt nutzbar sein. Keine Platzhalter fÃ¼r unbekannte Fakten. Wenn etwas nicht belegt ist, bitte allgemein um PrÃ¼fung, FristverlÃ¤ngerung oder RÃ¼ckmeldung statt Details zu behaupten.
+${includeSignature && profileName ? `FÃ¼ge am Ende die Signatur "Mit freundlichen GrÃ¼ÃŸen\\n${profileName}" ein.` : "Nutze keine persÃ¶nliche Signatur."}
+${shouldTranslate ? `Erstelle zusÃ¤tzlich eine sinngleiche Ãœbersetzung in ${targetLanguageLabel}.` : "Erstelle keine zusÃ¤tzliche Ãœbersetzung."}`
           }
         ]
       }
@@ -106,7 +106,7 @@ ${shouldTranslate ? `Erstelle zusätzlich eine sinngleiche Übersetzung in ${tar
   const parsed = replySchema.safeParse(JSON.parse(rawText));
 
   if (!parsed.success) {
-    throw new Error("Die Antwortgenerierung war unvollständig.");
+    throw new Error("Die Antwortgenerierung war unvollstÃ¤ndig.");
   }
 
   return parsed.data;
