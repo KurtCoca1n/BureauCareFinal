@@ -35,6 +35,8 @@ export type GoalAnalysisResult = {
 export type UsageEventType = "analysis_generated" | "reply_generated";
 export type CaseStatus = "open" | "waiting" | "done";
 export type DocumentStatus = "neu" | "analysiert" | "antwort_erstellt" | "gesendet" | "warten" | "erledigt";
+export type ProcessSessionStatus = "in_progress" | "ready";
+export type ProcessSessionAnswers = { [key: string]: Json | undefined };
 export type CaseEventType =
   | "document_uploaded"
   | "document_analyzed"
@@ -449,6 +451,51 @@ export type Database = {
           }
         ];
       };
+      process_sessions: {
+        Row: {
+          answers: ProcessSessionAnswers;
+          case_id: string | null;
+          created_at: string;
+          current_step_id: string | null;
+          current_step_index: number;
+          id: string;
+          procedure_id: string;
+          process_slug: string;
+          status: ProcessSessionStatus;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          answers?: ProcessSessionAnswers;
+          case_id?: string | null;
+          created_at?: string;
+          current_step_id?: string | null;
+          current_step_index?: number;
+          id?: string;
+          procedure_id: string;
+          process_slug: string;
+          status?: ProcessSessionStatus;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["process_sessions"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "process_sessions_case_id_fkey";
+            columns: ["case_id"];
+            isOneToOne: false;
+            referencedRelation: "cases";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "process_sessions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -470,3 +517,4 @@ export type TaskRecord = Database["public"]["Tables"]["tasks"]["Row"];
 export type UsageEventRecord = Database["public"]["Tables"]["usage_events"]["Row"];
 export type MobileUploadTokenRecord = Database["public"]["Tables"]["mobile_upload_tokens"]["Row"];
 export type GoalRecord = Database["public"]["Tables"]["goals"]["Row"];
+export type ProcessSessionRecord = Database["public"]["Tables"]["process_sessions"]["Row"];

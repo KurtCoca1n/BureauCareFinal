@@ -173,6 +173,8 @@
 .scene-settings::after { background: rgba(111, 168, 220, 0.22); }
 .scene-cases::before { background: rgba(124, 120, 184, 0.28); }
 .scene-cases::after { background: rgba(95, 163, 163, 0.24); }
+.scene-processes::before { background: rgba(111, 168, 220, 0.28); }
+.scene-processes::after { background: rgba(95, 163, 163, 0.26); }
 
 * {
   box-sizing: border-box;
@@ -225,4 +227,39 @@ select {
 
 ::selection {
   background: rgba(95, 163, 163, 0.18);
+}
+
+.explainable-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0 0.08rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: help;
+  font: inherit;
+  text-align: left;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(44, 122, 123, 0.58);
+  text-underline-offset: 0.18rem;
+}
+
+.explainable-term:hover,
+.explainable-term:focus-visible {
+  color: var(--accent-strong);
+  outline: none;
+}
+
+.explainable-term-popover {
+  position: fixed;
+  z-index: 80;
+  max-width: min(360px, calc(100vw - 32px));
+  border: 1px solid var(--line-strong);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 26px 56px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(18px);
+  padding: 1rem;
 }

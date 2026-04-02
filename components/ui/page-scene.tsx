@@ -12,6 +12,7 @@ function getSceneClass(pathname: string) {
   if (pathname.startsWith("/app/goals")) return "scene-goals";
   if (pathname.startsWith("/app/settings")) return "scene-settings";
   if (pathname.startsWith("/app/cases")) return "scene-cases";
+  if (pathname.startsWith("/app/processes")) return "scene-processes";
   if (pathname.startsWith("/app/upload")) return "scene-documents";
   return "scene-home";
 }

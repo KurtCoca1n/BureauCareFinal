@@ -5,7 +5,7 @@ import { Check, Copy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-export function CopyButton({ text }: { text: string }) {
+export function CopyButton({ text, label = "Text kopieren", copiedLabel = "Kopiert" }: { text: string; label?: string; copiedLabel?: string }) {
   const [copied, setCopied] = useState(false);
 
   return (
@@ -20,7 +20,7 @@ export function CopyButton({ text }: { text: string }) {
       }}
     >
       {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-      {copied ? "Kopiert" : "Antwort kopieren"}
+      {copied ? copiedLabel : label}
     </Button>
   );
 }

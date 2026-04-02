@@ -191,7 +191,29 @@ create table if not exists public.goals (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.process_sessions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  case_id uuid references public.cases(id) on delete set null,
+  process_slug text not null,
+  procedure_id text not null,
+  current_step_id text,
+  current_step_index integer not null default 0,
+  answers jsonb not null default '{}'::jsonb,
+  status text not null default 'in_progress',
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 alter table public.goals add column if not exists monthly_income numeric(12,2);
+alter table public.process_sessions add column if not exists case_id uuid references public.cases(id) on delete set null;
+alter table public.process_sessions add column if not exists process_slug text;
+alter table public.process_sessions add column if not exists procedure_id text;
+alter table public.process_sessions add column if not exists current_step_id text;
+alter table public.process_sessions add column if not exists current_step_index integer not null default 0;
+alter table public.process_sessions add column if not exists answers jsonb not null default '{}'::jsonb;
+alter table public.process_sessions add column if not exists status text not null default 'in_progress';
+alter table public.process_sessions add column if not exists updated_at timestamptz not null default timezone('utc', now());
 
 alter table public.goals
   drop constraint if exists goals_progress_percentage_check;
@@ -206,6 +228,13 @@ alter table public.goals
 alter table public.goals
   add constraint goals_financial_readiness_percentage_check
   check (financial_readiness_percentage is null or financial_readiness_percentage between 0 and 100);
+
+alter table public.process_sessions
+  drop constraint if exists process_sessions_status_check;
+
+alter table public.process_sessions
+  add constraint process_sessions_status_check
+  check (status in ('in_progress', 'ready'));
 
 alter table public.usage_events
   drop constraint if exists usage_events_event_type_check;
@@ -245,6 +274,8 @@ alter table public.case_events
 create index if not exists cases_user_id_idx on public.cases (user_id);
 create index if not exists documents_case_id_idx on public.documents (case_id);
 create index if not exists case_events_case_id_event_date_idx on public.case_events (case_id, event_date desc);
+create unique index if not exists process_sessions_user_id_process_slug_key on public.process_sessions (user_id, process_slug);
+create index if not exists process_sessions_user_id_updated_at_idx on public.process_sessions (user_id, updated_at desc);
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -309,6 +340,7 @@ alter table public.usage_events enable row level security;
 alter table public.mobile_upload_tokens enable row level security;
 alter table public.case_events enable row level security;
 alter table public.goals enable row level security;
+alter table public.process_sessions enable row level security;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
@@ -487,6 +519,27 @@ with check (auth.uid() = user_id);
 drop policy if exists "goals_delete_own" on public.goals;
 create policy "goals_delete_own"
 on public.goals for delete
+using (auth.uid() = user_id);
+
+drop policy if exists "process_sessions_select_own" on public.process_sessions;
+create policy "process_sessions_select_own"
+on public.process_sessions for select
+using (auth.uid() = user_id);
+
+drop policy if exists "process_sessions_insert_own" on public.process_sessions;
+create policy "process_sessions_insert_own"
+on public.process_sessions for insert
+with check (auth.uid() = user_id);
+
+drop policy if exists "process_sessions_update_own" on public.process_sessions;
+create policy "process_sessions_update_own"
+on public.process_sessions for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+drop policy if exists "process_sessions_delete_own" on public.process_sessions;
+create policy "process_sessions_delete_own"
+on public.process_sessions for delete
 using (auth.uid() = user_id);
 
 drop policy if exists "case_events_select_via_case_owner" on public.case_events;

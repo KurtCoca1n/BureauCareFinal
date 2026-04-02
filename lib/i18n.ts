@@ -18,7 +18,7 @@ export function getDateLocale(locale: AppLocale) {
 }
 
 type Copy = {
-  nav: { home: string; upload: string; tasks: string; settings: string; desk: string; brand: string };
+  nav: { home: string; upload: string; cases: string; processes: string; tasks: string; settings: string; desk: string; brand: string };
   common: {
     uploaded: string;
     analysisAvailable: string;
@@ -165,7 +165,7 @@ type Copy = {
 };
 
 const de: Copy = {
-  nav: { home: "Home", upload: "Upload", tasks: "Aufgaben", settings: "Einstellungen", desk: "Dein Büro im Blick", brand: "BureauCare" },
+  nav: { home: "Home", upload: "Upload", cases: "Fälle", processes: "Anträge & Vorgänge", tasks: "Aufgaben", settings: "Einstellungen", desk: "Dein Büro im Blick", brand: "BureauCare" },
   common: { uploaded: "Hochgeladen", analysisAvailable: "Analyse verfügbar", analysisPending: "Analyse ausstehend", unknown: "Unbekannt", noClearDeadline: "Keine klare Frist", deadline: "Frist", subject: "Thema", sender: "Absender", urgency: "Dringlichkeit", statusOpen: "Offen", statusDone: "Erledigt", document: "Dokument", openDocument: "Dokument öffnen", saveInProgress: "Wird gespeichert...", moreDetails: "Mehr Details", shortExplained: "Kurz erklärt", signOut: "Abmelden", dateUploaded: "Hochgeladen am", currentStatus: "Aktueller Stand", name: "Name", language: "Sprache", session: "Sitzung" },
   urgency: { high: "Hoch", medium: "Mittel", low: "Niedrig", unclear: "Noch unklar" },
   actionMode: { online: "Online möglich", onSite: "Vor Ort", byPost: "Per Post", byPhone: "Telefonisch" },
@@ -179,7 +179,7 @@ const de: Copy = {
 
 const en: Copy = {
   ...de,
-  nav: { home: "Home", upload: "Upload", tasks: "Tasks", settings: "Settings", desk: "Your desk at a glance", brand: "BureauCare" },
+  nav: { home: "Home", upload: "Upload", cases: "Cases", processes: "Applications & processes", tasks: "Tasks", settings: "Settings", desk: "Your desk at a glance", brand: "BureauCare" },
   common: { ...de.common, analysisAvailable: "Analysis ready", analysisPending: "Analysis pending", unknown: "Unknown", noClearDeadline: "No clear deadline", deadline: "Deadline", subject: "Subject", sender: "Sender", urgency: "Urgency", statusOpen: "Open", statusDone: "Done", document: "Document", openDocument: "Open document", saveInProgress: "Saving...", moreDetails: "More details", shortExplained: "Quick view", signOut: "Sign out", dateUploaded: "Uploaded on", currentStatus: "Current status", language: "Language", session: "Session" },
   urgency: { high: "High", medium: "Medium", low: "Low", unclear: "Still unclear" },
   actionMode: { online: "Online possible", onSite: "In person", byPost: "By mail", byPhone: "By phone" },
@@ -191,11 +191,11 @@ const en: Copy = {
   reply: { ...de.reply, back: "Back to document", badge: "Reply generator", title: "Prepare a suitable reply", intro: "Choose a tone and generate a ready-to-use draft for this message.", unknownSender: "Unknown sender", situation: "Situation", situationText: "This simplified summary is used for the reply.", note: "Note", noteText: "Please check the draft briefly before sending it.", tone: "Reply tone", format: "Format", asLetter: "As message", asEmail: "As email", includeName: "Add my name at the end", create: "Generate reply", creating: "Generating reply...", regenerate: "Generate a new reply", regenerating: "Creating a new version...", previousDrafts: "Earlier drafts", german: "German", neutral: "Neutral", friendly: "Friendly", veryFormal: "Very formal", objection: "Objection", appeal: "Appeal", needMoreTime: "I need more time" }
 };
 
-const tr: Copy = { ...en, nav: { ...en.nav, home: "Ana sayfa", upload: "Yükle", tasks: "Görevler", settings: "Ayarlar", desk: "Masandaki özet" }, common: { ...en.common, uploaded: "Yüklendi", analysisAvailable: "Analiz hazır", analysisPending: "Analiz bekleniyor", unknown: "Bilinmiyor", noClearDeadline: "Net bir son tarih yok", deadline: "Son tarih", subject: "Konu", sender: "Gönderen", urgency: "Aciliyet", statusOpen: "Açık", statusDone: "Tamamlandı", openDocument: "Belgeyi aç", saveInProgress: "Kaydediliyor...", moreDetails: "Daha fazla detay", shortExplained: "Kısa açıklama", signOut: "Çıkış yap", dateUploaded: "Yüklenme tarihi", currentStatus: "Mevcut durum", name: "İsim", language: "Dil", session: "Oturum" }, urgency: { high: "Yüksek", medium: "Orta", low: "Düşük", unclear: "Henüz belirsiz" }, actionMode: { online: "Çevrim içi mümkün", onSite: "Yerinde", byPost: "Posta ile", byPhone: "Telefonla" } };
-const uk: Copy = { ...en, nav: { ...en.nav, home: "Головна", upload: "Завантажити", tasks: "Завдання", settings: "Налаштування", desk: "Усе важливе під рукою" }, common: { ...en.common, uploaded: "Завантажено", analysisAvailable: "Аналіз готовий", analysisPending: "Аналіз очікується", unknown: "Невідомо", noClearDeadline: "Чіткого строку немає", deadline: "Строк", subject: "Тема", sender: "Відправник", urgency: "Терміновість", statusOpen: "Відкрито", statusDone: "Виконано", openDocument: "Відкрити документ", saveInProgress: "Зберігається...", moreDetails: "Більше деталей", shortExplained: "Коротко", signOut: "Вийти", currentStatus: "Поточний стан", name: "Ім’я", language: "Мова", session: "Сеанс" }, urgency: { high: "Висока", medium: "Середня", low: "Низька", unclear: "Поки неясно" }, actionMode: { online: "Можна онлайн", onSite: "Особисто", byPost: "Поштою", byPhone: "Телефоном" } };
+const tr: Copy = { ...en, nav: { ...en.nav, home: "Ana sayfa", upload: "Yükle", cases: "Dosyalar", processes: "Başvurular", tasks: "Görevler", settings: "Ayarlar", desk: "Masandaki özet" }, common: { ...en.common, uploaded: "Yüklendi", analysisAvailable: "Analiz hazır", analysisPending: "Analiz bekleniyor", unknown: "Bilinmiyor", noClearDeadline: "Net bir son tarih yok", deadline: "Son tarih", subject: "Konu", sender: "Gönderen", urgency: "Aciliyet", statusOpen: "Açık", statusDone: "Tamamlandı", openDocument: "Belgeyi aç", saveInProgress: "Kaydediliyor...", moreDetails: "Daha fazla detay", shortExplained: "Kısa açıklama", signOut: "Çıkış yap", dateUploaded: "Yüklenme tarihi", currentStatus: "Mevcut durum", name: "İsim", language: "Dil", session: "Oturum" }, urgency: { high: "Yüksek", medium: "Orta", low: "Düşük", unclear: "Henüz belirsiz" }, actionMode: { online: "Çevrim içi mümkün", onSite: "Yerinde", byPost: "Posta ile", byPhone: "Telefonla" } };
+const uk: Copy = { ...en, nav: { ...en.nav, home: "Головна", upload: "Завантажити", cases: "Справи", processes: "Заяви й процеси", tasks: "Завдання", settings: "Налаштування", desk: "Усе важливе під рукою" }, common: { ...en.common, uploaded: "Завантажено", analysisAvailable: "Аналіз готовий", analysisPending: "Аналіз очікується", unknown: "Невідомо", noClearDeadline: "Чіткого строку немає", deadline: "Строк", subject: "Тема", sender: "Відправник", urgency: "Терміновість", statusOpen: "Відкрито", statusDone: "Виконано", openDocument: "Відкрити документ", saveInProgress: "Зберігається...", moreDetails: "Більше деталей", shortExplained: "Коротко", signOut: "Вийти", currentStatus: "Поточний стан", name: "Ім’я", language: "Мова", session: "Сеанс" }, urgency: { high: "Висока", medium: "Середня", low: "Низька", unclear: "Поки неясно" }, actionMode: { online: "Можна онлайн", onSite: "Особисто", byPost: "Поштою", byPhone: "Телефоном" } };
 const es: Copy = {
   ...en,
-  nav: { ...en.nav, home: "Inicio", upload: "Subir", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
+  nav: { ...en.nav, home: "Inicio", upload: "Subir", cases: "Casos", processes: "Trámites y gestiones", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
   common: {
     ...en.common,
     uploaded: "Subido",

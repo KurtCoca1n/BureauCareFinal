@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
-import { FolderOpen, Home, Settings, SquareCheckBig, Target, Upload } from "lucide-react";
+import { FileText, FolderOpen, Home, Settings, SquareCheckBig, Target, Upload } from "lucide-react";
 
 import { getCasesNavLabel } from "@/lib/case-ui";
 import { getCopy } from "@/lib/i18n";
@@ -49,10 +49,17 @@ export function AppNavigation({ locale }: { locale: string }) {
     },
     {
       href: "/app/cases",
-      label: getCasesNavLabel(locale),
+      label: copy.nav.cases ?? getCasesNavLabel(locale),
       icon: FolderOpen,
       colorClass: "text-[#7c78b8]",
       activeClass: "bg-[rgba(124,120,184,0.14)] text-[var(--foreground)]"
+    },
+    {
+      href: "/app/processes",
+      label: copy.nav.processes,
+      icon: FileText,
+      colorClass: "text-[#4f8f88]",
+      activeClass: "bg-[rgba(95,163,163,0.18)] text-[var(--foreground)]"
     },
     {
       href: "/app/goals",
@@ -115,7 +122,8 @@ export function AppNavigation({ locale }: { locale: string }) {
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.9rem)] pt-3 lg:hidden">
-        <div className="mx-auto flex w-full max-w-md rounded-[28px] border border-white/80 bg-[rgba(255,252,247,0.98)] px-2 py-2 shadow-[var(--shadow)] backdrop-blur">
+        <div className="mx-auto w-full max-w-md rounded-[28px] border border-white/80 bg-[rgba(255,252,247,0.98)] px-2 py-2 shadow-[var(--shadow)] backdrop-blur">
+          <div className="flex gap-1 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {items.map((item) => {
             const isActive = isRouteActive(pathname, item.href);
             const Icon = item.icon;
@@ -126,7 +134,7 @@ export function AppNavigation({ locale }: { locale: string }) {
                 href={item.href as Route}
                 prefetch
                 className={cn(
-                  "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold text-[var(--muted)] transition active:scale-[0.98]",
+                  "flex min-w-[76px] shrink-0 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-[11px] font-semibold text-[var(--muted)] transition active:scale-[0.98]",
                   !isActive && "hover:bg-white/70",
                   isActive && `${item.activeClass} shadow-[var(--shadow-soft)]`
                 )}
@@ -136,6 +144,7 @@ export function AppNavigation({ locale }: { locale: string }) {
               </Link>
             );
           })}
+          </div>
         </div>
       </nav>
     </>

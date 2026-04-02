@@ -10,6 +10,7 @@ import type {
   DocumentRecord,
   DraftReplyRecord,
   GoalRecord,
+  ProcessSessionRecord,
   TaskRecord
 } from "@/lib/types";
 import { getMonthlyUsageSummary } from "@/lib/usage";
@@ -163,4 +164,28 @@ export async function getGoalById(goalId: string) {
   const supabase = await createClient();
   const { data } = await supabase.from("goals").select("*").eq("id", goalId).maybeSingle();
   return (data as GoalRecord | null) ?? null;
+}
+
+export async function getProcessSessionBySlug(processSlug: string) {
+  const user = await getCurrentUser();
+  if (!user || !processSlug) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("process_sessions")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("process_slug", processSlug)
+    .maybeSingle();
+
+  if (error) {
+    const message = error.message.toLowerCase();
+    if (message.includes("relation") || message.includes("process_sessions")) {
+      return null;
+    }
+  }
+
+  return (data as ProcessSessionRecord | null) ?? null;
 }
