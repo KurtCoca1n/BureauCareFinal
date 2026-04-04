@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, FolderOpen, Plus } from "lucide-react";
 import type { Route } from "next";
 
-import { CaseDoneForm } from "@/components/app/case-status-form";
+import { CaseDeleteForm, CaseDoneAndDeleteForm, CaseDoneForm } from "@/components/app/case-status-form";
 import { TaskCard } from "@/components/app/task-card";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -148,6 +148,10 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
               {caseText.addDocument}
             </Link>
             {caseItem.status !== "done" ? <CaseDoneForm caseId={caseItem.id} label={caseText.markCaseDone} /> : null}
+            {caseItem.status !== "done" ? (
+              <CaseDoneAndDeleteForm caseId={caseItem.id} label={caseText.doneAndDelete} confirmText={caseText.confirmDoneAndDelete} />
+            ) : null}
+            <CaseDeleteForm caseId={caseItem.id} label={caseText.deleteCase} confirmText={caseText.confirmCaseDelete} />
           </Card>
         </aside>
       </div>

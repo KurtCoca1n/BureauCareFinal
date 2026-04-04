@@ -37,6 +37,76 @@ export type CaseStatus = "open" | "waiting" | "done";
 export type DocumentStatus = "neu" | "analysiert" | "antwort_erstellt" | "gesendet" | "warten" | "erledigt";
 export type ProcessSessionStatus = "in_progress" | "ready";
 export type ProcessSessionAnswers = { [key: string]: Json | undefined };
+export type PersonalDataSource = "user_input" | "application_import" | "document_extracted" | "system_inferred";
+export type PersonalDataSuggestionPriority = "high" | "medium" | "low";
+export type PersonalDataFieldMeta = {
+  source: PersonalDataSource;
+  updated_at: string;
+  confirmed_by_user: boolean;
+  confirmed_at: string | null;
+  last_used_at: string | null;
+};
+export type UserPersonalDataSectionKey = "personal_details" | "contact_details" | "household_details" | "income_details" | "family_details" | "residency_details";
+export type UserPersonalDataFieldMetaMap = {
+  [section in UserPersonalDataSectionKey]?: {
+    [field: string]: PersonalDataFieldMeta | undefined;
+  };
+};
+export type PersonalDetails = {
+  first_name?: string;
+  last_name?: string;
+  birth_date?: string;
+  gender?: string;
+  nationality?: string;
+  family_status?: string;
+};
+export type ContactDetails = {
+  street?: string;
+  house_number?: string;
+  postal_code?: string;
+  city?: string;
+  country?: string;
+  email?: string;
+  phone?: string;
+};
+export type HouseholdDetails = {
+  housing_status?: string;
+  household_size?: number;
+  living_space_sqm?: number;
+  monthly_rent?: number;
+  move_in_date?: string;
+};
+export type IncomeDetails = {
+  employment_status?: string;
+  monthly_income_approx?: number;
+  additional_income?: string;
+  employer?: string;
+};
+export type FamilyDetails = {
+  children_count?: number;
+  family_constellation?: string;
+};
+export type ResidencyDetails = {
+  residence_status?: string;
+  current_life_phase?: string;
+};
+export type UserPersonalDataSections = {
+  personal_details: PersonalDetails;
+  contact_details: ContactDetails;
+  household_details: HouseholdDetails;
+  income_details: IncomeDetails;
+  family_details: FamilyDetails;
+  residency_details: ResidencyDetails;
+};
+export type PersonalDataSuggestion = {
+  id: string;
+  procedure_id: string;
+  title: string;
+  reason: string;
+  priority: PersonalDataSuggestionPriority;
+  score: number;
+  evidence: string[];
+};
 export type CaseEventType =
   | "document_uploaded"
   | "document_analyzed"
@@ -451,6 +521,44 @@ export type Database = {
           }
         ];
       };
+      user_personal_data: {
+        Row: {
+          contact_details: ContactDetails;
+          created_at: string;
+          family_details: FamilyDetails;
+          field_meta: UserPersonalDataFieldMetaMap;
+          household_details: HouseholdDetails;
+          income_details: IncomeDetails;
+          personal_details: PersonalDetails;
+          profile_version: number;
+          residency_details: ResidencyDetails;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          contact_details?: ContactDetails;
+          created_at?: string;
+          family_details?: FamilyDetails;
+          field_meta?: UserPersonalDataFieldMetaMap;
+          household_details?: HouseholdDetails;
+          income_details?: IncomeDetails;
+          personal_details?: PersonalDetails;
+          profile_version?: number;
+          residency_details?: ResidencyDetails;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["user_personal_data"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "user_personal_data_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       process_sessions: {
         Row: {
           answers: ProcessSessionAnswers;
@@ -517,4 +625,6 @@ export type TaskRecord = Database["public"]["Tables"]["tasks"]["Row"];
 export type UsageEventRecord = Database["public"]["Tables"]["usage_events"]["Row"];
 export type MobileUploadTokenRecord = Database["public"]["Tables"]["mobile_upload_tokens"]["Row"];
 export type GoalRecord = Database["public"]["Tables"]["goals"]["Row"];
+export type UserPersonalDataRecord = Database["public"]["Tables"]["user_personal_data"]["Row"];
+export type UserPersonalDataInsert = Database["public"]["Tables"]["user_personal_data"]["Insert"];
 export type ProcessSessionRecord = Database["public"]["Tables"]["process_sessions"]["Row"];

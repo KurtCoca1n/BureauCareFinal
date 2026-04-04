@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { CalendarRange, CircleHelp, Coins, LoaderCircle, Sparkles, Target } from "lucide-react";
@@ -286,3 +286,4 @@ export function GoalPlannerForm({
     </Card>
   );
 }
+

@@ -47,9 +47,12 @@ export function UploadForm({
   }, [router, state.documentId]);
 
   return (
-    <Card className="space-y-6 p-6 sm:p-7">
+    <Card className="space-y-6 border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(252,248,243,0.88))] p-6 shadow-[0_18px_42px_rgba(43,43,43,0.05)] sm:p-7">
       <div className="space-y-3">
-        <h2 className="text-xl font-semibold">{labels.title}</h2>
+        <div className="inline-flex rounded-2xl bg-[rgba(95,163,163,0.12)] p-3 text-[var(--accent)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
+          <UploadCloud className="h-5 w-5" />
+        </div>
+        <h2 className="text-xl font-semibold tracking-[-0.02em]">{labels.title}</h2>
         <p className="text-sm leading-6 text-[var(--muted)]">{labels.allowedFormats}</p>
       </div>
 
@@ -58,8 +61,8 @@ export function UploadForm({
         <label
           className={`flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[28px] border border-dashed px-6 py-8 text-center transition ${
             isDragging
-              ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-              : "border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.78),rgba(239,232,223,0.5))] hover:border-[var(--accent)] hover:bg-white"
+              ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(111,168,220,0.16),rgba(255,255,255,0.86))] shadow-[0_16px_34px_rgba(95,163,163,0.08)]"
+              : "border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.78),rgba(239,232,223,0.5))] hover:border-[var(--accent)] hover:bg-white hover:shadow-[0_16px_34px_rgba(43,43,43,0.04)]"
           }`}
           onDragOver={(event) => {
             event.preventDefault();
@@ -81,7 +84,7 @@ export function UploadForm({
             setSelectedFile(droppedFile.name);
           }}
         >
-          <div className="mb-5 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
+          <div className="mb-5 rounded-3xl bg-white/88 p-4 shadow-[var(--shadow-soft)] ring-1 ring-white/70">
             <UploadCloud className="h-7 w-7 text-[var(--accent)]" />
           </div>
           <p className="text-lg font-semibold">{labels.dropzoneTitle}</p>

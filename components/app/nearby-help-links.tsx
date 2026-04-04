@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, MapPin } from "lucide-react";
@@ -24,30 +24,30 @@ function getCopy(locale: string) {
 
   if (locale === "tr") {
     return {
-      title: "Yakındaki seçenekler",
-      text: "Kaydedilen konumuna göre BureauCare senin için uygun yerleri Haritalar'da açabilir.",
-      route: "Rota başlat",
-      routeToNearest: "En yakınına rota",
-      openMaps: "Haritada aç"
+      title: "Yak谋ndaki se莽enekler",
+      text: "Kaydedilen konumuna göre BureauCare senin i莽in uygun yerleri Haritalar'da a莽abilir.",
+      route: "Rota ba艧lat",
+      routeToNearest: "En yak谋n谋na rota",
+      openMaps: "Haritada a莽"
     };
   }
 
   if (locale === "uk") {
     return {
-      title: "Варіанти поруч",
-      text: "З огляду на збережене місце BureauCare може відкрити для тебе відповідні місця на мапі.",
-      route: "Прокласти маршрут",
-      routeToNearest: "Маршрут до найближчого",
-      openMaps: "Відкрити на мапі"
+      title: "袙邪褉褨邪薪褌懈 锌芯褉褍褔",
+      text: "袟 芯谐谢褟写褍 薪邪 蟹斜械褉械卸械薪械 屑褨褋褑械 BureauCare 屑芯卸械 胁褨写泻褉懈褌懈 写谢褟 褌械斜械 胁褨写锌芯胁褨写薪褨 屑褨褋褑褟 薪邪 屑邪锌褨.",
+      route: "袩褉芯泻谢邪褋褌懈 屑邪褉褕褉褍褌",
+      routeToNearest: "袦邪褉褕褉褍褌 写芯 薪邪泄斜谢懈卸褔芯谐芯",
+      openMaps: "袙褨写泻褉懈褌懈 薪邪 屑邪锌褨"
     };
   }
 
   if (locale === "es") {
     return {
       title: "Opciones cercanas",
-      text: "Según tu ubicación guardada, BureauCare puede abrir lugares adecuados en el mapa.",
+      text: "Seg煤n tu ubicaci贸n guardada, BureauCare puede abrir lugares adecuados en el mapa.",
       route: "Iniciar ruta",
-      routeToNearest: "Ruta al más cercano",
+      routeToNearest: "Ruta al m谩s cercano",
       openMaps: "Abrir en Maps"
     };
   }
@@ -215,3 +215,4 @@ export function NearbyHelpLinks({
     </div>
   );
 }
+

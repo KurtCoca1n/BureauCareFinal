@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { Lock, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { StartLink } from "@/components/marketing/start-link";
@@ -56,78 +56,78 @@ const marketingCopy = {
   },
   tr: {
     badge: "BureauCare V1",
-    title: "BureauCare resmi belgeleri sana basitçe açıklar ve uygun yanıtı hazırlar.",
-    text: "Bir belge yükle ve birkaç saniye içinde ne yapman gerektiğini anla. Sakin, açık ve resmi dil karmaşası olmadan.",
-    start: "Başla",
-    privacy: "Belgelerin gizli ve korumalı kalır.",
-    stepTitle: "Nasıl çalışır",
-    stepHeading: "Üç sakin adım",
+    title: "BureauCare resmi belgeleri sana basit莽e a莽谋klar ve uygun yan谋t谋 haz谋rlar.",
+    text: "Bir belge yükle ve birka莽 saniye i莽inde ne yapman gerekti臒ini anla. Sakin, a莽谋k ve resmi dil karma艧as谋 olmadan.",
+    start: "Ba艧la",
+    privacy: "Belgelerin gizli ve korumal谋 kal谋r.",
+    stepTitle: "Nas谋l 莽al谋艧谋r",
+    stepHeading: "Ü莽 sakin ad谋m",
     steps: [
-      ["1", "Belge yükle", "PDF veya görseli güvenli alanına kaydet."],
-      ["2", "Basit açıklama al", "Önemli noktaları, süreleri ve sonraki adımları hemen gör."],
-      ["3", "Yanıt oluştur", "Almanca ve seçtiğin dilde kullanılabilir bir yanıt al."]
+      ["1", "Belge yükle", "PDF veya görseli güvenli alan谋na kaydet."],
+      ["2", "Basit a莽谋klama al", "Önemli noktalar谋, süreleri ve sonraki ad谋mlar谋 hemen gör."],
+      ["3", "Yan谋t olu艧tur", "Almanca ve se莽ti臒in dilde kullan谋labilir bir yan谋t al."]
     ],
-    audience: "BureauCare kimler için",
-    audienceItems: ["Öğrenciler", "Çalışanlar", "Serbest çalışanlar", "Expatlar", "Zamanı az olanlar", "Bürokrasi stresi yaşayanlar"],
+    audience: "BureauCare kimler i莽in",
+    audienceItems: ["Ö臒renciler", "脟al谋艧anlar", "Serbest 莽al谋艧anlar", "Expatlar", "Zaman谋 az olanlar", "Bürokrasi stresi ya艧ayanlar"],
     trust: "Güven ve gizlilik",
     trustText:
-      "Belgelerin özel bir depolama alanında tutulur. Korumalı oturumlar ve Row Level Security sayesinde yalnızca sen erişebilirsin.",
+      "Belgelerin özel bir depolama alan谋nda tutulur. Korumal谋 oturumlar ve Row Level Security sayesinde yaln谋zca sen eri艧ebilirsin.",
     trustCards: [
-      ["Özel depolama", "Yüklemeler herkese açık olmaz, korumalı alanında kalır."],
-      ["Sakin tasarım", "Açık dil, bol boşluk ve karmaşık olmayan bir arayüz."]
+      ["Özel depolama", "Yüklemeler herkese a莽谋k olmaz, korumal谋 alan谋nda kal谋r."],
+      ["Sakin tasar谋m", "A莽谋k dil, bol bo艧luk ve karma艧谋k olmayan bir arayüz."]
     ]
   },
   uk: {
     badge: "BureauCare V1",
-    title: "BureauCare просто пояснює офіційні документи та допомагає підготувати відповідь.",
-    text: "Завантаж документ і за кілька секунд зрозумій, що потрібно зробити. Спокійно, чітко й без бюрократичної мови.",
-    start: "Почати",
-    privacy: "Твої документи приватні й захищені.",
-    stepTitle: "Як це працює",
-    stepHeading: "Три спокійні кроки",
+    title: "BureauCare 锌褉芯褋褌芯 锌芯褟褋薪褞褦 芯褎褨褑褨泄薪褨 写芯泻褍屑械薪褌懈 褌邪 写芯锌芯屑邪谐邪褦 锌褨写谐芯褌褍胁邪褌懈 胁褨写锌芯胁褨写褜.",
+    text: "袟邪胁邪薪褌邪卸 写芯泻褍屑械薪褌 褨 蟹邪 泻褨谢褜泻邪 褋械泻褍薪写 蟹褉芯蟹褍屑褨泄, 褖芯 锌芯褌褉褨斜薪芯 蟹褉芯斜懈褌懈. 小锌芯泻褨泄薪芯, 褔褨褌泻芯 泄 斜械蟹 斜褞褉芯泻褉邪褌懈褔薪芯褩 屑芯胁懈.",
+    start: "袩芯褔邪褌懈",
+    privacy: "孝胁芯褩 写芯泻褍屑械薪褌懈 锌褉懈胁邪褌薪褨 泄 蟹邪褏懈褖械薪褨.",
+    stepTitle: "携泻 褑械 锌褉邪褑褞褦",
+    stepHeading: "孝褉懈 褋锌芯泻褨泄薪褨 泻褉芯泻懈",
     steps: [
-      ["1", "Завантаж документ", "Безпечно збережи PDF або зображення у захищеному просторі."],
-      ["2", "Отримай просте пояснення", "Одразу побач важливе, строки й наступні кроки."],
-      ["3", "Створи відповідь", "Отримай ввічливу й готову до використання відповідь німецькою та своєю мовою."]
+      ["1", "袟邪胁邪薪褌邪卸 写芯泻褍屑械薪褌", "袘械蟹锌械褔薪芯 蟹斜械褉械卸懈 PDF 邪斜芯 蟹芯斜褉邪卸械薪薪褟 褍 蟹邪褏懈褖械薪芯屑褍 锌褉芯褋褌芯褉褨."],
+      ["2", "袨褌褉懈屑邪泄 锌褉芯褋褌械 锌芯褟褋薪械薪薪褟", "袨写褉邪蟹褍 锌芯斜邪褔 胁邪卸谢懈胁械, 褋褌褉芯泻懈 泄 薪邪褋褌褍锌薪褨 泻褉芯泻懈."],
+      ["3", "小褌胁芯褉懈 胁褨写锌芯胁褨写褜", "袨褌褉懈屑邪泄 胁胁褨褔谢懈胁褍 泄 谐芯褌芯胁褍 写芯 胁懈泻芯褉懈褋褌邪薪薪褟 胁褨写锌芯胁褨写褜 薪褨屑械褑褜泻芯褞 褌邪 褋胁芯褦褞 屑芯胁芯褞."]
     ],
-    audience: "Для кого BureauCare",
-    audienceItems: ["Студенти", "Працівники", "Фрилансери", "Експати", "Люди з нестачею часу", "Люди, яких виснажує бюрократія"],
-    trust: "Довіра та приватність",
+    audience: "袛谢褟 泻芯谐芯 BureauCare",
+    audienceItems: ["小褌褍写械薪褌懈", "袩褉邪褑褨胁薪懈泻懈", "肖褉懈谢邪薪褋械褉懈", "袝泻褋锌邪褌懈", "袥褞写懈 蟹 薪械褋褌邪褔械褞 褔邪褋褍", "袥褞写懈, 褟泻懈褏 胁懈褋薪邪卸褍褦 斜褞褉芯泻褉邪褌褨褟"],
+    trust: "袛芯胁褨褉邪 褌邪 锌褉懈胁邪褌薪褨褋褌褜",
     trustText:
-      "Твої документи зберігаються у приватному сховищі. Захищені сесії та Row Level Security гарантують, що доступ маєш лише ти.",
+      "孝胁芯褩 写芯泻褍屑械薪褌懈 蟹斜械褉褨谐邪褞褌褜褋褟 褍 锌褉懈胁邪褌薪芯屑褍 褋褏芯胁懈褖褨. 袟邪褏懈褖械薪褨 褋械褋褨褩 褌邪 Row Level Security 谐邪褉邪薪褌褍褞褌褜, 褖芯 写芯褋褌褍锌 屑邪褦褕 谢懈褕械 褌懈.",
     trustCards: [
-      ["Приватне сховище", "Завантаження не стають публічними й залишаються у твоєму захищеному просторі."],
-      ["Спокійний дизайн", "Зрозуміла мова, багато простору й жодного перевантаженого інтерфейсу."]
+      ["袩褉懈胁邪褌薪械 褋褏芯胁懈褖械", "袟邪胁邪薪褌邪卸械薪薪褟 薪械 褋褌邪褞褌褜 锌褍斜谢褨褔薪懈屑懈 泄 蟹邪谢懈褕邪褞褌褜褋褟 褍 褌胁芯褦屑褍 蟹邪褏懈褖械薪芯屑褍 锌褉芯褋褌芯褉褨."],
+      ["小锌芯泻褨泄薪懈泄 写懈蟹邪泄薪", "袟褉芯蟹褍屑褨谢邪 屑芯胁邪, 斜邪谐邪褌芯 锌褉芯褋褌芯褉褍 泄 卸芯写薪芯谐芯 锌械褉械胁邪薪褌邪卸械薪芯谐芯 褨薪褌械褉褎械泄褋褍."]
     ]
   },
   es: {
     badge: "BureauCare V1",
     title: "BureauCare te explica documentos oficiales de forma simple y redacta la respuesta adecuada para ti.",
-    text: "Sube un documento y entiende en pocos segundos qué tienes que hacer. Claro, tranquilo y sin lenguaje burocrático.",
+    text: "Sube un documento y entiende en pocos segundos qu茅 tienes que hacer. Claro, tranquilo y sin lenguaje burocr谩tico.",
     start: "Empezar",
-    privacy: "Tus documentos son privados y están protegidos.",
-    stepTitle: "Cómo funciona",
+    privacy: "Tus documentos son privados y est谩n protegidos.",
+    stepTitle: "C贸mo funciona",
     stepHeading: "Tres pasos tranquilos",
     steps: [
       ["1", "Subir documento", "Guarda un PDF o una imagen de forma segura en tu espacio protegido."],
-      ["2", "Recibir una explicación simple", "Ve enseguida lo importante, los plazos y los siguientes pasos."],
-      ["3", "Crear una respuesta", "Obtén una respuesta educada y útil en alemán y en tu idioma."]
+      ["2", "Recibir una explicaci贸n simple", "Ve enseguida lo importante, los plazos y los siguientes pasos."],
+      ["3", "Crear una respuesta", "Obt茅n una respuesta educada y 煤til en alem谩n y en tu idioma."]
     ],
-    audience: "Para quién es BureauCare",
-    audienceItems: ["Estudiantes", "Profesionales", "Autónomos", "Expats", "Personas con poco tiempo", "Personas con estrés por la burocracia"],
+    audience: "Para qui茅n es BureauCare",
+    audienceItems: ["Estudiantes", "Profesionales", "Aut贸nomos", "Expats", "Personas con poco tiempo", "Personas con estr茅s por la burocracia"],
     trust: "Confianza y privacidad",
     trustText:
-      "Tus documentos se guardan en un área privada. Las sesiones protegidas y Row Level Security garantizan que solo tú puedas acceder a ellos.",
+      "Tus documentos se guardan en un 谩rea privada. Las sesiones protegidas y Row Level Security garantizan que solo t煤 puedas acceder a ellos.",
     trustCards: [
-      ["Almacenamiento privado", "Las subidas nunca se publican y permanecen en tu área protegida."],
-      ["Diseño tranquilo", "Lenguaje claro, mucho espacio y una interfaz sin ruido burocrático."]
+      ["Almacenamiento privado", "Las subidas nunca se publican y permanecen en tu 谩rea protegida."],
+      ["Dise帽o tranquilo", "Lenguaje claro, mucho espacio y una interfaz sin ruido burocr谩tico."]
     ]
   }
 } as const;
 
 export default async function LandingPage() {
   const locale = await getRequestLanguage();
-  const copy = marketingCopy[locale];
+  const copy = marketingCopy[locale as keyof typeof marketingCopy] ?? marketingCopy.en;
 
   return (
     <PageShell className="max-w-6xl gap-16 py-10 lg:gap-24">
@@ -175,7 +175,8 @@ export default async function LandingPage() {
                 { Icon: Sparkles, bg: "rgba(123,191,159,0.16)", color: "var(--petrol)", title: copy.steps[1][1], text: copy.steps[1][2] },
                 { Icon: ShieldCheck, bg: "rgba(242,166,90,0.16)", color: "var(--foreground)", title: copy.steps[2][1], text: copy.steps[2][2] }
               ] as const
-            ).map(({ Icon, bg, color, title, text }) => {
+            ).map(
+              ({ Icon, bg, color, title, text }: { Icon: typeof Upload; bg: string; color: string; title: string; text: string }) => {
               const ItemIcon = Icon;
 
               return (
@@ -202,7 +203,7 @@ export default async function LandingPage() {
           <h2 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{copy.stepHeading}</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {copy.steps.map(([step, title, text]) => (
+          {copy.steps.map(([step, title, text]: readonly [string, string, string]) => (
             <Card key={step} className="h-full p-6">
               <p className="text-sm font-semibold text-[var(--accent)]">{step}</p>
               <h3 className="mt-3 text-xl font-semibold break-words">{title}</h3>
@@ -216,7 +217,7 @@ export default async function LandingPage() {
         <Card className="space-y-4 p-6">
           <h2 className="text-2xl font-semibold tracking-[-0.03em]">{copy.audience}</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {copy.audienceItems.map((item) => (
+            {copy.audienceItems.map((item: string) => (
               <div key={item} className="rounded-[22px] bg-white px-4 py-4 text-sm font-medium shadow-[var(--shadow-soft)] break-words">
                 {item}
               </div>
@@ -235,7 +236,7 @@ export default async function LandingPage() {
             </div>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {copy.trustCards.map(([title, text]) => (
+            {copy.trustCards.map(([title, text]: readonly [string, string]) => (
               <div key={title} className="rounded-[22px] bg-white p-4 shadow-[var(--shadow-soft)]">
                 <p className="text-sm font-semibold break-words">{title}</p>
                 <p className="mt-2 text-sm text-[var(--muted)] break-words">{text}</p>
@@ -247,3 +248,5 @@ export default async function LandingPage() {
     </PageShell>
   );
 }
+
+

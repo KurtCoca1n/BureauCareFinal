@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getAltLanguageLabel, getCopy, getDateLocale } from "@/lib/i18n";
 import { getDocumentAnalysisByDocumentId, getDocumentById, getDraftRepliesByDocumentId, getProfile } from "@/lib/queries";
+import { getReplyToneRecommendationWithAI } from "@/lib/openai/reply-tone-recommender";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 function getUrgencyLabel(value: string | null, locale: string) {
@@ -19,24 +20,6 @@ function getUrgencyLabel(value: string | null, locale: string) {
       : value === "low"
         ? copy.urgency.low
         : copy.urgency.unclear;
-}
-
-function getRecommendedTone(analysis: { urgency: string | null; is_action_required: boolean | null; subject: string | null; next_steps: string[] | null }, locale: string) {
-  const haystack = `${analysis.subject ?? ""} ${(analysis.next_steps ?? []).join(" ")}`.toLowerCase();
-
-  if (/widerspruch|einspruch|appeal|objection/.test(haystack)) {
-    return locale === "en" ? "Very formal" : locale === "tr" ? "Çok resmî" : locale === "uk" ? "Дуже формально" : locale === "es" ? "Muy formal" : "Sehr formell";
-  }
-
-  if (analysis.urgency === "high") {
-    return locale === "en" ? "Friendly, but formal" : locale === "tr" ? "Nazik ama resmî" : locale === "uk" ? "Доброзичливо, але формально" : locale === "es" ? "Amable, pero formal" : "Freundlich, aber formell";
-  }
-
-  if (analysis.is_action_required) {
-    return locale === "en" ? "Friendly" : locale === "tr" ? "Nazik" : locale === "uk" ? "Доброзичливо" : locale === "es" ? "Amable" : "Freundlich";
-  }
-
-  return locale === "en" ? "Neutral" : locale === "tr" ? "Nötr" : locale === "uk" ? "Нейтрально" : locale === "es" ? "Neutral" : "Neutral";
 }
 
 export default async function ReplyPage({ params }: { params: Promise<{ id: string }> }) {
@@ -63,11 +46,11 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
     locale === "en"
       ? { label: "Extra tone request", placeholder: "For example: shorter and more direct" }
       : locale === "tr"
-        ? { label: "Ek ton isteği", placeholder: "Örneğin: daha kısa ve daha net" }
+        ? { label: "Ek ton iste臒i", placeholder: "Örne臒in: daha k谋sa ve daha net" }
         : locale === "uk"
-          ? { label: "Додаткове побажання до тону", placeholder: "Наприклад: коротше й пряміше" }
+          ? { label: "袛芯写邪褌泻芯胁械 锌芯斜邪卸邪薪薪褟 写芯 褌芯薪褍", placeholder: "袧邪锌褉懈泻谢邪写: 泻芯褉芯褌褕械 泄 锌褉褟屑褨褕械" }
           : locale === "es"
-            ? { label: "Deseo adicional para el tono", placeholder: "Por ejemplo: más corto y más directo" }
+            ? { label: "Deseo adicional para el tono", placeholder: "Por ejemplo: m谩s corto y m谩s directo" }
             : { label: "Eigener Tonwunsch", placeholder: "Zum Beispiel: kürzer und direkter" };
   const recommendedToneLabel =
     locale === "en"
@@ -75,7 +58,7 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
       : locale === "tr"
         ? "Önerilen ton:"
         : locale === "uk"
-          ? "Рекомендований тон:"
+          ? "袪械泻芯屑械薪写芯胁邪薪懈泄 褌芯薪:"
           : locale === "es"
             ? "Tono recomendado:"
             : "Empfohlener Ton:";
@@ -85,11 +68,12 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
       : locale === "tr"
         ? "Öneriyi kullan"
         : locale === "uk"
-          ? "Використати пораду"
+          ? "袙懈泻芯褉懈褋褌邪褌懈 锌芯褉邪写褍"
           : locale === "es"
             ? "Usar sugerencia"
             : "Vorschlag nutzen";
-  const recommendedTone = getRecommendedTone(analysis, locale);
+  const allowedTones = [copy.reply.neutral, copy.reply.friendly, copy.reply.veryFormal, copy.reply.objection, copy.reply.appeal, copy.reply.needMoreTime];
+  const recommendedTone = await getReplyToneRecommendationWithAI({ analysis, locale, allowedTones });
 
   return (
     <div className="space-y-6">
@@ -179,7 +163,7 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
             previousDrafts: copy.reply.previousDrafts,
             german: copy.reply.german,
             translated: getAltLanguageLabel(profile?.preferred_language),
-            tones: [copy.reply.neutral, copy.reply.friendly, copy.reply.veryFormal, copy.reply.objection, copy.reply.appeal, copy.reply.needMoreTime],
+            tones: allowedTones,
             customTone: customToneCopy.label,
             customTonePlaceholder: customToneCopy.placeholder
           }}
@@ -188,3 +172,7 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
     </div>
   );
 }
+
+
+
+

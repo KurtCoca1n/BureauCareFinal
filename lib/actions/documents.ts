@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 
@@ -177,3 +177,4 @@ export async function uploadDocumentAction(_: UploadFormState, formData: FormDat
 
   return { error: "", success: "Dokument erfolgreich hochgeladen. Du wirst weitergeleitet.", documentId };
 }
+

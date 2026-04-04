@@ -13,6 +13,17 @@ import { ExplanationRichText } from "@/components/ui/explanation-rich-text";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { saveProcessSessionAction } from "@/lib/actions/process-sessions";
+import { saveUserPersonalDataSectionAction } from "@/lib/actions/user-personal-data";
+import {
+  blockHasChangesAgainstSaved,
+  blockHasKnownData,
+  getKnownDataHintForBlock,
+  getProcessDataBlocks,
+  getProcessDataReuseCopy,
+  getSavedAnswersForBlock,
+  getSavePatchesForBlock,
+  type ProcessDataBlockDefinition
+} from "@/lib/process-personal-data";
 import {
   getProcessWizardCopy,
   getWizardText,
@@ -21,7 +32,7 @@ import {
   type ProcessWizardField,
   type ProcessWizardStep
 } from "@/lib/process-wizard-v2";
-import type { ProcessSessionAnswers } from "@/lib/types";
+import type { ProcessSessionAnswers, UserPersonalDataRecord, UserPersonalDataSectionKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type ProcessWizardProps = {
@@ -33,6 +44,7 @@ type ProcessWizardProps = {
   initialAnswers: ProcessWizardAnswers;
   initialStepIndex: number;
   initialStorageMode: "remote" | "local";
+  initialPersonalData: UserPersonalDataRecord | null;
 };
 
 type DraftSnapshot = {
@@ -47,7 +59,7 @@ function getLocalStorageKey(processSlug: string) {
   return `bureaucare-process-draft:${processSlug}`;
 }
 
-function toFieldValue(value: ProcessWizardAnswers[string]) {
+function toFieldValue(value: ProcessWizardAnswers[string] | undefined) {
   if (typeof value === "string") return value;
   if (typeof value === "number") return String(value);
   if (typeof value === "boolean") return value ? "yes" : "no";
@@ -80,16 +92,22 @@ export function ProcessWizard({
   definition,
   initialAnswers,
   initialStepIndex,
-  initialStorageMode
+  initialStorageMode,
+  initialPersonalData
 }: ProcessWizardProps) {
   const copy = getProcessWizardCopy(locale);
+  const reuseCopy = getProcessDataReuseCopy(locale);
   const router = useRouter();
   const steps = definition.steps;
   const [answers, setAnswers] = useState<ProcessWizardAnswers>(initialAnswers);
+  const [personalData, setPersonalData] = useState<UserPersonalDataRecord | null>(initialPersonalData);
   const [currentStepIndex, setCurrentStepIndex] = useState(Math.min(initialStepIndex, Math.max(steps.length - 1, 0)));
   const [furthestStepIndex, setFurthestStepIndex] = useState(Math.min(initialStepIndex, Math.max(steps.length - 1, 0)));
   const [saveState, setSaveState] = useState<SaveState>(initialStorageMode === "remote" ? "saved" : "idle");
   const [fieldErrors, setFieldErrors] = useState<string[]>([]);
+  const [rememberChoices, setRememberChoices] = useState<Record<string, boolean>>({});
+  const [dismissedReuseBlocks, setDismissedReuseBlocks] = useState<Record<string, true>>({});
+  const [personalDataNotice, setPersonalDataNotice] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const readyRef = useRef(false);
   const lastSerializedRef = useRef("");
   const saveRequestRef = useRef(0);
@@ -98,6 +116,18 @@ export function ProcessWizard({
   const localStorageKey = getLocalStorageKey(processSlug);
   const status = currentStepIndex >= steps.length - 1 ? "ready" : "in_progress";
   const progressPercent = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
+  const stepDataBlocks = useMemo(() => getProcessDataBlocks(processSlug, currentStep.id), [currentStep.id, processSlug]);
+  const savedFieldHints = useMemo(() => {
+    return stepDataBlocks.reduce<Record<string, string>>((accumulator, block) => {
+      const savedAnswers = getSavedAnswersForBlock(block.id, personalData);
+      for (const [fieldId, value] of Object.entries(savedAnswers)) {
+        if (toFieldValue(value).trim()) {
+          accumulator[fieldId] = getWizardText(block.title, locale);
+        }
+      }
+      return accumulator;
+    }, {});
+  }, [locale, personalData, stepDataBlocks]);
 
   function buildSnapshot(nextAnswers = answers, nextStepIndex = currentStepIndex): DraftSnapshot {
     return {
@@ -207,6 +237,27 @@ export function ProcessWizard({
     setFieldErrors((current) => current.filter((entry) => entry !== fieldId));
   }
 
+  function applyKnownData(block: ProcessDataBlockDefinition) {
+    const savedAnswers = getSavedAnswersForBlock(block.id, personalData);
+    const filteredSavedAnswers = Object.fromEntries(
+      Object.entries(savedAnswers).filter(([, value]) => toFieldValue(value).trim().length > 0)
+    ) as ProcessWizardAnswers;
+
+    setAnswers((current) => ({
+      ...current,
+      ...filteredSavedAnswers
+    }));
+    setDismissedReuseBlocks((current) => ({ ...current, [block.id]: true }));
+  }
+
+  function dismissKnownData(blockId: string) {
+    setDismissedReuseBlocks((current) => ({ ...current, [blockId]: true }));
+  }
+
+  function toggleRememberChoice(blockId: string, checked: boolean) {
+    setRememberChoices((current) => ({ ...current, [blockId]: checked }));
+  }
+
   function validateStep(step: ProcessWizardStep) {
     const missingFields =
       step.fields
@@ -226,6 +277,11 @@ export function ProcessWizard({
 
   async function handleNext() {
     if (!currentStep.summary && !validateStep(currentStep)) {
+      return;
+    }
+
+    const personalDataSaved = await persistSelectedPersonalData();
+    if (!personalDataSaved) {
       return;
     }
 
@@ -249,6 +305,7 @@ export function ProcessWizard({
     const placeholder = field.placeholder ? getWizardText(field.placeholder, locale) : "";
     const value = toFieldValue(answers[field.id]);
     const hasError = fieldErrors.includes(field.id);
+    const knownFieldLabel = savedFieldHints[field.id];
 
     if (field.type === "textarea") {
       return (
@@ -261,6 +318,7 @@ export function ProcessWizard({
               <ExplanationRichText text={description} locale={locale} />
             </p>
           ) : null}
+          {knownFieldLabel ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.savedFromEarlierLabel}: {knownFieldLabel}</p> : null}
           <textarea
             value={value}
             onChange={(event) => updateAnswer(field.id, event.target.value)}
@@ -286,6 +344,7 @@ export function ProcessWizard({
               <ExplanationRichText text={description} locale={locale} />
             </p>
           ) : null}
+          {knownFieldLabel ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.savedFromEarlierLabel}: {knownFieldLabel}</p> : null}
           <select
             value={value}
             onChange={(event) => updateAnswer(field.id, event.target.value)}
@@ -317,6 +376,7 @@ export function ProcessWizard({
                 <ExplanationRichText text={description} locale={locale} />
               </p>
             ) : null}
+            {knownFieldLabel ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.savedFromEarlierLabel}: {knownFieldLabel}</p> : null}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {field.options?.map((option) => {
@@ -355,6 +415,7 @@ export function ProcessWizard({
             <ExplanationRichText text={description} locale={locale} />
           </p>
         ) : null}
+        {knownFieldLabel ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.savedFromEarlierLabel}: {knownFieldLabel}</p> : null}
         <Input
           type={field.type === "currency" || field.type === "number" ? "number" : field.type}
           value={value}
@@ -376,6 +437,45 @@ export function ProcessWizard({
     saveState === "local" ? copy.localSaveLabel :
     saveState === "error" ? copy.saveErrorLabel :
     copy.savedLabel;
+
+  async function persistSelectedPersonalData() {
+    const selectedBlocks = stepDataBlocks.filter((block) => rememberChoices[block.id]);
+    if (!selectedBlocks.length) {
+      return true;
+    }
+
+    setPersonalDataNotice("saving");
+
+    let latestRecord = personalData;
+
+    for (const block of selectedBlocks) {
+      const patches = getSavePatchesForBlock(block.id, answers);
+      for (const [section, patch] of Object.entries(patches) as Array<[UserPersonalDataSectionKey, Record<string, unknown>]>) {
+        if (!Object.keys(patch).length) {
+          continue;
+        }
+
+        const result = await saveUserPersonalDataSectionAction({
+          section,
+          patch,
+          source: "application_import",
+          confirmedByUser: true
+        });
+
+        if (!result.ok) {
+          setPersonalDataNotice("error");
+          return false;
+        }
+
+        latestRecord = result.record ?? latestRecord;
+      }
+    }
+
+    setPersonalData(latestRecord);
+    setPersonalDataNotice("saved");
+
+    return true;
+  }
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 pb-8">
@@ -508,8 +608,71 @@ export function ProcessWizard({
                 </div>
               </div>
             ) : (
-              <div className="mt-6 grid gap-5 md:grid-cols-2">
-                {currentStep.fields?.map((field) => renderField(field))}
+              <div className="mt-6 space-y-5">
+                {stepDataBlocks.map((block) => {
+                  const knownDataAvailable = blockHasKnownData(block.id, personalData);
+                  const hint = getKnownDataHintForBlock(block.id, personalData);
+                  const needsUpdate = blockHasChangesAgainstSaved(block.id, answers, personalData);
+                  const dismissed = dismissedReuseBlocks[block.id];
+
+                  return (
+                    <div key={block.id} className="space-y-3">
+                      {knownDataAvailable && !dismissed ? (
+                        <Card className="border-[var(--accent)]/28 bg-[linear-gradient(180deg,rgba(237,246,253,0.94),rgba(255,255,255,0.96))] p-5">
+                          <div className="space-y-2">
+                            <p className="text-sm font-semibold text-[var(--accent-strong)]">{reuseCopy.knownDataTitle}</p>
+                            <h3 className="text-base font-semibold">{getWizardText(block.title, locale)}</h3>
+                            <p className="text-sm leading-6 text-[var(--muted)]">{reuseCopy.knownDataDescription}</p>
+                            <p className="text-xs font-medium text-[var(--accent-strong)]">
+                              {hint === "outdated" ? reuseCopy.outdatedHintLabel : reuseCopy.savedFromEarlierLabel}
+                            </p>
+                          </div>
+                          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                            <Button type="button" onClick={() => applyKnownData(block)}>
+                              {reuseCopy.useDataLabel}
+                            </Button>
+                            <Button type="button" variant="secondary" onClick={() => dismissKnownData(block.id)}>
+                              {reuseCopy.reviewMyselfLabel}
+                            </Button>
+                            <Button type="button" variant="ghost" onClick={() => dismissKnownData(block.id)}>
+                              {reuseCopy.skipForNowLabel}
+                            </Button>
+                          </div>
+                        </Card>
+                      ) : null}
+
+                      <Card className="border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,250,252,0.92))] p-5">
+                        <div className="flex items-start gap-3">
+                          <input
+                            id={`remember-${block.id}`}
+                            type="checkbox"
+                            checked={Boolean(rememberChoices[block.id])}
+                            onChange={(event) => toggleRememberChoice(block.id, event.target.checked)}
+                            className="mt-1 h-4 w-4 rounded border-[var(--line-strong)] text-[var(--accent)] focus:ring-[var(--accent)]"
+                          />
+                          <label htmlFor={`remember-${block.id}`} className="space-y-1">
+                            <p className="text-sm font-semibold">{reuseCopy.saveDataTitle}</p>
+                            <p className="text-sm leading-6 text-[var(--muted)]">{reuseCopy.saveDataDescription}</p>
+                            <p className="text-sm font-medium text-[var(--foreground)]">
+                              {needsUpdate ? reuseCopy.saveUpdateToggleLabel : getWizardText(block.saveLabel, locale)}
+                            </p>
+                            {needsUpdate ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.updateHintLabel}</p> : null}
+                            {personalDataNotice === "saved" && rememberChoices[block.id] ? (
+                              <p className="text-xs font-medium text-[var(--accent-strong)]">{copy.savedLabel}</p>
+                            ) : null}
+                            {personalDataNotice === "error" && rememberChoices[block.id] ? (
+                              <p className="text-xs font-medium text-[var(--danger)]">{copy.saveErrorLabel}</p>
+                            ) : null}
+                          </label>
+                        </div>
+                      </Card>
+                    </div>
+                  );
+                })}
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  {currentStep.fields?.map((field) => renderField(field))}
+                </div>
               </div>
             )}
 

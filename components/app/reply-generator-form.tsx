@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { LoaderCircle, Sparkles } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { generateDraftReplyAction, type DraftReplyState } from "@/lib/actions/draft-replies";
+import type { ReplyToneRecommendation } from "@/lib/reply-tone";
 import type { DraftReplyRecord } from "@/lib/types";
 
 const initialState: DraftReplyState = {
@@ -27,15 +28,27 @@ function resolveRecommendedToneSelection(recommendation: string, tones: string[]
 
   const normalized = normalizeText(recommendation);
 
-  if (/(form|resm|офіці|formal|muy formal|sehr formell)/.test(normalized)) {
-    return tones.find((tone) => /(form|resm|офіці|formal)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  if (/(form|resm|formal|muy formal|sehr formell)/.test(normalized)) {
+    return tones.find((tone) => /(form|resm|formal)/.test(normalizeText(tone))) ?? tones[0] ?? "";
   }
 
-  if (/(freund|amable|nazik|доброзич|friendly)/.test(normalized)) {
-    return tones.find((tone) => /(freund|amable|nazik|доброзич|friendly)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  if (/(freund|amable|nazik|friendly|dobro)/.test(normalized)) {
+    return tones.find((tone) => /(freund|amable|nazik|friendly|dobro)/.test(normalizeText(tone))) ?? tones[0] ?? "";
   }
 
-  return tones.find((tone) => /(neutral|nötr|нейтр)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  if (/(widerspruch|objection|itiraz|oposicion|zaperech)/.test(normalized)) {
+    return tones.find((tone) => /(widerspruch|objection|itiraz|oposicion|zaperech)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  }
+
+  if (/(einspruch|appeal|recurso|skarga)/.test(normalized)) {
+    return tones.find((tone) => /(einspruch|appeal|recurso|skarga)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  }
+
+  if (/(mehr zeit|more time|zamana|tiempo|chasu)/.test(normalized)) {
+    return tones.find((tone) => /(mehr zeit|more time|zamana|tiempo|chasu)/.test(normalizeText(tone))) ?? tones[0] ?? "";
+  }
+
+  return tones.find((tone) => /(neutral|notr|neutral)/.test(normalizeText(tone))) ?? tones[0] ?? "";
 }
 
 export function ReplyGeneratorForm({
@@ -50,7 +63,7 @@ export function ReplyGeneratorForm({
   existingReplies: DraftReplyRecord[];
   profileName: string | null;
   preferredLanguage: string | null;
-  recommendedTone?: string | null;
+  recommendedTone?: ReplyToneRecommendation | null;
   labels: {
     tone: string;
     recommendedTone: string;
@@ -73,7 +86,8 @@ export function ReplyGeneratorForm({
 }) {
   const [state, formAction, pending] = useActionState(generateDraftReplyAction, initialState);
   const [activeLanguage, setActiveLanguage] = useState<"de" | "translated">("de");
-  const [selectedTone, setSelectedTone] = useState(resolveRecommendedToneSelection(recommendedTone ?? "", labels.tones));
+  const [selectedTone, setSelectedTone] = useState(resolveRecommendedToneSelection(recommendedTone?.tone ?? "", labels.tones));
+  const [toneDetails, setToneDetails] = useState(recommendedTone?.toneDetails ?? "");
 
   const activeReply = useMemo(() => {
     if (state.generatedReply) {
@@ -103,12 +117,13 @@ export function ReplyGeneratorForm({
     [existingReplies]
   );
 
-  const showTranslated = preferredLanguage !== "de" && !!activeReply?.replyTextTranslated && !!activeReply.translatedLanguage;
-  const recommendation = state.recommendedTone ?? recommendedTone ?? activeReply?.tone ?? "";
+  const showTranslated = preferredLanguage !== "de" && !!activeReply?.replyTextTranslated && !!activeReply?.translatedLanguage;
+  const recommendation = state.recommendedTone ?? recommendedTone ?? null;
 
   useEffect(() => {
     if (state.recommendedTone) {
-      setSelectedTone(resolveRecommendedToneSelection(state.recommendedTone, labels.tones));
+      setSelectedTone(resolveRecommendedToneSelection(state.recommendedTone.tone, labels.tones));
+      setToneDetails(state.recommendedTone.toneDetails ?? "");
     }
   }, [labels.tones, state.recommendedTone]);
 
@@ -118,17 +133,22 @@ export function ReplyGeneratorForm({
         <form action={formAction} className="space-y-4">
           <input type="hidden" name="documentId" value={documentId} />
           <input type="hidden" name="regenerate" value="1" />
+          <input type="hidden" name="recommendedToneTone" value={recommendedTone?.tone ?? ""} />
+          <input type="hidden" name="recommendedToneDetails" value={recommendedTone?.toneDetails ?? ""} />
 
           <div className="space-y-2">
             <p className="text-sm font-medium">{labels.tone}</p>
             {recommendation ? (
               <button
                 type="button"
-                onClick={() => setSelectedTone(resolveRecommendedToneSelection(recommendation, labels.tones))}
+                onClick={() => {
+                  setSelectedTone(resolveRecommendedToneSelection(recommendation.tone, labels.tones));
+                  setToneDetails(recommendation.toneDetails ?? "");
+                }}
                 className="w-full rounded-2xl border border-[rgba(95,163,163,0.24)] bg-[linear-gradient(135deg,rgba(95,163,163,0.12),rgba(111,168,220,0.08))] px-4 py-3 text-left text-sm text-[var(--foreground)] transition hover:border-[rgba(95,163,163,0.34)] hover:shadow-[var(--shadow-soft)]"
               >
                 <span className="font-medium text-[var(--accent-strong)]">{labels.recommendedTone}</span>{" "}
-                <span>{recommendation}</span>
+                <span>{recommendation.displayLabel}</span>
                 <span className="ml-2 inline-flex rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-[var(--accent-strong)]">
                   {labels.useRecommended}
                 </span>
@@ -158,6 +178,8 @@ export function ReplyGeneratorForm({
             <textarea
               name="toneDetails"
               rows={3}
+              value={toneDetails}
+              onChange={(event) => setToneDetails(event.target.value)}
               placeholder={labels.customTonePlaceholder}
               className="w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
             />

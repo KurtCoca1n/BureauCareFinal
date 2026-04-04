@@ -1,4 +1,4 @@
-import { createCaseEvent } from "@/lib/case-events";
+﻿import { createCaseEvent } from "@/lib/case-events";
 import { createClient } from "@/lib/supabase/server";
 import type { CaseRecord, ProcessSessionRecord } from "@/lib/types";
 
@@ -72,3 +72,4 @@ export async function ensureProcessCase(options: {
 
   return caseRecord;
 }
+

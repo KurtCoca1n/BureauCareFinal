@@ -1,4 +1,4 @@
-import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
+﻿import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 import { processProcedures, type ProcessProcedure } from "@/lib/processes-ui";
 
 type LocalizedDetailText = Partial<Record<SupportedLanguage, string>>;
@@ -28,7 +28,7 @@ function resolveText(value: LocalizedDetailText, locale: string | null | undefin
   return value[normalized] ?? value.en ?? value.de ?? "";
 }
 
-const detailCopyMap: Record<SupportedLanguage, ProcessDetailCopy> = {
+const detailCopyMap: Partial<Record<SupportedLanguage, ProcessDetailCopy>> = {
   de: {
     backLabel: "Zurück zu Anträge & Vorgänge",
     forWhoTitle: "Für wen ist das?",
@@ -52,39 +52,41 @@ const detailCopyMap: Record<SupportedLanguage, ProcessDetailCopy> = {
     detailBadge: "Process overview"
   },
   tr: {
-    backLabel: "Başvurulara geri dön",
-    forWhoTitle: "Bu kimler için?",
-    requirementsTitle: "Önemli şartlar",
+    backLabel: "Ba艧vurulara geri dön",
+    forWhoTitle: "Bu kimler i莽in?",
+    requirementsTitle: "Önemli 艧artlar",
     needsTitle: "Kabaca ne gerekir?",
-    goodFitTitle: "Genelde uygundur, eğer ...",
-    notIdealTitle: "Genelde uygun değildir, eğer ...",
-    startCta: "İşleme başla",
-    startHint: "BureauCare şimdi seni ilk bilgiler için adım adım yönlendirir.",
-    detailBadge: "İşlem özeti"
+    goodFitTitle: "Genelde uygundur, e臒er ...",
+    notIdealTitle: "Genelde uygun de臒ildir, e臒er ...",
+    startCta: "陌艧leme ba艧la",
+    startHint: "BureauCare 艧imdi seni ilk bilgiler i莽in ad谋m ad谋m yönlendirir.",
+    detailBadge: "陌艧lem özeti"
   },
   uk: {
-    backLabel: "Назад до заяв і процесів",
-    forWhoTitle: "Для кого це?",
-    requirementsTitle: "Важливі умови",
-    needsTitle: "Що приблизно знадобиться",
-    goodFitTitle: "Часто підходить, якщо ...",
-    notIdealTitle: "Часто не підходить, якщо ...",
-    startCta: "Почати процес",
-    startHint: "BureauCare зараз покроково веде вас через перші дані.",
-    detailBadge: "Огляд процесу"
+    backLabel: "袧邪蟹邪写 写芯 蟹邪褟胁 褨 锌褉芯褑械褋褨胁",
+    forWhoTitle: "袛谢褟 泻芯谐芯 褑械?",
+    requirementsTitle: "袙邪卸谢懈胁褨 褍屑芯胁懈",
+    needsTitle: "些芯 锌褉懈斜谢懈蟹薪芯 蟹薪邪写芯斜懈褌褜褋褟",
+    goodFitTitle: "效邪褋褌芯 锌褨写褏芯写懈褌褜, 褟泻褖芯 ...",
+    notIdealTitle: "效邪褋褌芯 薪械 锌褨写褏芯写懈褌褜, 褟泻褖芯 ...",
+    startCta: "袩芯褔邪褌懈 锌褉芯褑械褋",
+    startHint: "BureauCare 蟹邪褉邪蟹 锌芯泻褉芯泻芯胁芯 胁械写械 胁邪褋 褔械褉械蟹 锌械褉褕褨 写邪薪褨.",
+    detailBadge: "袨谐谢褟写 锌褉芯褑械褋褍"
   },
   es: {
-    backLabel: "Volver a trámites y gestiones",
-    forWhoTitle: "¿Para quién es esto?",
+    backLabel: "Volver a tr谩mites y gestiones",
+    forWhoTitle: "驴Para qui茅n es esto?",
     requirementsTitle: "Requisitos importantes",
-    needsTitle: "Qué vas a necesitar más o menos",
+    needsTitle: "Qu茅 vas a necesitar m谩s o menos",
     goodFitTitle: "Suele encajar si ...",
     notIdealTitle: "Suele no encajar si ...",
-    startCta: "Iniciar trámite",
-    startHint: "BureauCare te guía ahora paso a paso por los primeros datos.",
-    detailBadge: "Resumen del trámite"
+    startCta: "Iniciar tr谩mite",
+    startHint: "BureauCare te gu铆a ahora paso a paso por los primeros datos.",
+    detailBadge: "Resumen del tr谩mite"
   }
 };
+
+const fallbackDetailCopy = detailCopyMap.en ?? detailCopyMap.de!;
 
 const processDetailMap: Record<string, ProcessDetail> = {
   wohngeld: {
@@ -316,7 +318,7 @@ const processDetailMap: Record<string, ProcessDetail> = {
 };
 
 export function getProcessCopy(locale: string | null | undefined) {
-  return detailCopyMap[normalizePreferredLanguage(locale)];
+  return detailCopyMap[normalizePreferredLanguage(locale)] ?? fallbackDetailCopy;
 }
 
 export function getProcedureBySlug(slug: string) {
@@ -357,3 +359,4 @@ export function getProceduresWithDetails() {
 export function getRelatedAuthorities(procedure: ProcessProcedure) {
   return procedure.authorityIds;
 }
+

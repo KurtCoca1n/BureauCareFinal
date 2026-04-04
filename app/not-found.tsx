@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -32,3 +32,4 @@ export default function NotFound() {
     </PageShell>
   );
 }
+

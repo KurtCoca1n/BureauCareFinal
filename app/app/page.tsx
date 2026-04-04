@@ -1,16 +1,25 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowRight, FileText, Target, Upload } from "lucide-react";
 import type { Route } from "next";
 
 import { CaseCard } from "@/components/app/case-card";
 import { HomeGreeting } from "@/components/app/home-greeting";
+import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
 import { TaskCard } from "@/components/app/task-card";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { getHomeGreeting } from "@/lib/home-greeting";
+import { getHomeGreeting } from "@/lib/home-greeting-v2";
 import { getGoalsCopy } from "@/lib/goals-ui";
 import { getCopy, getDateLocale, getReminderCopy, getUsageCopy } from "@/lib/i18n";
-import { getCasesWithActionNeeded, getGoals, getProfile, getRecentDocuments, getTaskReminderBuckets, getUsageSummaryForCurrentUser } from "@/lib/queries";
+import {
+  getCasesWithActionNeeded,
+  getGoals,
+  getPersonalDataSuggestions,
+  getProfile,
+  getRecentDocuments,
+  getTaskReminderBuckets,
+  getUsageSummaryForCurrentUser
+} from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 function ReminderSection({
@@ -53,18 +62,43 @@ export default async function AppHomePage() {
     getGoals()
   ]);
   const locale = await getRequestLanguage(profile?.preferred_language);
+  const suggestions = await getPersonalDataSuggestions(locale);
   const copy = getCopy(locale);
   const goalsCopy = getGoalsCopy(locale);
   const reminderCopy = getReminderCopy(locale);
   const usageCopy = getUsageCopy(locale);
   const dateLocale = getDateLocale(locale);
   const greeting = getHomeGreeting(locale, profile?.full_name ?? null);
+  const homeUi =
+    locale === "zh"
+      ? {
+          actionCasesTitle: "需要处理的案件",
+          allCases: "查看全部案件",
+          noCases: "一旦 BureauCare 识别出关联内容，你的案件就会自动显示在这里。",
+          goalsLink: "查看目标"
+        }
+      : {
+          actionCasesTitle: "Fälle mit Handlungsbedarf",
+          allCases: "Alle Fälle",
+          noCases: "Sobald BureauCare Zusammenhänge erkennt, erscheinen deine Fälle hier automatisch.",
+          goalsLink: goalsCopy.navLabel
+        };
+  const goalsSummaryText =
+    locale === "zh"
+      ? goals.length
+        ? `已保存 ${goals.length} 个目标`
+        : goalsCopy.noGoals
+      : goals.length
+        ? `${goals.length} ${goalsCopy.navLabel.toLowerCase()}`
+        : goalsCopy.noGoals;
 
   return (
     <div className="space-y-10">
       <HomeGreeting
         locale={locale}
+        fullName={profile?.full_name ?? null}
         greeting={greeting.greeting}
+        greetings={greeting.greetings}
         initialSupportLine={greeting.supportLine}
         supportLines={greeting.supportLines}
       />
@@ -97,21 +131,21 @@ export default async function AppHomePage() {
                   <div className="space-y-2">
                     <StatusBadge tone="success">{goalsCopy.navLabel}</StatusBadge>
                     <h2 className="text-xl font-semibold">{goalsCopy.plannerTitle}</h2>
-                    <p className="text-sm leading-6 text-[var(--muted)]">
-                      {goals.length ? `${goals.length} ${goalsCopy.navLabel.toLowerCase()}` : goalsCopy.noGoals}
-                    </p>
+                    <p className="text-sm leading-6 text-[var(--muted)]">{goalsSummaryText}</p>
                   </div>
                   <div className="rounded-2xl bg-[rgba(123,191,159,0.16)] p-3 text-[var(--success)]">
                     <Target className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-6 inline-flex items-center text-sm font-medium text-[var(--success)]">
-                  {goalsCopy.navLabel}
+                  {homeUi.goalsLink}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </Card>
             </Link>
           </div>
+
+          <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} />
 
           <section className="space-y-5 pt-2">
             <div className="flex items-center justify-between gap-3">
@@ -129,9 +163,9 @@ export default async function AppHomePage() {
 
           <section className="space-y-5">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">Fälle mit Handlungsbedarf</h2>
+              <h2 className="text-lg font-semibold">{homeUi.actionCasesTitle}</h2>
               <Link href={"/app/cases" as Route} className="text-sm font-medium text-[var(--accent)]">
-                Alle Fälle
+                {homeUi.allCases}
               </Link>
             </div>
             {cases.length ? (
@@ -141,7 +175,7 @@ export default async function AppHomePage() {
                 ))}
               </div>
             ) : (
-              <Card className="p-5 text-sm text-[var(--muted)]">Sobald BureauCare Zusammenhänge erkennt, erscheinen deine Fälle hier automatisch.</Card>
+              <Card className="p-5 text-sm text-[var(--muted)]">{homeUi.noCases}</Card>
             )}
           </section>
 
@@ -215,3 +249,4 @@ export default async function AppHomePage() {
     </div>
   );
 }
+

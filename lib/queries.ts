@@ -1,6 +1,7 @@
 import { cache } from "react";
 
 import { ensureProfile } from "@/lib/profile";
+import { buildPersonalDataSuggestions } from "@/lib/personal-data-suggestions";
 import { groupTasksByReminder } from "@/lib/reminders";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -10,7 +11,9 @@ import type {
   DocumentRecord,
   DraftReplyRecord,
   GoalRecord,
+  PersonalDataSuggestion,
   ProcessSessionRecord,
+  UserPersonalDataRecord,
   TaskRecord
 } from "@/lib/types";
 import { getMonthlyUsageSummary } from "@/lib/usage";
@@ -164,6 +167,33 @@ export async function getGoalById(goalId: string) {
   const supabase = await createClient();
   const { data } = await supabase.from("goals").select("*").eq("id", goalId).maybeSingle();
   return (data as GoalRecord | null) ?? null;
+}
+
+export async function getUserPersonalData() {
+  const user = await getCurrentUser();
+  if (!user) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("user_personal_data").select("*").eq("user_id", user.id).maybeSingle();
+
+  if (error) {
+    const message = error.message.toLowerCase();
+    if (message.includes("relation") || message.includes("user_personal_data")) {
+      return null;
+    }
+
+    console.error("Loading user personal data failed", { userId: user.id, error });
+    return null;
+  }
+
+  return (data as UserPersonalDataRecord | null) ?? null;
+}
+
+export async function getPersonalDataSuggestions(locale: string | null | undefined) {
+  const personalData = await getUserPersonalData();
+  return buildPersonalDataSuggestions(personalData, locale) as PersonalDataSuggestion[];
 }
 
 export async function getProcessSessionBySlug(processSlug: string) {

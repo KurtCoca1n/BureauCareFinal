@@ -1,4 +1,4 @@
-import {
+﻿import {
   getAuthorityLabel,
   getProcedureSubtitle,
   getProcedureTitle,
@@ -57,10 +57,10 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "yardim para yasam",
       "gecim yardimi",
       "prozhyty",
-      "деньги на жизнь",
-      "допомога на життя",
-      "معونة معيشة",
-      "کمک هزینه زندگی",
+      "写械薪褜谐懈 薪邪 卸懈蟹薪褜",
+      "写芯锌芯屑芯谐邪 薪邪 卸懈褌褌褟",
+      "賲毓賵賳丞 賲毓賷卮丞",
+      "讴賲讴 賴夭蹖賳賴 夭賳丿诏蹖",
       "allocation de subsistance",
       "aiuto per vivere"
     ]
@@ -84,13 +84,13 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "ayuda para renta",
       "kira yardimi",
       "ev yardimi",
-      "допомога на житло",
-      "допомога на оренду",
-      "помощь с жильем",
-      "مساعدة الايجار",
-      "مساعدة السكن",
-      "کمک اجاره",
-      "کمک مسکن",
+      "写芯锌芯屑芯谐邪 薪邪 卸懈褌谢芯",
+      "写芯锌芯屑芯谐邪 薪邪 芯褉械薪写褍",
+      "锌芯屑芯褖褜 褋 卸懈谢褜械屑",
+      "賲爻丕毓丿丞 丕賱丕賷噩丕乇",
+      "賲爻丕毓丿丞 丕賱爻賰賳",
+      "讴賲讴 丕噩丕乇賴",
+      "讴賲讴 賲爻讴賳",
       "aide au logement",
       "aiuto affitto"
     ]
@@ -107,11 +107,11 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "sin trabajo",
       "desempleo",
       "issiz",
-      "işsiz",
-      "робота втрачена",
-      "безробіття",
-      "بطالة",
-      "بیکار",
+      "i艧siz",
+      "褉芯斜芯褌邪 胁褌褉邪褔械薪邪",
+      "斜械蟹褉芯斜褨褌褌褟",
+      "亘胤丕賱丞",
+      "亘蹖讴丕乇",
       "chomage",
       "disoccupato"
     ]
@@ -130,11 +130,11 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "ayuda para ninos",
       "dinero para ninos",
       "cocuk parasi",
-      "çocuk parası",
-      "дитячі виплати",
-      "деньги на ребенка",
-      "اعانة طفل",
-      "کمک هزینه فرزند",
+      "莽ocuk paras谋",
+      "写懈褌褟褔褨 胁懈锌谢邪褌懈",
+      "写械薪褜谐懈 薪邪 褉械斜械薪泻邪",
+      "丕毓丕賳丞 胤賮賱",
+      "讴賲讴 賴夭蹖賳賴 賮乇夭賳丿",
       "allocations familiales",
       "assegno figli"
     ]
@@ -150,10 +150,10 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "declaracion de impuestos",
       "impuestos",
       "vergi beyani",
-      "налоговая декларация",
-      "податкова декларація",
-      "اقرار ضريبي",
-      "اظهارنامه مالیاتی",
+      "薪邪谢芯谐芯胁邪褟 写械泻谢邪褉邪褑懈褟",
+      "锌芯写邪褌泻芯胁邪 写械泻谢邪褉邪褑褨褟",
+      "丕賯乇丕乇 囟乇賷亘賷",
+      "丕馗賴丕乇賳丕賲賴 賲丕賱蹖丕鬲蹖",
       "declaration d impots",
       "dichiarazione dei redditi"
     ]
@@ -173,10 +173,10 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "cambio de domicilio",
       "adres kaydi",
       "adres degisikligi kaydi",
-      "реєстрація адреси",
-      "смена адреса регистрация",
-      "تسجيل عنوان جديد",
-      "ثبت آدرس جدید",
+      "褉械褦褋褌褉邪褑褨褟 邪写褉械褋懈",
+      "褋屑械薪邪 邪写褉械褋邪 褉械谐懈褋褌褉邪褑懈褟",
+      "鬲爻噩賷賱 毓賳賵丕賳 噩丿賷丿",
+      "孬亘鬲 丌丿乇爻 噩丿蹖丿",
       "declaration de domicile",
       "cambio residenza"
     ]
@@ -196,13 +196,13 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "visado",
       "oturum",
       "vize",
-      "посвідка",
-      "віза",
-      "вид на жительство",
-      "اقامة",
-      "تأشيرة",
-      "ویزای",
-      "اقامت",
+      "锌芯褋胁褨写泻邪",
+      "胁褨蟹邪",
+      "胁懈写 薪邪 卸懈褌械谢褜褋褌胁芯",
+      "丕賯丕賲丞",
+      "鬲兀卮賷乇丞",
+      "賵蹖夭丕蹖",
+      "丕賯丕賲鬲",
       "titre de sejour",
       "permesso di soggiorno"
     ]
@@ -215,12 +215,12 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "health insurance",
       "medical insurance",
       "seguro medico",
-      "sağlık sigortası",
+      "sa臒l谋k sigortas谋",
       "saglik sigortasi",
-      "медичне страхування",
-      "медстраховка",
-      "تأمين صحي",
-      "بیمه درمانی",
+      "屑械写懈褔薪械 褋褌褉邪褏褍胁邪薪薪褟",
+      "屑械写褋褌褉邪褏芯胁泻邪",
+      "鬲兀賲賷賳 氐丨賷",
+      "亘蹖賲賴 丿乇賲丕賳蹖",
       "assurance maladie",
       "assicurazione sanitaria"
     ]
@@ -237,11 +237,11 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "ayuda estudios",
       "beca estudios",
       "ogrenci yardimi",
-      "öğrenci yardımı",
-      "допомога на навчання",
-      "студенческая помощь",
-      "منحة دراسة",
-      "کمک هزینه تحصیل",
+      "ö臒renci yard谋m谋",
+      "写芯锌芯屑芯谐邪 薪邪 薪邪胁褔邪薪薪褟",
+      "褋褌褍写械薪褔械褋泻邪褟 锌芯屑芯褖褜",
+      "賲賳丨丞 丿乇丕爻丞",
+      "讴賲讴 賴夭蹖賳賴 鬲丨氐蹖賱",
       "aide etudiante",
       "aiuto studio"
     ]
@@ -258,11 +258,11 @@ const procedureProfiles: ProcedureSearchProfile[] = [
       "registrar negocio",
       "alta autonomo",
       "isyeri kaydi",
-      "iş kurma",
-      "реєстрація бізнесу",
-      "самозайнятість",
-      "تسجيل نشاط تجاري",
-      "ثبت کسب و کار",
+      "i艧 kurma",
+      "褉械褦褋褌褉邪褑褨褟 斜褨蟹薪械褋褍",
+      "褋邪屑芯蟹邪泄薪褟褌褨褋褌褜",
+      "鬲爻噩賷賱 賳卮丕胤 鬲噩丕乇賷",
+      "孬亘鬲 讴爻亘 賵 讴丕乇",
       "creer entreprise",
       "aprire partita iva"
     ]
@@ -270,8 +270,8 @@ const procedureProfiles: ProcedureSearchProfile[] = [
 ];
 
 const authorityProfiles: AuthoritySearchProfile[] = [
-  { authorityId: "jobcenter", aliases: ["jobcenter", "basic support office", "centro de empleo", "مركز العمل", "مرکز کار"] },
-  { authorityId: "agentur", aliases: ["arbeitsagentur", "employment agency", "agencia de empleo", "وكالة العمل", "ajans"] },
+  { authorityId: "jobcenter", aliases: ["jobcenter", "basic support office", "centro de empleo", "賲乇賰夭 丕賱毓賲賱", "賲乇讴夭 讴丕乇"] },
+  { authorityId: "agentur", aliases: ["arbeitsagentur", "employment agency", "agencia de empleo", "賵賰丕賱丞 丕賱毓賲賱", "ajans"] },
   { authorityId: "familienkasse", aliases: ["familienkasse", "family benefits office", "caja familiar"] },
   { authorityId: "finanzamt", aliases: ["finanzamt", "tax office", "hacienda", "impuestos"] },
   { authorityId: "buergeramt", aliases: ["burgeramt", "buergeramt", "citizen office", "oficina ciudadana"] },
@@ -289,9 +289,9 @@ const conceptLexicon: Record<string, string[]> = {
     "existenz",
     "subsistence",
     "gecim",
-    "допомога на життя",
-    "معيشة",
-    "زندگی"
+    "写芯锌芯屑芯谐邪 薪邪 卸懈褌褌褟",
+    "賲毓賷卮丞",
+    "夭賳丿诏蹖"
   ],
   survival_money: ["bills", "food money", "essen bezahlen", "leben bezahlen", "para comer"],
   housing_support: [
@@ -301,29 +301,29 @@ const conceptLexicon: Record<string, string[]> = {
     "help with rent",
     "ayuda vivienda",
     "kira yardimi",
-    "допомога на житло",
-    "مساعدة السكن",
-    "کمک مسکن",
+    "写芯锌芯屑芯谐邪 薪邪 卸懈褌谢芯",
+    "賲爻丕毓丿丞 丕賱爻賰賳",
+    "讴賲讴 賲爻讴賳",
     "aide logement",
     "aiuto casa"
   ],
-  housing_costs: ["miete", "rent", "alquiler", "kira", "оренда", "жилье", "إيجار", "اجاره", "loyer", "affitto"],
+  housing_costs: ["miete", "rent", "alquiler", "kira", "芯褉械薪写邪", "卸懈谢褜械", "廿賷噩丕乇", "丕噩丕乇賴", "loyer", "affitto"],
   rent_support: ["rent support", "hilfe bei miete", "money for rent", "housing allowance", "alquiler ayuda"],
-  children_support: ["kind geld", "kindergeld", "child benefit", "money for children", "ayuda hijos", "çocuk parası"],
-  family_support: ["family support", "familie hilfe", "familia ayuda", "aile yardimi", "родина допомога"],
-  visa_residence: ["visum", "visa", "residence permit", "aufenthalt", "permiso residencia", "oturum", "віза", "اقامة", "اقامت"],
-  foreigner: ["auslander", "ausländer", "foreign", "foreigner", "extranjero", "yabanci", "іноземець", "اجنبي", "اتباع خارجی"],
-  immigration: ["immigration", "migracion", "goc", "міграція", "هجرة", "مهاجرت"],
-  address_registration: ["ummelden", "anmeldung", "register address", "new address", "empadronamiento", "adres kaydi", "реєстрація адреси"],
-  move: ["move", "moving", "umzug", "mudanza", "tasinmak", "переїзд", "نقل عنوان", "اسباب کشی"],
-  job_loss: ["arbeitslos", "unemployed", "job loss", "sin trabajo", "issiz", "безробіття", "بطالة", "بیکار"],
-  employment_support: ["agentur", "employment", "arbeit suchen", "busco trabajo", "iş bulma", "пошук роботи"],
-  student_funding: ["bafoeg", "student aid", "study support", "beca", "ogrenci yardimi", "студентська допомога"],
-  education_support: ["study", "studium", "universidad", "universite", "навчання", "دراسة", "تحصیل"],
-  taxes: ["steuer", "tax", "impuestos", "vergi", "податок", "ضريبة", "مالیات"],
-  health_insurance: ["krankenkasse", "health insurance", "medical insurance", "seguro medico", "sigorta", "страхування", "تأمين صحي", "بیمه درمانی"],
-  business_registration: ["gewerbe", "register business", "start business", "autonomo", "isyeri", "бізнес", "نشاط تجاري", "کسب و کار"],
-  self_employment: ["selbststandig", "self employed", "freelance", "autonomo", "serbest", "самозайнятість"]
+  children_support: ["kind geld", "kindergeld", "child benefit", "money for children", "ayuda hijos", "莽ocuk paras谋"],
+  family_support: ["family support", "familie hilfe", "familia ayuda", "aile yardimi", "褉芯写懈薪邪 写芯锌芯屑芯谐邪"],
+  visa_residence: ["visum", "visa", "residence permit", "aufenthalt", "permiso residencia", "oturum", "胁褨蟹邪", "丕賯丕賲丞", "丕賯丕賲鬲"],
+  foreigner: ["auslander", "ausländer", "foreign", "foreigner", "extranjero", "yabanci", "褨薪芯蟹械屑械褑褜", "丕噩賳亘賷", "丕鬲亘丕毓 禺丕乇噩蹖"],
+  immigration: ["immigration", "migracion", "goc", "屑褨谐褉邪褑褨褟", "賴噩乇丞", "賲賴丕噩乇鬲"],
+  address_registration: ["ummelden", "anmeldung", "register address", "new address", "empadronamiento", "adres kaydi", "褉械褦褋褌褉邪褑褨褟 邪写褉械褋懈"],
+  move: ["move", "moving", "umzug", "mudanza", "tasinmak", "锌械褉械褩蟹写", "賳賯賱 毓賳賵丕賳", "丕爻亘丕亘 讴卮蹖"],
+  job_loss: ["arbeitslos", "unemployed", "job loss", "sin trabajo", "issiz", "斜械蟹褉芯斜褨褌褌褟", "亘胤丕賱丞", "亘蹖讴丕乇"],
+  employment_support: ["agentur", "employment", "arbeit suchen", "busco trabajo", "i艧 bulma", "锌芯褕褍泻 褉芯斜芯褌懈"],
+  student_funding: ["bafoeg", "student aid", "study support", "beca", "ogrenci yardimi", "褋褌褍写械薪褌褋褜泻邪 写芯锌芯屑芯谐邪"],
+  education_support: ["study", "studium", "universidad", "universite", "薪邪胁褔邪薪薪褟", "丿乇丕爻丞", "鬲丨氐蹖賱"],
+  taxes: ["steuer", "tax", "impuestos", "vergi", "锌芯写邪褌芯泻", "囟乇賷亘丞", "賲丕賱蹖丕鬲"],
+  health_insurance: ["krankenkasse", "health insurance", "medical insurance", "seguro medico", "sigorta", "褋褌褉邪褏褍胁邪薪薪褟", "鬲兀賲賷賳 氐丨賷", "亘蹖賲賴 丿乇賲丕賳蹖"],
+  business_registration: ["gewerbe", "register business", "start business", "autonomo", "isyeri", "斜褨蟹薪械褋", "賳卮丕胤 鬲噩丕乇賷", "讴爻亘 賵 讴丕乇"],
+  self_employment: ["selbststandig", "self employed", "freelance", "autonomo", "serbest", "褋邪屑芯蟹邪泄薪褟褌褨褋褌褜"]
 };
 
 function normalizeSearchText(value: string) {
@@ -331,14 +331,6 @@ function normalizeSearchText(value: string) {
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[أإآ]/g, "ا")
-    .replace(/[ة]/g, "ه")
-    .replace(/[ى]/g, "ي")
-    .replace(/[ؤ]/g, "و")
-    .replace(/[ئ]/g, "ي")
-    .replace(/[ك]/g, "ک")
-    .replace(/[ي]/g, "ی")
-    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
     .replace(/[^\p{L}\p{N}\s-]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -487,3 +479,4 @@ export function rankProcesses(locale: string, rawQuery: string, selectedAuthorit
     hasSemanticInterpretation: conceptMatches.size > 0 || results.some((entry) => entry.matchReasons.length > 0)
   };
 }
+

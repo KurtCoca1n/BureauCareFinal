@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+﻿import OpenAI from "openai";
 import { z } from "zod";
 
 import type { GoalClarificationQuestion } from "@/lib/goals-ui";
@@ -567,3 +567,4 @@ Wichtig:
 export function areClarificationQuestionsComplete(questions: GoalClarificationQuestion[], answers: Record<string, string>) {
   return questions.every((question) => typeof answers[question.id] === "string" && answers[question.id].trim().length > 0);
 }
+

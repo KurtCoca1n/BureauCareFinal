@@ -1,4 +1,4 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+﻿import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 import { getServerEnv } from "@/lib/env";
 
@@ -16,3 +16,4 @@ export function createAdminClient() {
     }
   });
 }
+

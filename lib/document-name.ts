@@ -1,4 +1,4 @@
-function slugify(input: string) {
+﻿function slugify(input: string) {
   return input
     .normalize("NFKD")
     .replace(/[^\w\s-]+/g, "")
@@ -65,3 +65,4 @@ export function looksLikePotentiallyIncompleteDocument(text: string | null | und
   const haystack = (text ?? "").toLowerCase();
   return /\bseite\s*1\b|\bpage\s*1\b|\banlage\b|\bfortsetzung\b|\brückseite\b|\bweitere seite\b/.test(haystack);
 }
+

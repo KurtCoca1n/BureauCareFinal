@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+﻿import OpenAI from "openai";
 import { z } from "zod";
 
 import { processDocumentForAnalysis } from "@/lib/document-processing";
@@ -265,7 +265,7 @@ function clipExcerpt(value: string | null) {
     return null;
   }
 
-  return value.length <= 4000 ? value : `${value.slice(0, 3999).trimEnd()}…`;
+  return value.length <= 4000 ? value : `${value.slice(0, 3999).trimEnd()}...`;
 }
 
 function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof processDocumentForAnalysis>>): DocumentAnalysisResult {
@@ -391,3 +391,4 @@ Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, s
     throw error;
   }
 }
+

@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+﻿import OpenAI from "openai";
 import { z } from "zod";
 
 import { getServerEnv } from "@/lib/env";
@@ -79,7 +79,8 @@ Längere Erklärung: ${analysis.summary_simple_long ?? analysis.summary_simple}
 Nächste Schritte: ${(analysis.next_steps ?? []).join(" | ")}
 Risiken: ${analysis.risks_if_ignored ?? "nicht klar"}
 
-Berücksichtige neben dem Standardton auch diesen zusätzlichen Wunsch: ${toneDetails || "kein zusätzlicher Wunsch"}.
+Der erste Teil des Tons ist die Hauptstilrichtung. Zusaetzliche Tonwuensche muessen ebenfalls sichtbar im Text ankommen und duerfen nicht verloren gehen.
+Beruecksichtige neben dem Hauptton auch diesen zusaetzlichen Wunsch: ${toneDetails || "kein zusaetzlicher Wunsch"}.
 Die Antwort soll direkt nutzbar sein. Keine Platzhalter für unbekannte Fakten. Wenn etwas nicht belegt ist, bitte allgemein um Prüfung, Fristverlängerung oder Rückmeldung statt Details zu behaupten.
 ${includeSignature && profileName ? `Füge am Ende die Signatur "Mit freundlichen Grüßen,\\n${profileName}" ein.` : "Nutze keine persönliche Signatur."}
 ${shouldTranslate ? `Erstelle zusätzlich eine sinngleiche Übersetzung in ${targetLanguageLabel}.` : "Erstelle keine zusätzliche Übersetzung."}`
@@ -111,3 +112,6 @@ ${shouldTranslate ? `Erstelle zusätzlich eine sinngleiche Übersetzung in ${tar
 
   return parsed.data;
 }
+
+
+

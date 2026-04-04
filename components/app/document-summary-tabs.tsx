@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -55,3 +55,4 @@ export function DocumentSummaryTabs({
     </div>
   );
 }
+

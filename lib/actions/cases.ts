@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { createCaseEvent } from "@/lib/case-events";
 import { createClient } from "@/lib/supabase/server";
@@ -67,6 +68,7 @@ export async function markDocumentWaitingAction(formData: FormData) {
 
 export async function markCaseDoneAction(formData: FormData) {
   const caseId = String(formData.get("caseId") ?? "").trim();
+  const deleteAfterDone = String(formData.get("deleteAfterDone") ?? "").trim() === "1";
   if (!caseId) return;
 
   const supabase = await createClient();
@@ -75,11 +77,65 @@ export async function markCaseDoneAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  await supabase.from("cases").update({ status: "done", updated_at: new Date().toISOString() }).eq("id", caseId).eq("user_id", user.id);
-  await supabase.from("documents").update({ status: "erledigt" }).eq("case_id", caseId).eq("user_id", user.id);
-  await createCaseEvent({ caseId, eventType: "case_closed", note: "Fall manuell als erledigt markiert." });
+  if (!deleteAfterDone) {
+    const { error } = await supabase
+      .from("cases")
+      .update({ status: "done", updated_at: new Date().toISOString() })
+      .eq("id", caseId)
+      .eq("user_id", user.id);
+    if (error) {
+      console.error("Failed to mark case as done", error);
+      return;
+    }
+  }
+
+  const { error: documentsError } = await supabase
+    .from("documents")
+    .update({ status: "erledigt" })
+    .eq("case_id", caseId)
+    .eq("user_id", user.id);
+  if (documentsError) {
+    console.error("Failed to update documents for case", documentsError);
+    return;
+  }
+
+  if (deleteAfterDone) {
+    const { error } = await supabase.from("cases").delete().eq("id", caseId).eq("user_id", user.id);
+    if (error) {
+      console.error("Failed to delete case after completion", error);
+      return;
+    }
+  } else {
+    await createCaseEvent({ caseId, eventType: "case_closed", note: "Fall manuell als erledigt markiert." });
+  }
 
   revalidatePath("/app");
   revalidatePath("/app/cases");
   revalidatePath(`/app/cases/${caseId}`);
+
+  if (deleteAfterDone) {
+    redirect("/app/cases");
+  }
+}
+
+export async function deleteCaseAction(formData: FormData) {
+  const caseId = String(formData.get("caseId") ?? "").trim();
+  if (!caseId) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { error } = await supabase.from("cases").delete().eq("id", caseId).eq("user_id", user.id);
+  if (error) {
+    console.error("Failed to delete case", error);
+    return;
+  }
+
+  revalidatePath("/app");
+  revalidatePath("/app/cases");
+  revalidatePath(`/app/cases/${caseId}`);
+  redirect("/app/cases");
 }

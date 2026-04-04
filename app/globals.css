@@ -23,6 +23,11 @@
   --shadow: 0 18px 42px rgba(0, 0, 0, 0.05);
   --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.05);
   --bottom-nav-offset: calc(9.75rem + env(safe-area-inset-bottom, 0px));
+  --time-accent-start: #4d8f98;
+  --time-accent-mid: #6fa8dc;
+  --time-accent-end: #7d8bd8;
+  --time-accent-shadow: rgba(95, 163, 163, 0.2);
+  --time-scene-wash: rgba(111, 168, 220, 0.08);
 }
 
 @keyframes bureaucare-shooting-star {
@@ -61,11 +66,11 @@
 }
 
 .page-title-accent {
-  background: linear-gradient(135deg, var(--accent-strong), var(--soft-blue) 58%, #7d8bd8);
+  background: linear-gradient(135deg, var(--time-accent-start), var(--time-accent-mid) 58%, var(--time-accent-end));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 14px 30px rgba(95, 163, 163, 0.2));
+  filter: drop-shadow(0 14px 30px var(--time-accent-shadow));
 }
 
 .goals-sky {
@@ -131,9 +136,42 @@
   position: relative;
   isolation: isolate;
   background:
+    radial-gradient(circle at 22% 6%, var(--time-scene-wash) 0, transparent 30%),
     radial-gradient(circle at 14% 12%, rgba(255,255,255,0.62) 0 1.5px, transparent 2.5px),
     radial-gradient(circle at 82% 18%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
     radial-gradient(circle at 72% 44%, rgba(255,255,255,0.36) 0 1px, transparent 2px);
+}
+
+.page-scene[data-day-phase="morning"] {
+  --time-accent-start: #ba7a42;
+  --time-accent-mid: #d69b63;
+  --time-accent-end: #f0c187;
+  --time-accent-shadow: rgba(214, 155, 99, 0.22);
+  --time-scene-wash: rgba(240, 193, 135, 0.11);
+}
+
+.page-scene[data-day-phase="day"] {
+  --time-accent-start: #3d8a96;
+  --time-accent-mid: #6fa8dc;
+  --time-accent-end: #79b9c7;
+  --time-accent-shadow: rgba(95, 163, 163, 0.2);
+  --time-scene-wash: rgba(111, 168, 220, 0.08);
+}
+
+.page-scene[data-day-phase="evening"] {
+  --time-accent-start: #8d6ba8;
+  --time-accent-mid: #b183b2;
+  --time-accent-end: #d4a0b1;
+  --time-accent-shadow: rgba(177, 131, 178, 0.22);
+  --time-scene-wash: rgba(212, 160, 177, 0.09);
+}
+
+.page-scene[data-day-phase="night"] {
+  --time-accent-start: #31557f;
+  --time-accent-mid: #4970a7;
+  --time-accent-end: #6b84bf;
+  --time-accent-shadow: rgba(73, 112, 167, 0.22);
+  --time-scene-wash: rgba(73, 112, 167, 0.1);
 }
 
 .page-scene::before,

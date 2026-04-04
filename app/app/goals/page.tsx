@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ChevronRight, Coins, Flag, Sparkles, Target } from "lucide-react";
 import type { Route } from "next";
 
@@ -44,7 +44,68 @@ export default async function GoalsPage({
   const selectedGoal = selectedGoalId ? goals.find((goal) => goal.id === selectedGoalId) ?? null : null;
   const showPlanner = mode !== "view" || !selectedGoal;
   const activeGoal = showPlanner ? null : selectedGoal;
-  const dateLocale = locale === "en" ? "en-GB" : locale === "tr" ? "tr-TR" : locale === "uk" ? "uk-UA" : locale === "es" ? "es-ES" : "de-DE";
+  const dateLocale =
+    locale === "en" ? "en-GB" : locale === "tr" ? "tr-TR" : locale === "uk" ? "uk-UA" : locale === "es" ? "es-ES" : locale === "zh" ? "zh-CN" : "de-DE";
+  const goalsUi =
+    locale === "en"
+      ? {
+          stepDetails: "Step details",
+          back: "Back",
+          whatMatters: "What matters here",
+          defaultNote: "Prepare the key documents first and take this step one part at a time.",
+          moreAboutStep: "More about this step",
+          notOpenYet: "Not open yet",
+          timelineFallback: "Already described in the goal"
+        }
+      : locale === "tr"
+        ? {
+            stepDetails: "Adim detayi",
+            back: "Geri",
+            whatMatters: "Burada önemli olan",
+            defaultNote: "Önemli belgeleri önce hazırla ve bu adımı sakince küçük parçalara böl.",
+            moreAboutStep: "Bu adım hakkında daha fazla",
+            notOpenYet: "Henüz açık değil",
+            timelineFallback: "Hedefte zaten belirtilmiş"
+          }
+        : locale === "uk"
+          ? {
+              stepDetails: "Деталі кроку",
+              back: "Назад",
+              whatMatters: "На що тут варто звернути увагу",
+              defaultNote: "Спочатку підготуй основні документи й проходь цей крок спокійно, частинами.",
+              moreAboutStep: "Більше про цей крок",
+              notOpenYet: "Ще не відкрито",
+              timelineFallback: "Уже описано в цілі"
+            }
+          : locale === "es"
+            ? {
+                stepDetails: "Detalle del paso",
+                back: "Volver",
+                whatMatters: "Qué importa aquí",
+                defaultNote: "Prepara primero los documentos más importantes y aborda este paso con calma, por partes.",
+                moreAboutStep: "Más sobre este paso",
+                notOpenYet: "Aún no abierto",
+                timelineFallback: "Ya se describe en la meta"
+              }
+            : locale === "zh"
+              ? {
+                  stepDetails: "步骤详情",
+                  back: "返回",
+                  whatMatters: "这里要注意什么",
+                  defaultNote: "先准备好最重要的材料，再把这一步慢慢分开处理。",
+                  moreAboutStep: "查看这一步的更多信息",
+                  notOpenYet: "暂未开始",
+                  timelineFallback: "目标里已经写到了"
+                }
+              : {
+                  stepDetails: "Schritt-Detail",
+                  back: "Zurück",
+                  whatMatters: "Worauf du achten solltest",
+                  defaultNote: "Lege die wichtigsten Unterlagen zuerst bereit und geh diesen Schritt dann ruhig in Teilen an.",
+                  moreAboutStep: "Mehr zu diesem Schritt",
+                  notOpenYet: "Noch offen",
+                  timelineFallback: "Schon im Ziel beschrieben"
+                };
 
   return (
     <div className="relative space-y-8">
@@ -147,7 +208,7 @@ export default async function GoalsPage({
                           <Flag className="h-4 w-4" />
                           {copy.timeline}
                         </div>
-                        <p className="text-base font-semibold">{hasOwnTimingHint ? "Schon im Ziel beschrieben" : analysis?.estimated_overall_timeline ?? "—"}</p>
+                        <p className="text-base font-semibold">{hasOwnTimingHint ? goalsUi.timelineFallback : analysis?.estimated_overall_timeline ?? "—"}</p>
                       </Card>
 
                       <Card className="space-y-3 p-4">
@@ -185,7 +246,7 @@ export default async function GoalsPage({
                                 <div className="flex flex-wrap items-center justify-between gap-3">
                                   <div>
                                     <p className="text-sm font-medium text-[var(--accent-strong)]">
-                                      {locale === "en" ? "Step details" : locale === "tr" ? "Adım detayı" : locale === "uk" ? "Деталі кроку" : locale === "es" ? "Detalle del paso" : "Schritt-Detail"}
+                                      {goalsUi.stepDetails}
                                     </p>
                                     <h4 className="mt-1 text-xl font-semibold">{selectedStep.title}</h4>
                                   </div>
@@ -194,7 +255,7 @@ export default async function GoalsPage({
                                     className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--line-strong)]"
                                   >
                                     <ArrowLeft className="mr-2 h-4 w-4" />
-                                    {locale === "en" ? "Back" : locale === "tr" ? "Geri" : locale === "uk" ? "Назад" : locale === "es" ? "Volver" : "Zurück"}
+                                    {goalsUi.back}
                                   </Link>
                                 </div>
                                 <p className="text-sm leading-7 text-[var(--foreground)]">{selectedStep.description_simple}</p>
@@ -210,27 +271,11 @@ export default async function GoalsPage({
                                 </div>
                                 <Card className="space-y-3 bg-white p-4">
                                   <h5 className="font-semibold">
-                                    {locale === "en"
-                                      ? "What matters here"
-                                      : locale === "tr"
-                                        ? "Burada önemli olan"
-                                        : locale === "uk"
-                                          ? "На що тут звернути увагу"
-                                          : locale === "es"
-                                            ? "Qué importa aquí"
-                                            : "Worauf du achten solltest"}
+                                    {goalsUi.whatMatters}
                                   </h5>
                                   <p className="text-sm leading-6 text-[var(--muted)]">
                                     {selectedStep.related_costs_note ||
-                                      (locale === "en"
-                                        ? "Prepare the key documents first and take this step one part at a time."
-                                        : locale === "tr"
-                                          ? "Önemli belgeleri önce hazırla ve bu adımı sakince küçük parçalara böl."
-                                          : locale === "uk"
-                                            ? "Спочатку підготуй основні документи й проходь цей крок спокійно, частинами."
-                                            : locale === "es"
-                                              ? "Prepara primero los documentos más importantes y aborda este paso con calma, por partes."
-                                              : "Lege die wichtigsten Unterlagen zuerst bereit und geh diesen Schritt dann ruhig in Teilen an.")}
+                                      goalsUi.defaultNote}
                                   </p>
                                 </Card>
                                 <GoalStepLocationHint
@@ -264,7 +309,7 @@ export default async function GoalsPage({
                                     href={`/app/goals?mode=view&goal=${activeGoal.id}&step=${step.id}` as Route}
                                     className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--line-strong)]"
                                   >
-                                    {locale === "en" ? "More about this step" : locale === "tr" ? "Bu adım hakkında daha fazla" : locale === "uk" ? "Більше про цей крок" : locale === "es" ? "Más sobre este paso" : "Mehr zu diesem Schritt"}
+                                    {goalsUi.moreAboutStep}
                                   </Link>
                                   {step.related_costs_note ? <p className="text-sm leading-6 text-[var(--muted)]">{step.related_costs_note}</p> : null}
                                 </Card>
@@ -334,3 +379,4 @@ export default async function GoalsPage({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
+﻿import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 
 type LocalizedText = Partial<Record<SupportedLanguage, string>>;
 
@@ -73,7 +73,7 @@ type ProcessRealityCopy = {
   importanceHelpful: string;
 };
 
-const copyMap: Record<SupportedLanguage, ProcessRealityCopy> = {
+const copyMap: Partial<Record<SupportedLanguage, ProcessRealityCopy>> = {
   de: {
     realityTitle: "So läuft das in echt ab",
     formTitle: "Formular, Anfrage oder Termin",
@@ -135,75 +135,75 @@ const copyMap: Record<SupportedLanguage, ProcessRealityCopy> = {
     importanceHelpful: "Can help in addition"
   },
   tr: {
-    realityTitle: "Gerçekte süreç genelde böyle ilerler",
+    realityTitle: "Ger莽ekte süre莽 genelde böyle ilerler",
     formTitle: "Form, talep veya randevu",
     documentsTitle: "Tipik belgeler",
     transparencyTitle: "Bilmen iyi olur",
-    statusTypeLabel: "Süreç tipi",
-    statusConfidenceLabel: "Değerlendirme",
-    sourceLabel: "Nasıl alırsın",
+    statusTypeLabel: "Süre莽 tipi",
+    statusConfidenceLabel: "De臒erlendirme",
+    sourceLabel: "Nas谋l al谋rs谋n",
     authorityLabel: "Yetkili kurum",
     yesLabel: "Evet",
-    noLabel: "Hayır",
+    noLabel: "Hay谋r",
     officialFormLabel: "Resmi form",
     requestFirstLabel: "Önce talep gerekir",
     appointmentLabel: "Randevu gerekir",
     onlinePortalLabel: "Online portal",
-    typeOfficialForm: "Doğrudan resmi form",
+    typeOfficialForm: "Do臒rudan resmi form",
     typeRequestFirst: "Önce talep, sonra evrak",
     typeAppointment: "Kurumda randevu",
-    typeOnlinePortal: "Online başvuru veya portal",
-    typeCombination: "Birden fazla yolun birleşimi",
+    typeOnlinePortal: "Online ba艧vuru veya portal",
+    typeCombination: "Birden fazla yolun birle艧imi",
     confidenceClear: "Bu genelde nettir",
-    confidenceLikely: "Çoğu zaman süreç böyledir",
-    confidenceDependsOnCity: "Şehre veya kuruma göre değişebilir",
-    sourceDownload: "İndirme veya form sayfası",
+    confidenceLikely: "脟o臒u zaman süre莽 böyledir",
+    confidenceDependsOnCity: "艦ehre veya kuruma göre de臒i艧ebilir",
+    sourceDownload: "陌ndirme veya form sayfas谋",
     sourceOnlinePortal: "Online portal",
     sourceAppointment: "Randevuda veya kurumda",
-    sourcePostalRequest: "Talep sonrası veya posta ile",
-    importanceCore: "Genelde gerçekten istenir",
-    importanceHelpful: "Ek olarak faydalı olabilir"
+    sourcePostalRequest: "Talep sonras谋 veya posta ile",
+    importanceCore: "Genelde ger莽ekten istenir",
+    importanceHelpful: "Ek olarak faydal谋 olabilir"
   },
   uk: {
-    realityTitle: "Як це зазвичай відбувається насправді",
-    formTitle: "Форма, запит або запис",
-    documentsTitle: "Типові документи",
-    transparencyTitle: "Що важливо знати",
-    statusTypeLabel: "Тип процесу",
-    statusConfidenceLabel: "Оцінка",
-    sourceLabel: "Як це отримати",
-    authorityLabel: "Відповідальна установа",
-    yesLabel: "Так",
-    noLabel: "Ні",
-    officialFormLabel: "Офіційна форма",
-    requestFirstLabel: "Спочатку потрібен запит",
-    appointmentLabel: "Потрібен запис",
-    onlinePortalLabel: "Онлайн-портал",
-    typeOfficialForm: "Офіційна форма одразу",
-    typeRequestFirst: "Спочатку запит, потім документи",
-    typeAppointment: "Запис до установи",
-    typeOnlinePortal: "Онлайн-заява або портал",
-    typeCombination: "Комбінація кількох шляхів",
-    confidenceClear: "Зазвичай це саме так",
-    confidenceLikely: "Найчастіше все відбувається так",
-    confidenceDependsOnCity: "Може відрізнятися залежно від міста або установи",
-    sourceDownload: "Завантаження або сторінка форми",
-    sourceOnlinePortal: "Онлайн-портал",
-    sourceAppointment: "На прийомі або в установі",
-    sourcePostalRequest: "Після запиту або поштою",
-    importanceCore: "Часто справді потрібно",
-    importanceHelpful: "Може додатково допомогти"
+    realityTitle: "携泻 褑械 蟹邪蟹胁懈褔邪泄 胁褨写斜褍胁邪褦褌褜褋褟 薪邪褋锌褉邪胁写褨",
+    formTitle: "肖芯褉屑邪, 蟹邪锌懈褌 邪斜芯 蟹邪锌懈褋",
+    documentsTitle: "孝懈锌芯胁褨 写芯泻褍屑械薪褌懈",
+    transparencyTitle: "些芯 胁邪卸谢懈胁芯 蟹薪邪褌懈",
+    statusTypeLabel: "孝懈锌 锌褉芯褑械褋褍",
+    statusConfidenceLabel: "袨褑褨薪泻邪",
+    sourceLabel: "携泻 褑械 芯褌褉懈屑邪褌懈",
+    authorityLabel: "袙褨写锌芯胁褨写邪谢褜薪邪 褍褋褌邪薪芯胁邪",
+    yesLabel: "孝邪泻",
+    noLabel: "袧褨",
+    officialFormLabel: "袨褎褨褑褨泄薪邪 褎芯褉屑邪",
+    requestFirstLabel: "小锌芯褔邪褌泻褍 锌芯褌褉褨斜械薪 蟹邪锌懈褌",
+    appointmentLabel: "袩芯褌褉褨斜械薪 蟹邪锌懈褋",
+    onlinePortalLabel: "袨薪谢邪泄薪-锌芯褉褌邪谢",
+    typeOfficialForm: "袨褎褨褑褨泄薪邪 褎芯褉屑邪 芯写褉邪蟹褍",
+    typeRequestFirst: "小锌芯褔邪褌泻褍 蟹邪锌懈褌, 锌芯褌褨屑 写芯泻褍屑械薪褌懈",
+    typeAppointment: "袟邪锌懈褋 写芯 褍褋褌邪薪芯胁懈",
+    typeOnlinePortal: "袨薪谢邪泄薪-蟹邪褟胁邪 邪斜芯 锌芯褉褌邪谢",
+    typeCombination: "袣芯屑斜褨薪邪褑褨褟 泻褨谢褜泻芯褏 褕谢褟褏褨胁",
+    confidenceClear: "袟邪蟹胁懈褔邪泄 褑械 褋邪屑械 褌邪泻",
+    confidenceLikely: "袧邪泄褔邪褋褌褨褕械 胁褋械 胁褨写斜褍胁邪褦褌褜褋褟 褌邪泻",
+    confidenceDependsOnCity: "袦芯卸械 胁褨写褉褨蟹薪褟褌懈褋褟 蟹邪谢械卸薪芯 胁褨写 屑褨褋褌邪 邪斜芯 褍褋褌邪薪芯胁懈",
+    sourceDownload: "袟邪胁邪薪褌邪卸械薪薪褟 邪斜芯 褋褌芯褉褨薪泻邪 褎芯褉屑懈",
+    sourceOnlinePortal: "袨薪谢邪泄薪-锌芯褉褌邪谢",
+    sourceAppointment: "袧邪 锌褉懈泄芯屑褨 邪斜芯 胁 褍褋褌邪薪芯胁褨",
+    sourcePostalRequest: "袩褨褋谢褟 蟹邪锌懈褌褍 邪斜芯 锌芯褕褌芯褞",
+    importanceCore: "效邪褋褌芯 褋锌褉邪胁写褨 锌芯褌褉褨斜薪芯",
+    importanceHelpful: "袦芯卸械 写芯写邪褌泻芯胁芯 写芯锌芯屑芯谐褌懈"
   },
   es: {
-    realityTitle: "Así suele funcionar en la práctica",
+    realityTitle: "As铆 suele funcionar en la pr谩ctica",
     formTitle: "Formulario, solicitud o cita",
-    documentsTitle: "Documentos típicos",
+    documentsTitle: "Documentos t铆picos",
     transparencyTitle: "Conviene saberlo",
     statusTypeLabel: "Tipo de proceso",
-    statusConfidenceLabel: "Valoración",
-    sourceLabel: "Cómo lo consigues",
+    statusConfidenceLabel: "Valoraci贸n",
+    sourceLabel: "C贸mo lo consigues",
     authorityLabel: "Organismo responsable",
-    yesLabel: "Sí",
+    yesLabel: "S铆",
     noLabel: "No",
     officialFormLabel: "Formulario oficial",
     requestFirstLabel: "Primero hace falta una solicitud",
@@ -213,18 +213,20 @@ const copyMap: Record<SupportedLanguage, ProcessRealityCopy> = {
     typeRequestFirst: "Primero solicitud, luego documentos",
     typeAppointment: "Cita en la oficina",
     typeOnlinePortal: "Solicitud online o portal",
-    typeCombination: "Combinación de varios pasos",
-    confidenceClear: "Normalmente esto está claro",
-    confidenceLikely: "Así suele funcionar la mayoría de las veces",
-    confidenceDependsOnCity: "Puede variar según la ciudad o la oficina",
-    sourceDownload: "Descarga o página del formulario",
+    typeCombination: "Combinaci贸n de varios pasos",
+    confidenceClear: "Normalmente esto est谩 claro",
+    confidenceLikely: "As铆 suele funcionar la mayor铆a de las veces",
+    confidenceDependsOnCity: "Puede variar seg煤n la ciudad o la oficina",
+    sourceDownload: "Descarga o p谩gina del formulario",
     sourceOnlinePortal: "Portal online",
     sourceAppointment: "En la cita o en la oficina",
     sourcePostalRequest: "Tras una solicitud o por correo",
     importanceCore: "Suele pedirse de verdad",
-    importanceHelpful: "Puede ayudar además"
+    importanceHelpful: "Puede ayudar adem谩s"
   }
 };
+
+const fallbackRealityCopy = copyMap.en ?? copyMap.de!;
 
 function resolveText(value: LocalizedText, locale: string | null | undefined) {
   const normalized = normalizePreferredLanguage(locale);
@@ -232,7 +234,7 @@ function resolveText(value: LocalizedText, locale: string | null | undefined) {
 }
 
 export function getProcessRealityCopy(locale: string | null | undefined) {
-  return copyMap[normalizePreferredLanguage(locale)];
+  return copyMap[normalizePreferredLanguage(locale)] ?? fallbackRealityCopy;
 }
 
 export function getLocalizedRealityValue(value: LocalizedText, locale: string | null | undefined) {
@@ -468,3 +470,4 @@ export function getProcessRealitySourceLabel(source: ProcessOfficialForm["source
       return copy.sourcePostalRequest;
   }
 }
+

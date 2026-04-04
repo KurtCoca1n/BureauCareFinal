@@ -4,15 +4,16 @@ import { ProcessWizard } from "@/components/app/process-wizard";
 import { getProcessDetail, getProcedureBySlug, getProcedureHref } from "@/lib/process-details";
 import { getInitialWizardAnswers, getProcessWizardDefinition, normalizeProcessWizardAnswers } from "@/lib/process-wizard-v2";
 import { getProcedureTitle } from "@/lib/processes-ui";
-import { getProcessSessionBySlug, getProfile } from "@/lib/queries";
+import { getProcessSessionBySlug, getProfile, getUserPersonalData } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 export default async function ProcessStartPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [profile, procedure, session] = await Promise.all([
+  const [profile, procedure, session, personalData] = await Promise.all([
     getProfile(),
     Promise.resolve(getProcedureBySlug(slug)),
-    getProcessSessionBySlug(slug)
+    getProcessSessionBySlug(slug),
+    getUserPersonalData()
   ]);
 
   if (!procedure || !getProcessDetail(slug)) {
@@ -37,6 +38,7 @@ export default async function ProcessStartPage({ params }: { params: Promise<{ s
       initialAnswers={initialAnswers}
       initialStepIndex={initialStepIndex}
       initialStorageMode={session ? "remote" : "local"}
+      initialPersonalData={personalData}
     />
   );
 }

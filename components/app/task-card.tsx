@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Clock3, MapPin, MousePointerClick } from "lucide-react";
 import type { Route } from "next";
 
@@ -147,3 +147,4 @@ export function TaskCard({ task, compact = false, locale = "de" }: { task: TaskR
     </Card>
   );
 }
+

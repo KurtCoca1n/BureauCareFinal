@@ -1,8 +1,8 @@
-import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
+﻿import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 import { getBerlinWohngeldWizardDefinition } from "@/lib/official-forms/berlin-wohngeld";
 import type { ProcessProcedure } from "@/lib/processes-ui";
 
-type LocalizedText = Partial<Record<SupportedLanguage, string>>;
+export type LocalizedText = Partial<Record<SupportedLanguage, string>>;
 
 export type ProcessWizardValue = string | number | boolean | null;
 export type ProcessWizardAnswers = Record<string, ProcessWizardValue>;
@@ -74,7 +74,7 @@ const baseCopy = {
   startBackLabel: "Zurück zum Vorgang"
 } satisfies ProcessWizardCopy;
 
-const copyMap: Record<SupportedLanguage, ProcessWizardCopy> = {
+const copyMap: Partial<Record<SupportedLanguage, ProcessWizardCopy>> = {
   de: baseCopy,
   en: {
     progressLabel: "Step",
@@ -96,6 +96,8 @@ const copyMap: Record<SupportedLanguage, ProcessWizardCopy> = {
   uk: baseCopy,
   es: baseCopy
 };
+
+const fallbackWizardCopy = copyMap.en ?? copyMap.de!;
 
 const yesNoOptions: ProcessWizardOption[] = [
   { value: "yes", label: { de: "Ja", en: "Yes" } },
@@ -179,13 +181,174 @@ function createGenericWizard(procedureId: string): ProcessWizardDefinition {
 }
 
 const wohnngeldWizard: ProcessWizardDefinition = getBerlinWohngeldWizardDefinition();
+const buergergeldWizard: ProcessWizardDefinition = {
+  procedureId: "buergergeld",
+  intro: {
+    de: "Wir bereiten die wichtigsten Angaben fuer einen ersten Buergergeld-Antrag in ruhigen Schritten vor.",
+    en: "We prepare the most important details for a first basic income support application in calm steps."
+  },
+  nextStepHint: {
+    de: "Bekannte Angaben kannst du uebernehmen und bei Bedarf direkt aktualisieren.",
+    en: "You can reuse known details and update them right away if needed."
+  },
+  steps: [
+    {
+      id: "applicant",
+      title: { de: "Angaben zu dir", en: "About you" },
+      description: {
+        de: "Hier geht es um deine persoenlichen Daten und wie wir dich erreichen koennen.",
+        en: "This step is about your personal details and how you can be reached."
+      },
+      fields: [
+        { id: "applicant_first_names", type: "text", label: { de: "Vorname(n)", en: "First name(s)" }, required: true },
+        { id: "applicant_last_name", type: "text", label: { de: "Nachname", en: "Last name" }, required: true },
+        { id: "applicant_birth_date", type: "date", label: { de: "Geburtsdatum", en: "Date of birth" }, required: true },
+        {
+          id: "family_status",
+          type: "select",
+          label: { de: "Familienstand", en: "Family status" },
+          required: true,
+          options: [
+            { value: "single", label: { de: "Ledig", en: "Single" } },
+            { value: "married", label: { de: "Verheiratet", en: "Married" } },
+            { value: "separated", label: { de: "Getrennt", en: "Separated" } },
+            { value: "divorced", label: { de: "Geschieden", en: "Divorced" } },
+            { value: "widowed", label: { de: "Verwitwet", en: "Widowed" } }
+          ]
+        },
+        { id: "applicant_phone", type: "text", label: { de: "Telefonnummer", en: "Phone number" } },
+        { id: "applicant_email", type: "text", label: { de: "E-Mail", en: "Email" } }
+      ]
+    },
+    {
+      id: "home",
+      title: { de: "Wohnen und Haushalt", en: "Housing and household" },
+      description: {
+        de: "Diese Angaben helfen spaeter bei Miete, Bedarf und Personen im Haushalt.",
+        en: "These details help later with rent, needs and people in the household."
+      },
+      fields: [
+        { id: "housing_street", type: "text", label: { de: "Strasse", en: "Street" }, required: true },
+        { id: "housing_house_number", type: "text", label: { de: "Hausnummer", en: "House number" }, required: true },
+        { id: "housing_postal_code", type: "text", label: { de: "Postleitzahl", en: "Postal code" }, required: true },
+        { id: "housing_city", type: "text", label: { de: "Ort", en: "City" }, required: true },
+        {
+          id: "tenant_role",
+          type: "radio",
+          label: { de: "Wie wohnst du dort?", en: "What is your housing situation?" },
+          required: true,
+          options: [
+            { value: "main_tenant", label: { de: "Ich zahle selbst Miete", en: "I pay rent myself" } },
+            { value: "subtenant", label: { de: "Ich wohne zur Untermiete oder mit", en: "I sublet or live with others" } }
+          ]
+        },
+        {
+          id: "household_size",
+          type: "number",
+          label: { de: "Wie viele Personen leben im Haushalt?", en: "How many people live in the household?" },
+          min: 1,
+          step: 1,
+          required: true
+        },
+        {
+          id: "monthly_rent",
+          type: "currency",
+          label: { de: "Monatliche Miete", en: "Monthly rent" },
+          required: true
+        }
+      ]
+    },
+    {
+      id: "income-and-payment",
+      title: { de: "Arbeit und Einkommen", en: "Work and income" },
+      description: {
+        de: "Hier geht es um deine aktuelle Arbeitssituation und dein ungefaehres Einkommen.",
+        en: "This step covers your current work situation and approximate income."
+      },
+      fields: [
+        {
+          id: "employment_status",
+          type: "select",
+          label: { de: "Berufliche Situation", en: "Work situation" },
+          required: true,
+          options: [
+            { value: "employee", label: { de: "Arbeitnehmer:in", en: "Employee" } },
+            { value: "self_employed", label: { de: "Selbststaendig", en: "Self-employed" } },
+            { value: "student", label: { de: "Ausbildung oder Studium", en: "Training or studies" } },
+            { value: "unemployed", label: { de: "Arbeitslos", en: "Unemployed" } },
+            { value: "retired", label: { de: "Rente", en: "Retired" } },
+            { value: "other", label: { de: "Etwas anderes", en: "Something else" } }
+          ]
+        },
+        {
+          id: "primary_income_amount",
+          type: "currency",
+          label: { de: "Monatliches Einkommen ungefaehr", en: "Approximate monthly income" }
+        },
+        {
+          id: "primary_income_type",
+          type: "text",
+          label: { de: "Woraus kommt dein Einkommen?", en: "What is your income from?" },
+          placeholder: { de: "Zum Beispiel Gehalt, Minijob oder gar kein Einkommen", en: "For example salary, mini job or no income" }
+        },
+        {
+          id: "has_bank_statements",
+          type: "radio",
+          label: { de: "Hast du aktuelle Kontoauszuege?", en: "Do you have current bank statements?" },
+          required: true,
+          options: yesNoOptions
+        }
+      ]
+    },
+    {
+      id: "documents",
+      title: { de: "Unterlagen", en: "Documents" },
+      description: {
+        de: "Zum Schluss pruefen wir nur kurz, was du schon hast und was noch fehlt.",
+        en: "At the end we briefly check what you already have and what is still missing."
+      },
+      fields: [
+        {
+          id: "has_rental_contract",
+          type: "radio",
+          label: { de: "Hast du einen Mietvertrag oder Nachweis zu Wohnkosten?", en: "Do you have a rental contract or proof of housing costs?" },
+          required: true,
+          options: yesNoOptions
+        },
+        {
+          id: "has_income_proofs",
+          type: "radio",
+          label: { de: "Hast du Nachweise zu Einkommen oder Arbeit?", en: "Do you have proof of income or work?" },
+          required: true,
+          options: yesNoOptions
+        },
+        {
+          id: "documents_note",
+          type: "textarea",
+          label: { de: "Was fehlt noch?", en: "What is still missing?" },
+          placeholder: { de: "Zum Beispiel Ausweis, Bescheide oder weitere Nachweise", en: "For example ID, notices or additional proofs" }
+        }
+      ]
+    },
+    {
+      id: "summary",
+      title: { de: "Zusammenfassung", en: "Summary" },
+      description: {
+        de: "Damit hast du einen ruhigen ersten Stand fuer die naechsten Schritte.",
+        en: "This gives you a calm first draft for the next steps."
+      },
+      summary: true
+    }
+  ]
+};
 
 const wizardDefinitions: Record<string, ProcessWizardDefinition> = {
-  wohngeld: wohnngeldWizard
+  wohngeld: wohnngeldWizard,
+  buergergeld: buergergeldWizard
 };
 
 export function getProcessWizardCopy(locale: string | null | undefined) {
-  return copyMap[normalizePreferredLanguage(locale)];
+  return copyMap[normalizePreferredLanguage(locale)] ?? fallbackWizardCopy;
 }
 
 export function getWizardText(value: LocalizedText, locale: string | null | undefined) {
@@ -249,3 +412,4 @@ export function normalizeProcessWizardAnswers(value: Record<string, unknown> | n
     })
   ) as ProcessWizardAnswers;
 }
+

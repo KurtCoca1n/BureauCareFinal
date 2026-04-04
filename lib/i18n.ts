@@ -1,4 +1,4 @@
-import { getLanguageLabel, normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
+﻿import { getLanguageLabel, normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 
 export type AppLocale = SupportedLanguage;
 
@@ -12,6 +12,8 @@ export function getDateLocale(locale: AppLocale) {
       return "uk-UA";
     case "es":
       return "es-ES";
+    case "zh":
+      return "zh-CN";
     default:
       return "de-DE";
   }
@@ -191,16 +193,91 @@ const en: Copy = {
   reply: { ...de.reply, back: "Back to document", badge: "Reply generator", title: "Prepare a suitable reply", intro: "Choose a tone and generate a ready-to-use draft for this message.", unknownSender: "Unknown sender", situation: "Situation", situationText: "This simplified summary is used for the reply.", note: "Note", noteText: "Please check the draft briefly before sending it.", tone: "Reply tone", format: "Format", asLetter: "As message", asEmail: "As email", includeName: "Add my name at the end", create: "Generate reply", creating: "Generating reply...", regenerate: "Generate a new reply", regenerating: "Creating a new version...", previousDrafts: "Earlier drafts", german: "German", neutral: "Neutral", friendly: "Friendly", veryFormal: "Very formal", objection: "Objection", appeal: "Appeal", needMoreTime: "I need more time" }
 };
 
-const tr: Copy = { ...en, nav: { ...en.nav, home: "Ana sayfa", upload: "Yükle", cases: "Dosyalar", processes: "Başvurular", tasks: "Görevler", settings: "Ayarlar", desk: "Masandaki özet" }, common: { ...en.common, uploaded: "Yüklendi", analysisAvailable: "Analiz hazır", analysisPending: "Analiz bekleniyor", unknown: "Bilinmiyor", noClearDeadline: "Net bir son tarih yok", deadline: "Son tarih", subject: "Konu", sender: "Gönderen", urgency: "Aciliyet", statusOpen: "Açık", statusDone: "Tamamlandı", openDocument: "Belgeyi aç", saveInProgress: "Kaydediliyor...", moreDetails: "Daha fazla detay", shortExplained: "Kısa açıklama", signOut: "Çıkış yap", dateUploaded: "Yüklenme tarihi", currentStatus: "Mevcut durum", name: "İsim", language: "Dil", session: "Oturum" }, urgency: { high: "Yüksek", medium: "Orta", low: "Düşük", unclear: "Henüz belirsiz" }, actionMode: { online: "Çevrim içi mümkün", onSite: "Yerinde", byPost: "Posta ile", byPhone: "Telefonla" } };
-const uk: Copy = { ...en, nav: { ...en.nav, home: "Головна", upload: "Завантажити", cases: "Справи", processes: "Заяви й процеси", tasks: "Завдання", settings: "Налаштування", desk: "Усе важливе під рукою" }, common: { ...en.common, uploaded: "Завантажено", analysisAvailable: "Аналіз готовий", analysisPending: "Аналіз очікується", unknown: "Невідомо", noClearDeadline: "Чіткого строку немає", deadline: "Строк", subject: "Тема", sender: "Відправник", urgency: "Терміновість", statusOpen: "Відкрито", statusDone: "Виконано", openDocument: "Відкрити документ", saveInProgress: "Зберігається...", moreDetails: "Більше деталей", shortExplained: "Коротко", signOut: "Вийти", currentStatus: "Поточний стан", name: "Ім’я", language: "Мова", session: "Сеанс" }, urgency: { high: "Висока", medium: "Середня", low: "Низька", unclear: "Поки неясно" }, actionMode: { online: "Можна онлайн", onSite: "Особисто", byPost: "Поштою", byPhone: "Телефоном" } };
+const tr: Copy = {
+  ...en,
+  nav: {
+    ...en.nav,
+    home: "Ana sayfa",
+    upload: "Yukle",
+    cases: "Dosyalar",
+    processes: "Basvurular",
+    tasks: "Gorevler",
+    settings: "Ayarlar",
+    desk: "Masandaki ozet"
+  },
+  common: {
+    ...en.common,
+    uploaded: "Yuklendi",
+    analysisAvailable: "Analiz hazir",
+    analysisPending: "Analiz bekleniyor",
+    unknown: "Bilinmiyor",
+    noClearDeadline: "Net bir son tarih yok",
+    deadline: "Son tarih",
+    subject: "Konu",
+    sender: "Gonderen",
+    urgency: "Aciliyet",
+    statusOpen: "Acik",
+    statusDone: "Tamamlandi",
+    openDocument: "Belgeyi ac",
+    saveInProgress: "Kaydediliyor...",
+    moreDetails: "Daha fazla detay",
+    shortExplained: "Kisa aciklama",
+    signOut: "Cikis yap",
+    dateUploaded: "Yuklenme tarihi",
+    currentStatus: "Mevcut durum",
+    name: "Isim",
+    language: "Dil",
+    session: "Oturum"
+  },
+  urgency: { high: "Yuksek", medium: "Orta", low: "Dusuk", unclear: "Henuz belirsiz" },
+  actionMode: { online: "Cevrim ici mumkun", onSite: "Yerinde", byPost: "Posta ile", byPhone: "Telefonla" }
+};
+const uk: Copy = {
+  ...en,
+  nav: {
+    ...en.nav,
+    home: "Holovna",
+    upload: "Zavantazhyty",
+    cases: "Spravy",
+    processes: "Zayavy i protsesy",
+    tasks: "Zavdannya",
+    settings: "Nalashtuvannya",
+    desk: "Vse vazhlyve pid rukoyu"
+  },
+  common: {
+    ...en.common,
+    uploaded: "Zavantazheno",
+    analysisAvailable: "Analiz hotovyy",
+    analysisPending: "Analiz ochikuyetsya",
+    unknown: "Nevidomo",
+    noClearDeadline: "Nemae choitkoho stroku",
+    deadline: "Strok",
+    subject: "Tema",
+    sender: "Vidpravnyk",
+    urgency: "Terminovist",
+    statusOpen: "Vidkryto",
+    statusDone: "Vykonano",
+    openDocument: "Vidkryty dokument",
+    saveInProgress: "Zberezhennya...",
+    moreDetails: "Bilshe detaley",
+    shortExplained: "Korotko",
+    signOut: "Vyity",
+    currentStatus: "Potochnyy stan",
+    name: "Imya",
+    language: "Mova",
+    session: "Seans"
+  },
+  urgency: { high: "Vysoka", medium: "Serednya", low: "Nyzka", unclear: "Shche neyasno" },
+  actionMode: { online: "Mozhna onlayn", onSite: "Osobysto", byPost: "Poshtoyu", byPhone: "Telefonom" }
+};
 const es: Copy = {
   ...en,
-  nav: { ...en.nav, home: "Inicio", upload: "Subir", cases: "Casos", processes: "Trámites y gestiones", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
+  nav: { ...en.nav, home: "Inicio", upload: "Subir", cases: "Casos", processes: "Tr谩mites y gestiones", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
   common: {
     ...en.common,
     uploaded: "Subido",
-    analysisAvailable: "Análisis listo",
-    analysisPending: "Análisis pendiente",
+    analysisAvailable: "An谩lisis listo",
+    analysisPending: "An谩lisis pendiente",
     unknown: "Desconocido",
     noClearDeadline: "No hay plazo claro",
     deadline: "Plazo",
@@ -211,43 +288,43 @@ const es: Copy = {
     statusDone: "Hecho",
     openDocument: "Abrir documento",
     saveInProgress: "Guardando...",
-    moreDetails: "Más detalles",
-    shortExplained: "Explicación corta",
-    signOut: "Cerrar sesión",
+    moreDetails: "M谩s detalles",
+    shortExplained: "Explicaci贸n corta",
+    signOut: "Cerrar sesi贸n",
     dateUploaded: "Subido el",
     currentStatus: "Estado actual",
     name: "Nombre",
     language: "Idioma",
-    session: "Sesión"
+    session: "Sesi贸n"
   },
-  urgency: { high: "Alta", medium: "Media", low: "Baja", unclear: "Aún no está claro" },
-  actionMode: { online: "Posible en línea", onSite: "En persona", byPost: "Por correo", byPhone: "Por teléfono" },
+  urgency: { high: "Alta", medium: "Media", low: "Baja", unclear: "A煤n no est谩 claro" },
+  actionMode: { online: "Posible en l铆nea", onSite: "En persona", byPost: "Por correo", byPhone: "Por tel茅fono" },
   home: {
     ...en.home,
     welcome: "Bienvenido de nuevo",
     titleFallback: "Tu BureauCare",
-    intro: "Todos tus documentos importantes en un lugar protegido, con explicaciones claras, plazos y próximos pasos.",
+    intro: "Todos tus documentos importantes en un lugar protegido, con explicaciones claras, plazos y pr贸ximos pasos.",
     newLetter: "Nuevo documento",
     uploadTitle: "Subir un nuevo documento",
-    uploadText: "Sube un documento oficial o una notificación y guárdalo de forma segura en tu cuenta.",
+    uploadText: "Sube un documento oficial o una notificaci贸n y gu谩rdalo de forma segura en tu cuenta.",
     latestDocuments: "Documentos recientes",
     entries: "entradas",
-    noDocuments: "Todavía no hay documentos. Sube tu primer documento para ver aquí un resumen.",
+    noDocuments: "Todav铆a no hay documentos. Sube tu primer documento para ver aqu铆 un resumen.",
     openDeadlines: "Plazos abiertos",
     tasks: "tareas",
-    noDeadlinesTitle: "Todavía no hay plazos abiertos",
-    noDeadlinesText: "En cuanto se detecte un documento con plazo, tu siguiente tarea aparecerá aquí automáticamente."
+    noDeadlinesTitle: "Todav铆a no hay plazos abiertos",
+    noDeadlinesText: "En cuanto se detecte un documento con plazo, tu siguiente tarea aparecer谩 aqu铆 autom谩ticamente."
   },
   settings: {
     ...en.settings,
     section: "Ajustes",
     title: "Cuenta e idioma",
-    intro: "Elige cómo debe aparecer tu nombre en las respuestas y a qué idioma adicional debe traducir BureauCare.",
+    intro: "Elige c贸mo debe aparecer tu nombre en las respuestas y a qu茅 idioma adicional debe traducir BureauCare.",
     currentState: "Estado actual",
     noName: "No hay nombre guardado",
-    sessionText: "Puedes cerrar sesión de forma segura en cualquier momento. Tus documentos permanecen en tu zona protegida.",
+    sessionText: "Puedes cerrar sesi贸n de forma segura en cualquier momento. Tus documentos permanecen en tu zona protegida.",
     fullName: "Tu nombre",
-    translationLanguage: "Idioma de traducción",
+    translationLanguage: "Idioma de traducci贸n",
     save: "Guardar ajustes",
     saving: "Guardando..."
   },
@@ -255,13 +332,13 @@ const es: Copy = {
     ...en.upload,
     badge: "Subir documento",
     title: "Guardar tu documento de forma segura en BureauCare",
-    intro: "Sube aquí un documento oficial o una notificación. BureauCare te explica qué debes hacer.",
-    saveInfoTitle: "Cómo se guarda",
-    saveInfoText: "Tu archivo se guarda en el bucket privado documents de Supabase. Cada ruta se guarda bajo tu ID de usuario, así que solo tú puedes acceder a tus documentos.",
+    intro: "Sube aqu铆 un documento oficial o una notificaci贸n. BureauCare te explica qu茅 debes hacer.",
+    saveInfoTitle: "C贸mo se guarda",
+    saveInfoText: "Tu archivo se guarda en el bucket privado documents de Supabase. Cada ruta se guarda bajo tu ID de usuario, as铆 que solo t煤 puedes acceder a tus documentos.",
     cardTitle: "Subir archivo de forma segura",
-    allowedFormats: "Formatos permitidos: PDF, JPG, JPEG, PNG. Tamaño máximo: 15 MB.",
-    dropzoneTitle: "Suelta tu archivo aquí",
-    dropzoneText: "En escritorio puedes arrastrar el archivo aquí o elegirlo abajo.",
+    allowedFormats: "Formatos permitidos: PDF, JPG, JPEG, PNG. Tama帽o m谩ximo: 15 MB.",
+    dropzoneTitle: "Suelta tu archivo aqu铆",
+    dropzoneText: "En escritorio puedes arrastrar el archivo aqu铆 o elegirlo abajo.",
     pickFile: "Elegir archivo",
     submit: "Subir documento",
     submitting: "Subiendo archivo..."
@@ -269,11 +346,11 @@ const es: Copy = {
   tasks: {
     ...en.tasks,
     section: "Tareas",
-    title: "Mantén tus plazos a la vista",
-    intro: "Aquí ves qué es importante ahora, por qué importa y cómo abrir directamente el documento correcto.",
-    none: "Todavía no hay tareas.",
+    title: "Mant茅n tus plazos a la vista",
+    intro: "Aqu铆 ves qu茅 es importante ahora, por qu茅 importa y c贸mo abrir directamente el documento correcto.",
+    none: "Todav铆a no hay tareas.",
     topic: "Tema",
-    whatToDo: "Qué hacer",
+    whatToDo: "Qu茅 hacer",
     noLinkedDocument: "No hay documento vinculado",
     toDocument: "Abrir documento y siguiente paso",
     markDone: "Marcar como hecho",
@@ -282,36 +359,36 @@ const es: Copy = {
   documents: {
     ...en.documents,
     badge: "Documento",
-    introReady: "Aquí tienes en palabras simples lo que este documento quiere de ti.",
-    introPending: "Documento subido. El análisis viene después.",
-    topBox: "Lo más importante",
-    topTitle: "Ver enseguida qué es importante ahora",
+    introReady: "Aqu铆 tienes en palabras simples lo que este documento quiere de ti.",
+    introPending: "Documento subido. El an谩lisis viene despu茅s.",
+    topBox: "Lo m谩s importante",
+    topTitle: "Ver enseguida qu茅 es importante ahora",
     reactionNeeded: "Hace falta actuar",
-    noDirectPressure: "No hay presión inmediata",
+    noDirectPressure: "No hay presi贸n inmediata",
     keyPoints: "Puntos clave",
-    keyPointsText: "Las afirmaciones más importantes en forma muy corta.",
+    keyPointsText: "Las afirmaciones m谩s importantes en forma muy corta.",
     explainTitle: "Explicado de forma simple",
-    explainText: "Corto o con un poco más de contexto, pero sin lenguaje burocrático.",
-    nextStepsTitle: "Qué deberías hacer ahora",
-    nextStepsText: "Los siguientes pasos más razonables del documento.",
-    noNextStep: "Todavía no se ha detectado un siguiente paso claro.",
+    explainText: "Corto o con un poco m谩s de contexto, pero sin lenguaje burocr谩tico.",
+    nextStepsTitle: "Qu茅 deber铆as hacer ahora",
+    nextStepsText: "Los siguientes pasos m谩s razonables del documento.",
+    noNextStep: "Todav铆a no se ha detectado un siguiente paso claro.",
     ifIgnoredTitle: "Si no haces nada",
     ifIgnoredText: "Posibles consecuencias, en la medida en que se puedan ver en el documento.",
     noClearConsequence: "No se pudo identificar una consecuencia clara a partir del documento.",
     understandTitle: "Entender el documento",
     understandText: "BureauCare lee el documento en el servidor y te lo explica con palabras simples.",
-    beforeAnalysis: "Antes del análisis",
-    beforeAnalysisText: "Comprobamos quién envió el documento, de qué trata, si tienes que hacer algo, hasta cuándo tienes tiempo y cuál es el mejor siguiente paso.",
+    beforeAnalysis: "Antes del an谩lisis",
+    beforeAnalysisText: "Comprobamos qui茅n envi贸 el documento, de qu茅 trata, si tienes que hacer algo, hasta cu谩ndo tienes tiempo y cu谩l es el mejor siguiente paso.",
     analyzeDocument: "Analizar documento",
-    analyzingDocument: "El documento se está analizando...",
+    analyzingDocument: "El documento se est谩 analizando...",
     createReply: "Crear respuesta",
-    whereToDoIt: "Dónde puedes hacerlo",
+    whereToDoIt: "D贸nde puedes hacerlo",
     kind: "Tipo",
     office: "Oficina",
-    address: "Dirección",
+    address: "Direcci贸n",
     openOfficialLink: "Abrir enlace oficial",
     nextStep: "Siguiente paso",
-    nextStepText: "Aquí puedes preparar directamente una respuesta adecuada.",
+    nextStepText: "Aqu铆 puedes preparar directamente una respuesta adecuada.",
     unknownFileType: "Tipo de archivo desconocido",
     noDownloadLink: "No se pudo crear un enlace de descarga para este archivo."
   },
@@ -322,31 +399,44 @@ const es: Copy = {
     title: "Preparar una respuesta adecuada",
     intro: "Elige un tono y genera un borrador listo para usar para este mensaje.",
     unknownSender: "Remitente desconocido",
-    situation: "Situación",
+    situation: "Situaci贸n",
     situationText: "Este resumen simplificado se usa para la respuesta.",
     note: "Nota",
     noteText: "Revisa brevemente el borrador antes de enviarlo.",
     tone: "Tono de la respuesta",
     format: "Formato",
     asLetter: "Como escrito",
-    asEmail: "Como correo electrónico",
-    includeName: "Añadir mi nombre al final",
+    asEmail: "Como correo electr贸nico",
+    includeName: "A帽adir mi nombre al final",
     create: "Generar respuesta",
-    creating: "Se está generando la respuesta...",
+    creating: "Se est谩 generando la respuesta...",
     regenerate: "Generar una nueva respuesta",
-    regenerating: "Se está creando una nueva versión...",
+    regenerating: "Se est谩 creando una nueva versi贸n...",
     previousDrafts: "Borradores anteriores",
-    german: "Alemán",
+    german: "Alem谩n",
     neutral: "Neutral",
     friendly: "Amable",
     veryFormal: "Muy formal",
-    objection: "Oposición",
+    objection: "Oposici贸n",
     appeal: "Recurso",
-    needMoreTime: "Necesito más tiempo"
+    needMoreTime: "Necesito m谩s tiempo"
   }
 };
 
-const copy: Record<AppLocale, Copy> = { de, en, tr, uk, es };
+const zh: Copy = {
+  ...en,
+  nav: { ...en.nav, home: "首页", upload: "上传", cases: "案件", processes: "申请与流程", tasks: "任务", settings: "设置", desk: "你的事务一目了然", brand: "BureauCare" },
+  common: { ...en.common, uploaded: "已上传", analysisAvailable: "分析已完成", analysisPending: "分析进行中", unknown: "未知", noClearDeadline: "没有明确期限", deadline: "期限", subject: "主题", sender: "发件方", urgency: "紧急程度", statusOpen: "进行中", statusDone: "已完成", document: "文件", openDocument: "打开文件", saveInProgress: "正在保存...", moreDetails: "更多详情", shortExplained: "简要说明", signOut: "退出登录", dateUploaded: "上传于", currentStatus: "当前状态", name: "姓名", language: "语言", session: "会话" },
+  urgency: { high: "高", medium: "中", low: "低", unclear: "暂不明确" },
+  actionMode: { online: "可在线办理", onSite: "需要到现场", byPost: "通过邮寄", byPhone: "通过电话" },
+  home: { ...en.home, welcome: "欢迎回来", titleFallback: "你的 BureauCare", intro: "把重要文件放在一个安全的地方，并获得清晰说明、期限提醒和下一步建议。", newLetter: "新文件", uploadTitle: "上传新文件", uploadText: "上传官方文件或通知，并安全保存在你的账号中。", latestDocuments: "最近文件", entries: "条", noDocuments: "还没有文件。上传第一份文件后，这里就会出现总览。", openDeadlines: "待处理期限", tasks: "任务", noDeadlinesTitle: "目前没有开放期限", noDeadlinesText: "一旦识别到带期限的文件，你的下一步任务会自动显示在这里。" },
+  settings: { ...en.settings, section: "设置", title: "账号与语言", intro: "设置你的姓名如何出现在回复中，以及 BureauCare 还要额外翻译成哪种语言。", currentState: "当前状态", noName: "还没有保存姓名", sessionText: "你可以随时安全退出登录。你的文件会继续保存在受保护区域中。", fullName: "你的姓名", translationLanguage: "翻译语言", save: "保存设置", saving: "正在保存..." },
+  upload: { ...en.upload, badge: "上传文件", title: "将文件安全保存到 BureauCare", intro: "在这里上传官方文件或通知。BureauCare 会解释你接下来需要做什么。", saveInfoTitle: "保存方式", saveInfoText: "你的文件会保存在 Supabase 的私有 documents 存储桶中。每个路径都绑定到你的用户 ID，因此只有你能访问这些文件。", cardTitle: "安全上传文件", allowedFormats: "允许格式：PDF、JPG、JPEG、PNG。最大文件大小：15 MB。", dropzoneTitle: "把文件拖到这里", dropzoneText: "在桌面端，你可以把文件拖放到这里，或者在下方直接选择。", pickFile: "选择文件", submit: "上传文件", submitting: "正在上传文件..." },
+  tasks: { ...en.tasks, section: "任务", title: "关注你的期限", intro: "这里会告诉你现在最重要的事情、原因，以及如何直接打开对应文件。", none: "目前还没有任务。", topic: "主题", whatToDo: "需要做什么", noLinkedDocument: "没有关联文件", toDocument: "打开文件和下一步", markDone: "标记为完成", openOfficialLink: "打开官方链接" },
+  documents: { ...en.documents, badge: "文件", introReady: "这里会用简单的话告诉你，这份文件希望你做什么。", introPending: "文件已上传。分析即将开始。", topBox: "最重要的信息", topTitle: "马上看清现在最重要的事", reactionNeeded: "需要处理", noDirectPressure: "目前没有直接压力", keyPoints: "重点内容", keyPointsText: "最重要的内容会以简短方式展示。", explainTitle: "简单说明", explainText: "简短但清楚，不使用难懂的官方语言。", nextStepsTitle: "你现在应该做什么", nextStepsText: "从这份文件中整理出的下一步建议。", noNextStep: "目前还没有识别到明确的下一步。", ifIgnoredTitle: "如果你不处理", ifIgnoredText: "根据文件可见内容，可能出现的后果。", noClearConsequence: "这份文件里没有明确说明后果。", understandTitle: "理解这份文件", understandText: "BureauCare 会在服务器上读取文件，并用简单语言为你解释。", beforeAnalysis: "分析前", beforeAnalysisText: "我们会查看是谁发来的、内容是什么、你是否需要行动、截止时间，以及最合适的下一步。", analyzeDocument: "分析文件", analyzingDocument: "正在分析文件...", createReply: "生成回复", whereToDoIt: "你可以在哪里办理", kind: "类型", office: "机构", address: "地址", openOfficialLink: "打开官方链接", nextStep: "下一步", nextStepText: "你可以直接在这里准备一份合适的回复。", unknownFileType: "未知文件类型", noDownloadLink: "无法为这个文件生成下载链接。" },
+  reply: { ...en.reply, back: "返回文件", badge: "回复生成器", title: "准备合适的回复", intro: "选择语气，然后为这份来信生成一份可直接使用的回复草稿。", unknownSender: "未知发件方", situation: "当前情况", situationText: "这份简化总结会用于生成回复。", note: "提示", noteText: "发送前请简短检查一下草稿。", tone: "回复语气", format: "格式", asLetter: "正式信件", asEmail: "电子邮件", includeName: "在结尾加入我的姓名", create: "生成回复", creating: "正在生成回复...", regenerate: "重新生成回复", regenerating: "正在生成新版本...", previousDrafts: "之前的草稿", german: "德语", neutral: "中性", friendly: "友好", veryFormal: "非常正式", objection: "异议", appeal: "申诉", needMoreTime: "我需要更多时间" }
+};
+const copy: Record<AppLocale, Copy> = { de, en, tr, uk, es, zh };
 
 export function getCopy(locale: string | null | undefined) {
   return copy[normalizePreferredLanguage(locale)];
@@ -359,9 +449,10 @@ export function getAltLanguageLabel(locale: string | null | undefined) {
 export function getReminderCopy(locale: string | null | undefined) {
   switch (normalizePreferredLanguage(locale)) {
     case "en": return { dueToday: "Due today", dueSoon: "Due soon", overdue: "Overdue", openLater: "Upcoming", completed: "Completed", reminderIntro: "Keep an eye on the next deadlines so nothing slips through.", noItems: "Nothing in this section right now." };
-    case "tr": return { dueToday: "Bugün son gün", dueSoon: "Yakında son gün", overdue: "Süresi geçti", openLater: "Daha sonra", completed: "Tamamlananlar", reminderIntro: "Hiçbir şeyi kaçırmamak için sıradaki son tarihleri burada gör.", noItems: "Bu bölümde şu anda bir şey yok." };
-    case "uk": return { dueToday: "Потрібно сьогодні", dueSoon: "Незабаром", overdue: "Строк минув", openLater: "Пізніше", completed: "Виконано", reminderIntro: "Тут видно найближчі строки, щоб нічого не пропустити.", noItems: "У цьому розділі зараз нічого немає." };
-    case "es": return { dueToday: "Vence hoy", dueSoon: "Vence pronto", overdue: "Vencido", openLater: "Más adelante", completed: "Completado", reminderIntro: "Aquí ves los próximos plazos para que no se te pase nada.", noItems: "Ahora mismo no hay nada en esta sección." };
+    case "tr": return { dueToday: "Bugün son gün", dueSoon: "Yak谋nda son gün", overdue: "Süresi ge莽ti", openLater: "Daha sonra", completed: "Tamamlananlar", reminderIntro: "Hi莽bir 艧eyi ka莽谋rmamak i莽in s谋radaki son tarihleri burada gör.", noItems: "Bu bölümde 艧u anda bir 艧ey yok." };
+    case "uk": return { dueToday: "袩芯褌褉褨斜薪芯 褋褜芯谐芯写薪褨", dueSoon: "袧械蟹邪斜邪褉芯屑", overdue: "小褌褉芯泻 屑懈薪褍胁", openLater: "袩褨蟹薪褨褕械", completed: "袙懈泻芯薪邪薪芯", reminderIntro: "孝褍褌 胁懈写薪芯 薪邪泄斜谢懈卸褔褨 褋褌褉芯泻懈, 褖芯斜 薪褨褔芯谐芯 薪械 锌褉芯锌褍褋褌懈褌懈.", noItems: "校 褑褜芯屑褍 褉芯蟹写褨谢褨 蟹邪褉邪蟹 薪褨褔芯谐芯 薪械屑邪褦." };
+    case "es": return { dueToday: "Vence hoy", dueSoon: "Vence pronto", overdue: "Vencido", openLater: "M谩s adelante", completed: "Completado", reminderIntro: "Aqu铆 ves los pr贸ximos plazos para que no se te pase nada.", noItems: "Ahora mismo no hay nada en esta secci贸n." };
+    case "zh": return { dueToday: "今天到期", dueSoon: "即将到期", overdue: "已逾期", openLater: "稍后处理", completed: "已完成", reminderIntro: "在这里查看接下来的期限，这样就不会漏掉重要事情。", noItems: "这个区域目前没有内容。" };
     default: return { dueToday: "Heute fällig", dueSoon: "Bald fällig", overdue: "Überfällig", openLater: "Später offen", completed: "Erledigt", reminderIntro: "Hier siehst du die nächsten Fristen auf einen Blick, damit nichts untergeht.", noItems: "In diesem Bereich ist gerade nichts offen." };
   }
 }
@@ -369,9 +460,10 @@ export function getReminderCopy(locale: string | null | undefined) {
 export function getUsageCopy(locale: string | null | undefined) {
   switch (normalizePreferredLanguage(locale)) {
     case "en": return { title: "Usage this month", analyses: "free analyses used", replies: "reply drafts created", note: "This is a gentle preview of future free plan limits.", limitReached: "You have reached your free monthly analysis limit." };
-    case "tr": return { title: "Bu ay kullanım", analyses: "ücretsiz analiz kullanıldı", replies: "yanıt taslağı oluşturuldu", note: "Bu alan ilerideki ücretsiz plan limitleri için hafif bir önizlemedir.", limitReached: "Bu ay için ücretsiz analiz limitine ulaştın." };
-    case "uk": return { title: "Використання за місяць", analyses: "безкоштовних аналізів використано", replies: "чернеток відповіді створено", note: "Це ненав’язлива підготовка до майбутніх лімітів безкоштовного плану.", limitReached: "Ви досягли безкоштовного місячного ліміту аналізів." };
-    case "es": return { title: "Uso este mes", analyses: "análisis gratuitos usados", replies: "borradores de respuesta creados", note: "Esto es una vista previa discreta de los futuros límites del plan gratuito.", limitReached: "Has alcanzado tu límite mensual gratuito de análisis." };
+    case "tr": return { title: "Bu ay kullan谋m", analyses: "ücretsiz analiz kullan谋ld谋", replies: "yan谋t tasla臒谋 olu艧turuldu", note: "Bu alan ilerideki ücretsiz plan limitleri i莽in hafif bir önizlemedir.", limitReached: "Bu ay i莽in ücretsiz analiz limitine ula艧t谋n." };
+    case "uk": return { title: "袙懈泻芯褉懈褋褌邪薪薪褟 蟹邪 屑褨褋褟褑褜", analyses: "斜械蟹泻芯褕褌芯胁薪懈褏 邪薪邪谢褨蟹褨胁 胁懈泻芯褉懈褋褌邪薪芯", replies: "褔械褉薪械褌芯泻 胁褨写锌芯胁褨写褨 褋褌胁芯褉械薪芯", note: "笑械 薪械薪邪胁鈥櫻徯沸恍感残?锌褨写谐芯褌芯胁泻邪 写芯 屑邪泄斜褍褌薪褨褏 谢褨屑褨褌褨胁 斜械蟹泻芯褕褌芯胁薪芯谐芯 锌谢邪薪褍.", limitReached: "袙懈 写芯褋褟谐谢懈 斜械蟹泻芯褕褌芯胁薪芯谐芯 屑褨褋褟褔薪芯谐芯 谢褨屑褨褌褍 邪薪邪谢褨蟹褨胁." };
+    case "es": return { title: "Uso este mes", analyses: "an谩lisis gratuitos usados", replies: "borradores de respuesta creados", note: "Esto es una vista previa discreta de los futuros l铆mites del plan gratuito.", limitReached: "Has alcanzado tu l铆mite mensual gratuito de an谩lisis." };
+    case "zh": return { title: "本月使用情况", analyses: "已使用的免费分析次数", replies: "已生成的回复草稿", note: "这是对以后免费计划额度的一种温和预览。", limitReached: "你已经达到本月免费的分析上限。" };
     default: return { title: "Nutzung in diesem Monat", analyses: "kostenlose Analysen genutzt", replies: "Antwortentwürfe erstellt", note: "Das ist eine dezente Vorschau auf spätere Freemium-Limits.", limitReached: "Du hast dein kostenloses Monatslimit für Analysen erreicht." };
   }
 }
@@ -379,9 +471,11 @@ export function getUsageCopy(locale: string | null | undefined) {
 export function getDocumentTrustCopy(locale: string | null | undefined) {
   switch (normalizePreferredLanguage(locale)) {
     case "en": return { pageLabel: "Page", pageCountSuffix: "pages", referencesTitle: "Important places in the document", referencesText: "These details were linked to specific pages.", pageSummaryTitle: "Page overview", pageSummaryText: "A short view of what each page contains." };
-    case "tr": return { pageLabel: "Sayfa", pageCountSuffix: "sayfa", referencesTitle: "Belgedeki önemli yerler", referencesText: "Bu bilgiler belirli sayfalara bağlanabildi.", pageSummaryTitle: "Sayfa özeti", pageSummaryText: "Her sayfada ne olduğuna dair kısa bir bakış." };
-    case "uk": return { pageLabel: "Сторінка", pageCountSuffix: "сторінок", referencesTitle: "Важливі місця в документі", referencesText: "Ці дані вдалося прив’язати до конкретних сторінок.", pageSummaryTitle: "Огляд сторінок", pageSummaryText: "Коротко про те, що є на кожній сторінці." };
-    case "es": return { pageLabel: "Página", pageCountSuffix: "páginas", referencesTitle: "Lugares importantes del documento", referencesText: "Estos datos se pudieron vincular a páginas concretas.", pageSummaryTitle: "Resumen por páginas", pageSummaryText: "Una vista corta de lo que contiene cada página." };
+    case "tr": return { pageLabel: "Sayfa", pageCountSuffix: "sayfa", referencesTitle: "Belgedeki önemli yerler", referencesText: "Bu bilgiler belirli sayfalara ba臒lanabildi.", pageSummaryTitle: "Sayfa özeti", pageSummaryText: "Her sayfada ne oldu臒una dair k谋sa bir bak谋艧." };
+    case "uk": return { pageLabel: "小褌芯褉褨薪泻邪", pageCountSuffix: "褋褌芯褉褨薪芯泻", referencesTitle: "袙邪卸谢懈胁褨 屑褨褋褑褟 胁 写芯泻褍屑械薪褌褨", referencesText: "笑褨 写邪薪褨 胁写邪谢芯褋褟 锌褉懈胁鈥櫻徯沸把傂?写芯 泻芯薪泻褉械褌薪懈褏 褋褌芯褉褨薪芯泻.", pageSummaryTitle: "袨谐谢褟写 褋褌芯褉褨薪芯泻", pageSummaryText: "袣芯褉芯褌泻芯 锌褉芯 褌械, 褖芯 褦 薪邪 泻芯卸薪褨泄 褋褌芯褉褨薪褑褨." };
+    case "es": return { pageLabel: "P谩gina", pageCountSuffix: "p谩ginas", referencesTitle: "Lugares importantes del documento", referencesText: "Estos datos se pudieron vincular a p谩ginas concretas.", pageSummaryTitle: "Resumen por p谩ginas", pageSummaryText: "Una vista corta de lo que contiene cada p谩gina." };
     default: return { pageLabel: "Seite", pageCountSuffix: "Seiten", referencesTitle: "Wichtige Stellen im Dokument", referencesText: "Diese Angaben konnten konkreten Seiten zugeordnet werden.", pageSummaryTitle: "Seitenüberblick", pageSummaryText: "Kurz erklärt, was auf den einzelnen Seiten steht." };
   }
 }
+
+

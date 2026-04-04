@@ -1,17 +1,18 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 
 import { createCaseEvent } from "@/lib/case-events";
 import { normalizePreferredLanguage } from "@/lib/languages";
 import { generateReplyWithOpenAI } from "@/lib/openai/reply-generator";
+import { getReplyToneRecommendation, type ReplyToneRecommendation } from "@/lib/reply-tone";
 import { createClient } from "@/lib/supabase/server";
 import { recordUsageEvent } from "@/lib/usage";
 
 export type DraftReplyState = {
   error: string;
   success: string;
-  recommendedTone?: string;
+  recommendedTone?: ReplyToneRecommendation;
   generatedReply?: {
     primaryId: string;
     translatedId?: string;
@@ -23,33 +24,17 @@ export type DraftReplyState = {
   };
 };
 
-function getRecommendedTone(analysis: { urgency: string | null; is_action_required: boolean | null; subject: string | null; next_steps: string[] | null }) {
-  const haystack = `${analysis.subject ?? ""} ${(analysis.next_steps ?? []).join(" ")}`.toLowerCase();
-
-  if (/widerspruch|einspruch|appeal|objection/.test(haystack)) {
-    return "Sehr formell";
-  }
-
-  if (analysis.urgency === "high") {
-    return "Freundlich, aber formell";
-  }
-
-  if (analysis.is_action_required) {
-    return "Freundlich";
-  }
-
-  return "Neutral";
-}
-
 export async function generateDraftReplyAction(_: DraftReplyState, formData: FormData): Promise<DraftReplyState> {
   const documentId = String(formData.get("documentId") ?? "").trim();
   const tone = String(formData.get("tone") ?? "").trim();
   const toneDetails = String(formData.get("toneDetails") ?? "").trim();
+  const recommendedToneTone = String(formData.get("recommendedToneTone") ?? "").trim();
+  const recommendedToneDetails = String(formData.get("recommendedToneDetails") ?? "").trim();
   const formatType = String(formData.get("formatType") ?? "brief").trim() as "brief" | "email";
   const includeSignature = String(formData.get("includeSignature") ?? "") === "1";
 
   if (!documentId || (!tone && !toneDetails)) {
-    return { error: "Bitte wähle zuerst einen Antwortton aus.", success: "" };
+    return { error: "Bitte waehle zuerst einen Antwortton aus.", success: "" };
   }
 
   const supabase = await createClient();
@@ -69,7 +54,7 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
     .maybeSingle();
 
   if (!document) {
-    return { error: "Dieses Dokument wurde nicht gefunden oder gehört dir nicht.", success: "" };
+    return { error: "Dieses Dokument wurde nicht gefunden oder gehoert dir nicht.", success: "" };
   }
 
   const { data: analysis } = await supabase.from("document_analyses").select("*").eq("document_id", documentId).maybeSingle();
@@ -79,7 +64,14 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
     return { error: "Bitte analysiere das Dokument zuerst, bevor du eine Antwort erstellst.", success: "" };
   }
 
-  const recommendedTone = getRecommendedTone(analysis);
+  const recommendedTone =
+    recommendedToneTone || recommendedToneDetails
+      ? {
+          tone: recommendedToneTone || getReplyToneRecommendation(analysis, profile?.preferred_language ?? "de").tone,
+          toneDetails: recommendedToneDetails,
+          displayLabel: [recommendedToneTone, recommendedToneDetails].filter(Boolean).join(" + ")
+        }
+      : getReplyToneRecommendation(analysis, profile?.preferred_language ?? "de");
 
   try {
     const generated = await generateReplyWithOpenAI({
@@ -94,10 +86,11 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
     });
 
     const now = new Date().toISOString();
+    const savedToneLabel = [tone, toneDetails].filter(Boolean).join(" + ") || tone;
     const inserts = [
       {
         document_id: documentId,
-        tone: toneDetails ? `${tone || "Eigener Wunsch"} • ${toneDetails}` : tone,
+        tone: savedToneLabel,
         format_type: formatType,
         language_code: "de",
         reply_text: generated.reply_text_de,
@@ -110,7 +103,7 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
     if (generated.reply_text_translated && preferredLanguage !== "de") {
       inserts.push({
         document_id: documentId,
-        tone: toneDetails ? `${tone || "Eigener Wunsch"} • ${toneDetails}` : tone,
+        tone: savedToneLabel,
         format_type: formatType,
         language_code: preferredLanguage,
         reply_text: generated.reply_text_translated,
@@ -144,7 +137,7 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
         caseId: document.case_id,
         documentId,
         eventType: "reply_created",
-        note: `Antwortentwurf im Ton "${tone || "Eigener Wunsch"}" erstellt.`
+        note: `Antwortentwurf im Ton "${savedToneLabel || "Eigener Wunsch"}" erstellt.`
       });
     }
 
@@ -159,7 +152,7 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
       generatedReply: {
         primaryId: germanReply.id,
         translatedId: translatedReply?.id,
-        tone: germanReply.tone ?? tone,
+        tone: germanReply.tone ?? savedToneLabel,
         formatType: germanReply.format_type ?? formatType,
         replyTextDe: germanReply.reply_text,
         replyTextTranslated: translatedReply?.reply_text ?? null,

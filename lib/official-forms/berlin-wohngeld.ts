@@ -1,4 +1,4 @@
-import { PDFDocument } from "pdf-lib";
+﻿import { PDFDocument } from "pdf-lib";
 
 type LocalizedText = Partial<Record<"de" | "en" | "tr" | "uk" | "es", string>>;
 
@@ -310,7 +310,7 @@ export function getBerlinWohngeldWizardDefinition(): BerlinWohngeldWizardDefinit
           {
             id: "apartment_size_sqm",
             type: "number",
-            label: { de: "Wohnungsgröße in m²", en: "Apartment size in m²" },
+            label: { de: "Wohnungsgröße in m虏", en: "Apartment size in m虏" },
             min: 1,
             step: 0.5
           },
@@ -719,3 +719,4 @@ export async function buildBerlinWohngeldPdf(answers: BerlinWohngeldAnswers) {
   form.flatten();
   return pdf.save();
 }
+

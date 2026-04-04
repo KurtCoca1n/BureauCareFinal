@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { LoaderCircle, MapPin, ShieldCheck } from "lucide-react";
@@ -38,36 +38,36 @@ export function LocationPreferencesCard({
         }
       : locale === "tr"
         ? {
-            title: "Yerel ipuçları",
-            text: "Konumuna izin verirsen BureauCare, bir görevde yer bilgisi olduğunda daha uygun kurumları, adresleri ve yakındaki ipuçlarını gösterebilir.",
+            title: "Yerel ipu莽lar谋",
+            text: "Konumuna izin verirsen BureauCare, bir görevde yer bilgisi oldu臒unda daha uygun kurumlar谋, adresleri ve yak谋ndaki ipu莽lar谋n谋 gösterebilir.",
             grant: "Konuma izin ver",
-            granted: "Konum erişimi aktif.",
-            denied: "Konum erişimi engellendi. BureauCare normal şekilde çalışmaya devam eder.",
-            saved: "Yalnızca bu cihazda yerel olarak saklanır.",
-            reset: "Kararı sıfırla",
+            granted: "Konum eri艧imi aktif.",
+            denied: "Konum eri艧imi engellendi. BureauCare normal 艧ekilde 莽al谋艧maya devam eder.",
+            saved: "Yaln谋zca bu cihazda yerel olarak saklan谋r.",
+            reset: "Karar谋 s谋f谋rla",
             refresh: "Konumu güncelle"
           }
         : locale === "uk"
           ? {
-              title: "Локальні підказки",
-              text: "Дозволь геолокацію, щоб BureauCare міг показувати доречні установи, адреси й підказки поруч, коли завдання містить прив’язку до місця.",
-              grant: "Дозволити геолокацію",
-              granted: "Доступ до геолокації активний.",
-              denied: "Доступ до геолокації заблоковано. BureauCare і далі працює нормально.",
-              saved: "Зберігається лише локально на цьому пристрої.",
-              reset: "Скинути рішення",
-              refresh: "Оновити місце"
+              title: "袥芯泻邪谢褜薪褨 锌褨写泻邪蟹泻懈",
+              text: "袛芯蟹胁芯谢褜 谐械芯谢芯泻邪褑褨褞, 褖芯斜 BureauCare 屑褨谐 锌芯泻邪蟹褍胁邪褌懈 写芯褉械褔薪褨 褍褋褌邪薪芯胁懈, 邪写褉械褋懈 泄 锌褨写泻邪蟹泻懈 锌芯褉褍褔, 泻芯谢懈 蟹邪胁写邪薪薪褟 屑褨褋褌懈褌褜 锌褉懈胁鈥櫻徯沸貉?写芯 屑褨褋褑褟.",
+              grant: "袛芯蟹胁芯谢懈褌懈 谐械芯谢芯泻邪褑褨褞",
+              granted: "袛芯褋褌褍锌 写芯 谐械芯谢芯泻邪褑褨褩 邪泻褌懈胁薪懈泄.",
+              denied: "袛芯褋褌褍锌 写芯 谐械芯谢芯泻邪褑褨褩 蟹邪斜谢芯泻芯胁邪薪芯. BureauCare 褨 写邪谢褨 锌褉邪褑褞褦 薪芯褉屑邪谢褜薪芯.",
+              saved: "袟斜械褉褨谐邪褦褌褜褋褟 谢懈褕械 谢芯泻邪谢褜薪芯 薪邪 褑褜芯屑褍 锌褉懈褋褌褉芯褩.",
+              reset: "小泻懈薪褍褌懈 褉褨褕械薪薪褟",
+              refresh: "袨薪芯胁懈褌懈 屑褨褋褑械"
             }
           : locale === "es"
             ? {
                 title: "Ayudas locales",
-                text: "Permite tu ubicación para que BureauCare pueda mostrar oficinas, direcciones y pistas cercanas más relevantes cuando una tarea tenga referencia de lugar.",
-                grant: "Permitir ubicación",
-                granted: "El acceso a la ubicación está activo.",
-                denied: "El acceso a la ubicación está bloqueado. BureauCare sigue funcionando con normalidad.",
+                text: "Permite tu ubicaci贸n para que BureauCare pueda mostrar oficinas, direcciones y pistas cercanas m谩s relevantes cuando una tarea tenga referencia de lugar.",
+                grant: "Permitir ubicaci贸n",
+                granted: "El acceso a la ubicaci贸n est谩 activo.",
+                denied: "El acceso a la ubicaci贸n est谩 bloqueado. BureauCare sigue funcionando con normalidad.",
                 saved: "Solo se guarda localmente en este dispositivo.",
-                reset: "Restablecer decisión",
-                refresh: "Actualizar ubicación"
+                reset: "Restablecer decisi贸n",
+                refresh: "Actualizar ubicaci贸n"
               }
             : {
                 title: "Lokale Hinweise",
@@ -195,3 +195,4 @@ export function LocationPreferencesCard({
     </Card>
   );
 }
+

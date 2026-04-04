@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 
@@ -207,3 +207,4 @@ export async function analyzeDocumentAction(
     };
   }
 }
+

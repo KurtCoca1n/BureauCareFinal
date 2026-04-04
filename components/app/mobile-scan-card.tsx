@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Copy, LoaderCircle, QrCode, RefreshCw, Smartphone } from "lucide-react";
+import { Copy, Laptop2, LoaderCircle, QrCode, RefreshCw, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ export function MobileScanCard({
   labels: {
     title: string;
     text: string;
+    note?: string;
     create: string;
     creating: string;
     copyLink: string;
@@ -114,13 +115,21 @@ export function MobileScanCard({
   }
 
   return (
-    <Card className="space-y-6 p-6 sm:p-7">
+    <Card className="space-y-6 border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,250,252,0.9))] p-6 shadow-[0_18px_42px_rgba(43,43,43,0.05)] sm:p-7">
       <div className="space-y-3">
-        <div className="inline-flex rounded-2xl bg-[var(--accent-soft)] p-3 text-[var(--accent)]">
+        <div className="inline-flex rounded-2xl bg-[rgba(111,168,220,0.14)] p-3 text-[var(--soft-blue)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
           <QrCode className="h-5 w-5" />
         </div>
-        <h2 className="text-xl font-semibold">{labels.title}</h2>
+        <h2 className="text-xl font-semibold tracking-[-0.02em]">{labels.title}</h2>
         <p className="text-sm leading-6 text-[var(--muted)]">{labels.text}</p>
+        {labels.note ? (
+          <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-[rgba(255,255,255,0.5)] bg-[linear-gradient(180deg,rgba(214,231,245,0.66),rgba(255,255,255,0.82))] px-3.5 py-2 text-xs font-medium leading-5 text-[var(--foreground)]/78 shadow-[0_10px_24px_rgba(95,163,163,0.08)] backdrop-blur-md">
+            <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/70 text-[var(--accent)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
+              <Laptop2 className="h-3.5 w-3.5" />
+            </span>
+            <span>{labels.note}</span>
+          </div>
+        ) : null}
       </div>
 
       {!uploadUrl ? (
@@ -139,7 +148,7 @@ export function MobileScanCard({
         </Button>
       ) : (
         <div className="space-y-5">
-          <div className="flex items-center justify-center rounded-[28px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(239,232,223,0.38))] p-6">
+          <div className="flex items-center justify-center rounded-[28px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(231,239,247,0.5))] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
             {qrUrl ? <img src={qrUrl} alt="QR-Code für mobilen Upload" className="h-60 w-60 rounded-2xl" /> : null}
           </div>
 
@@ -162,3 +171,4 @@ export function MobileScanCard({
     </Card>
   );
 }
+

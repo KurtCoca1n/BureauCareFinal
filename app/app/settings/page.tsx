@@ -4,14 +4,17 @@ import { SettingsForm } from "@/components/app/settings-form";
 import { Card } from "@/components/ui/card";
 import { getCopy, getUsageCopy } from "@/lib/i18n";
 import { getLanguageLabel } from "@/lib/languages";
+import { getMyDataCopy } from "@/lib/my-data-ui";
 import { getProfile, getUsageSummaryForCurrentUser } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
+import Link from "next/link";
 
 export default async function SettingsPage() {
   const [profile, usage] = await Promise.all([getProfile(), getUsageSummaryForCurrentUser()]);
   const locale = await getRequestLanguage(profile?.preferred_language);
   const copy = getCopy(locale);
   const usageCopy = getUsageCopy(locale);
+  const myDataCopy = getMyDataCopy(locale);
 
   return (
     <>
@@ -45,6 +48,17 @@ export default async function SettingsPage() {
                 <p className="font-medium">{getLanguageLabel(profile?.preferred_language ?? locale)}</p>
               </div>
             </div>
+          </Card>
+
+          <Card className="space-y-3 p-5">
+            <h2 className="text-lg font-semibold">{myDataCopy.settingsLinkTitle}</h2>
+            <p className="text-sm leading-6 text-[var(--muted)]">{myDataCopy.settingsLinkText}</p>
+            <Link
+              href="/app/my-data"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(232,220,207,0.85)] bg-[rgba(232,220,207,0.32)] px-5 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[rgba(232,220,207,0.48)]"
+            >
+              {myDataCopy.openMyData}
+            </Link>
           </Card>
 
           {usage ? (

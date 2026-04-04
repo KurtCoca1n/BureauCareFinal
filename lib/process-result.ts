@@ -1,4 +1,4 @@
-import { stripExplainableText } from "@/lib/glossary";
+﻿import { stripExplainableText } from "@/lib/glossary";
 import { berlinWohngeldOfficialForm } from "@/lib/official-forms/berlin-wohngeld";
 import { getProcessDetail } from "@/lib/process-details";
 import { getLocalizedRealityValue, getProcessReality, type ProcessRealityDocument } from "@/lib/process-reality";
@@ -168,3 +168,4 @@ export function buildProcessResult(procedureId: string, locale: string, answers:
     emailBody: requestOrEmailText
   };
 }
+

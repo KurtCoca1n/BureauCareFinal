@@ -46,7 +46,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && request.nextUrl.pathname === "/login") {
+  const isAuthStatusPage =
+    request.nextUrl.pathname === "/login/verify-email" || request.nextUrl.pathname === "/login/confirmed";
+
+  if (user && request.nextUrl.pathname === "/login" && !isAuthStatusPage) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/app";
     redirectUrl.search = "";

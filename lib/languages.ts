@@ -1,13 +1,14 @@
-export const SUPPORTED_LANGUAGES = ["de", "en", "tr", "uk", "es"] as const;
+﻿export const SUPPORTED_LANGUAGES = ["de", "en", "tr", "uk", "es", "zh"] as const;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const LANGUAGE_OPTIONS: Array<{ value: SupportedLanguage; label: string }> = [
   { value: "de", label: "Deutsch" },
   { value: "en", label: "English" },
-  { value: "tr", label: "Türkçe" },
-  { value: "uk", label: "Українська" },
-  { value: "es", label: "Español" }
+  { value: "tr", label: "Turkce" },
+  { value: "uk", label: "Ukrainska" },
+  { value: "es", label: "Espanol" },
+  { value: "zh", label: "中文" }
 ];
 
 export function normalizePreferredLanguage(value: string | null | undefined): SupportedLanguage {
@@ -25,16 +26,20 @@ export function normalizePreferredLanguage(value: string | null | undefined): Su
     return "en";
   }
 
-  if (["türkisch", "turkisch", "turkish"].includes(normalized)) {
+  if (["turkisch", "turkish", "tuerkisch", "turkce"].includes(normalized)) {
     return "tr";
   }
 
-  if (["ukrainisch", "ukrainian"].includes(normalized)) {
+  if (["ukrainisch", "ukrainian", "ukrainska"].includes(normalized)) {
     return "uk";
   }
 
-  if (["spanisch", "spanish", "español", "espanol"].includes(normalized)) {
+  if (["spanisch", "spanish", "espanol"].includes(normalized)) {
     return "es";
+  }
+
+  if (["chinesisch", "chinese", "mandarin", "zh", "zh-cn", "zh-hans", "中文", "汉语", "漢語"].includes(normalized)) {
+    return "zh";
   }
 
   return "en";
@@ -58,6 +63,7 @@ export function normalizeBrowserLanguage(value: string | null | undefined): Supp
     if (candidate.startsWith("tr")) return "tr";
     if (candidate.startsWith("uk") || candidate.startsWith("ua")) return "uk";
     if (candidate.startsWith("es")) return "es";
+    if (candidate.startsWith("zh")) return "zh";
   }
 
   return "en";
