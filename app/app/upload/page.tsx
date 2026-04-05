@@ -2,6 +2,7 @@
 import { UploadForm } from "@/components/app/upload-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { getContractAnalysisCopy } from "@/lib/contract-analysis-ui";
 import { getCopy } from "@/lib/i18n";
 import { getCaseById, getProfile } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
@@ -17,6 +18,7 @@ export default async function UploadPage({
   const linkedCase = caseId ? await getCaseById(caseId) : null;
   const locale = await getRequestLanguage(profile?.preferred_language);
   const copy = getCopy(locale);
+  const contractCopy = getContractAnalysisCopy(locale);
 
   const caseUploadCopy =
     locale === "en"
@@ -180,6 +182,10 @@ export default async function UploadPage({
       </section>
 
       <Card className="space-y-4 p-5 sm:p-6">
+        <div className="rounded-[20px] border border-[rgba(95,163,163,0.16)] bg-[rgba(238,246,245,0.82)] p-4">
+          <p className="text-sm font-semibold text-[var(--foreground)]">{contractCopy.uploadHintTitle}</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{contractCopy.uploadHintText}</p>
+        </div>
         <p className="text-sm font-semibold text-[var(--foreground)]/90">{copy.upload.saveInfoTitle}</p>
         <p className="text-sm leading-7 text-[var(--muted)]">{copy.upload.saveInfoText}</p>
         {linkedCase ? (

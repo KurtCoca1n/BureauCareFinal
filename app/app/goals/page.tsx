@@ -11,7 +11,7 @@ import { GoalStepToggleForm } from "@/components/app/goal-step-toggle-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { computeGoalProgress, getGoalFinancialSummary, getGoalImportanceLabel, getGoalsCopy, normalizeGoalAnalysis } from "@/lib/goals-ui";
-import { getGoals, getProfile } from "@/lib/queries";
+import { getGoals, getProfile, getUserSettings } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 function ProgressBar({ value, tone = "accent" }: { value: number; tone?: "accent" | "success" }) {
@@ -34,7 +34,7 @@ export default async function GoalsPage({
   searchParams?: Promise<{ goal?: string; mode?: string; deleted?: string; step?: string }>;
 }) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const [profile, goals] = await Promise.all([getProfile(), getGoals()]);
+  const [profile, goals, userSettings] = await Promise.all([getProfile(), getGoals(), getUserSettings()]);
   const locale = await getRequestLanguage(profile?.preferred_language);
   const copy = getGoalsCopy(locale);
   const mode = resolvedSearchParams?.mode ?? "";
@@ -283,6 +283,7 @@ export default async function GoalsPage({
                                   stepTitle={selectedStep.title}
                                   stepDescription={selectedStep.description_simple}
                                   note={selectedStep.related_costs_note}
+                                  locationPreferences={userSettings?.location_preferences ?? null}
                                 />
                               </Card>
                             ) : null}

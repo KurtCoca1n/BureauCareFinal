@@ -4,6 +4,7 @@ export type ReplyToneRecommendation = {
   tone: string;
   toneDetails: string;
   displayLabel: string;
+  reason: string;
 };
 
 type ToneKey = "neutral" | "friendly" | "veryFormal" | "objection" | "appeal" | "needMoreTime";
@@ -138,6 +139,67 @@ function buildDisplayLabel(tone: string, toneDetails: string) {
   return toneDetails ? `${tone} + ${toneDetails}` : tone;
 }
 
+function localizeReason(locale: string, key: "appeal" | "objection" | "extension" | "deadline" | "action" | "review" | "neutral") {
+  const map: Record<ToneLocale, Record<typeof key, string>> = {
+    de: {
+      appeal: "BureauCare schlaegt Einspruch vor, weil das Schreiben nach einer formellen Pruefung, Anfechtung oder einem offiziellen Rechtsbehelf klingt.",
+      objection: "BureauCare schlaegt Widerspruch vor, weil das Schreiben nach einer formellen Gegenwehr gegen eine Entscheidung oder Forderung klingt.",
+      extension: "BureauCare schlaegt mehr Zeit vor, weil es vor allem um Fristverlaengerung oder Aufschub zu gehen scheint.",
+      deadline: "BureauCare schlaegt einen sehr formellen Ton vor, weil das Schreiben dringend wirkt oder eine klare Frist hat.",
+      action: "BureauCare schlaegt einen freundlichen, klaren Ton vor, weil eine konkrete Rueckmeldung oder Unterlage benoetigt wird.",
+      review: "BureauCare schlaegt einen sachlichen Ton vor, weil es vor allem um Pruefung, Rueckmeldung oder Klaerung geht.",
+      neutral: "BureauCare schlaegt einen neutralen Ton vor, weil im Schreiben noch kein staerkerer Sonderfall erkennbar ist."
+    },
+    en: {
+      appeal: "BureauCare suggests an appeal because the document sounds like a formal review, challenge or official remedy.",
+      objection: "BureauCare suggests an objection because the document sounds like a formal response against a decision or claim.",
+      extension: "BureauCare suggests asking for more time because the main issue seems to be a deadline extension or delay.",
+      deadline: "BureauCare suggests a very formal tone because the document looks urgent or contains a clear deadline.",
+      action: "BureauCare suggests a friendly but clear tone because a concrete reply or missing document seems to be needed.",
+      review: "BureauCare suggests a factual tone because the main point seems to be review, clarification or feedback.",
+      neutral: "BureauCare suggests a neutral tone because no stronger special case is clearly visible in the document."
+    },
+    tr: {
+      appeal: "BureauCare resmi bir inceleme veya itiraz yolu ima edildigi icin resmi itiraz tonu oneriyor.",
+      objection: "BureauCare bir karar ya da talebe karsi resmi cevap gerektigi icin itiraz tonu oneriyor.",
+      extension: "BureauCare konu daha cok ek sure veya erteleme gibi gorundugu icin daha fazla zaman tonu oneriyor.",
+      deadline: "BureauCare belge acil veya net bir son tarih iceriyor gibi gorundugu icin cok resmi bir ton oneriyor.",
+      action: "BureauCare somut bir cevap ya da belge gerekli gorundugu icin nazik ama net bir ton oneriyor.",
+      review: "BureauCare konu daha cok inceleme, aciklama veya geri donus oldugu icin sade bir ton oneriyor.",
+      neutral: "BureauCare belgede daha guclu bir ozel durum gormedigi icin notr bir ton oneriyor."
+    },
+    uk: {
+      appeal: "BureauCare proponuye skargu, bo dokument skhozhyy na formalnyy perehlyad chy pravovyy zasib.",
+      objection: "BureauCare proponuye zaperechennya, bo dokument skhozhyy na formalnu vidpovid proty rishennya abo vymohy.",
+      extension: "BureauCare proponuye poprosyty bilshe chasu, bo ymovirno ydetsya pro prodovzhennya stroku.",
+      deadline: "BureauCare proponuye duzhe formalnyy ton, bo dokument vyhlyadaye terminovym abo mistyt chytkyy strok.",
+      action: "BureauCare proponuye dobrychlyvyy, ale chytkyy ton, bo skhozhe potribna konkretna vidpovid abo dokument.",
+      review: "BureauCare proponuye strymanyy ton, bo skhozhe ydetsya pro perevirku, utochnennya abo vidpovid.",
+      neutral: "BureauCare proponuye neitralnyy ton, bo v dokumenti ne vydno sylnishoho osoblyvoho vypadka."
+    },
+    es: {
+      appeal: "BureauCare propone un recurso porque el documento suena a revision formal, impugnacion o remedio oficial.",
+      objection: "BureauCare propone una oposicion porque el documento suena a respuesta formal contra una decision o reclamacion.",
+      extension: "BureauCare propone pedir mas tiempo porque parece que el punto central es una ampliacion de plazo.",
+      deadline: "BureauCare propone un tono muy formal porque el documento parece urgente o tiene un plazo claro.",
+      action: "BureauCare propone un tono amable y claro porque parece que hace falta una respuesta concreta o un documento.",
+      review: "BureauCare propone un tono objetivo porque el punto principal parece ser una revision, aclaracion o respuesta.",
+      neutral: "BureauCare propone un tono neutral porque no se ve un caso especial mas fuerte en el documento."
+    },
+    zh: {
+      appeal: "BureauCare 建议用申诉语气，因为这份文件看起来像是在进入正式复核、申诉或其他正式救济程序。",
+      objection: "BureauCare 建议用异议语气，因为这份文件看起来像是在正式反对某项决定或要求。",
+      extension: "BureauCare 建议请求更多时间，因为这份文件的重点似乎是期限延长或暂缓处理。",
+      deadline: "BureauCare 建议更正式的语气，因为这份文件看起来比较紧急，或者有明确期限。",
+      action: "BureauCare 建议用友好但清楚的语气，因为这里更像是需要具体回复或补交材料。",
+      review: "BureauCare 建议用客观语气，因为这里更像是需要复核、说明或进一步答复。",
+      neutral: "BureauCare 建议用中性语气，因为文件里暂时没有更强的特殊情况。"
+    }
+  };
+
+  return map[normalizeToneLocale(locale)][key];
+}
+
 export function getReplyToneRecommendation(
   analysis: Pick<
     DocumentAnalysisRecord,
@@ -173,19 +235,19 @@ export function getReplyToneRecommendation(
       ? localizeTone(locale, "appeal")
       : localizeTone(locale, "objection");
     const toneDetails = localizeDetail(locale, "formal");
-    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, /(einspruch|appeal|recurso)/.test(haystack) ? "appeal" : "objection") };
   }
 
   if (/(fristverl|more time|extension|verlanger|prorroga|mehr zeit)/.test(haystack)) {
     const tone = localizeTone(locale, "needMoreTime");
     const toneDetails = localizeDetail(locale, "extension");
-    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, "extension") };
   }
 
   if (analysis.urgency === "high") {
     const tone = localizeTone(locale, "veryFormal");
     const toneDetails = localizeDetail(locale, "deadline");
-    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, "deadline") };
   }
 
   if (analysis.is_action_required) {
@@ -193,16 +255,16 @@ export function getReplyToneRecommendation(
     const toneDetails = /(unterlage|nachweis|formular|meldung|bescheid|frist|reply|antwort|response|document)/.test(haystack)
       ? localizeDetail(locale, "direct")
       : localizeDetail(locale, "cooperative");
-    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, "action") };
   }
 
   if (/(pruf|review|check|ueberpr|überpr|revision|rueckmeldung|rückmeldung)/.test(haystack)) {
     const tone = localizeTone(locale, "neutral");
     const toneDetails = localizeDetail(locale, "review");
-    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+    return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, "review") };
   }
 
   const tone = localizeTone(locale, "neutral");
   const toneDetails = "";
-  return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails) };
+  return { tone, toneDetails, displayLabel: buildDisplayLabel(tone, toneDetails), reason: localizeReason(locale, "neutral") };
 }

@@ -5,9 +5,11 @@ import { revalidatePath } from "next/cache";
 import { createCaseEvent } from "@/lib/case-events";
 import { normalizePreferredLanguage } from "@/lib/languages";
 import { generateReplyWithOpenAI } from "@/lib/openai/reply-generator";
+import { getProfileFullName } from "@/lib/profile";
 import { getReplyToneRecommendation, type ReplyToneRecommendation } from "@/lib/reply-tone";
 import { createClient } from "@/lib/supabase/server";
-import { recordUsageEvent } from "@/lib/usage";
+import type { ReplyTranslationMode } from "@/lib/types";
+import { getMonthlyUsageSummary, hasReachedReplyLimit, recordUsageEvent } from "@/lib/usage";
 
 export type DraftReplyState = {
   error: string;
@@ -32,6 +34,10 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
   const recommendedToneDetails = String(formData.get("recommendedToneDetails") ?? "").trim();
   const formatType = String(formData.get("formatType") ?? "brief").trim() as "brief" | "email";
   const includeSignature = String(formData.get("includeSignature") ?? "") === "1";
+  const signatureText = String(formData.get("signatureText") ?? "").trim() || null;
+  const translationMode = (String(formData.get("translationMode") ?? "app_language").trim() === "german_only"
+    ? "german_only"
+    : "app_language") as ReplyTranslationMode;
 
   if (!documentId || (!tone && !toneDetails)) {
     return { error: "Bitte waehle zuerst einen Antwortton aus.", success: "" };
@@ -64,14 +70,21 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
     return { error: "Bitte analysiere das Dokument zuerst, bevor du eine Antwort erstellst.", success: "" };
   }
 
+  const usageSummary = await getMonthlyUsageSummary(user.id);
+  if (hasReachedReplyLimit(usageSummary)) {
+    return { error: "Du hast dein kostenloses Monatslimit für Antworten erreicht.", success: "" };
+  }
+
+  const fallbackRecommendation = getReplyToneRecommendation(analysis, profile?.preferred_language ?? "de");
   const recommendedTone =
     recommendedToneTone || recommendedToneDetails
       ? {
-          tone: recommendedToneTone || getReplyToneRecommendation(analysis, profile?.preferred_language ?? "de").tone,
+          tone: recommendedToneTone || fallbackRecommendation.tone,
           toneDetails: recommendedToneDetails,
-          displayLabel: [recommendedToneTone, recommendedToneDetails].filter(Boolean).join(" + ")
+          displayLabel: [recommendedToneTone, recommendedToneDetails].filter(Boolean).join(" + "),
+          reason: fallbackRecommendation.reason
         }
-      : getReplyToneRecommendation(analysis, profile?.preferred_language ?? "de");
+      : fallbackRecommendation;
 
   try {
     const generated = await generateReplyWithOpenAI({
@@ -81,8 +94,10 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
       toneDetails,
       formatType,
       includeSignature,
-      profileName: profile?.full_name ?? null,
-      preferredLanguage: profile?.preferred_language ?? null
+      signatureText,
+      profileName: getProfileFullName(profile),
+      preferredLanguage: profile?.preferred_language ?? null,
+      translationMode
     });
 
     const now = new Date().toISOString();
@@ -100,7 +115,7 @@ export async function generateDraftReplyAction(_: DraftReplyState, formData: For
 
     const preferredLanguage = normalizePreferredLanguage(profile?.preferred_language);
 
-    if (generated.reply_text_translated && preferredLanguage !== "de") {
+    if (generated.reply_text_translated && preferredLanguage !== "de" && translationMode === "app_language") {
       inserts.push({
         document_id: documentId,
         tone: savedToneLabel,

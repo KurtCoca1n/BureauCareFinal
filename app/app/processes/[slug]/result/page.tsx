@@ -11,15 +11,16 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { ensureProcessCase } from "@/lib/process-case";
 import { getProcedureBySlug, getProcedureHref } from "@/lib/process-details";
 import { buildProcessResult } from "@/lib/process-result";
-import { getProcessSessionBySlug, getProfile } from "@/lib/queries";
+import { getProcessSessionBySlug, getProfile, getUserSettings } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 export default async function ProcessResultPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [profile, procedure, session] = await Promise.all([
+  const [profile, procedure, session, userSettings] = await Promise.all([
     getProfile(),
     Promise.resolve(getProcedureBySlug(slug)),
-    getProcessSessionBySlug(slug)
+    getProcessSessionBySlug(slug),
+    getUserSettings()
   ]);
 
   if (!procedure || !session) {
@@ -216,6 +217,15 @@ export default async function ProcessResultPage({ params }: { params: Promise<{ 
                 locationName={result.locationName}
                 contextText={result.procedureTitle}
                 actionMode={result.actionMode}
+                initialLocation={
+                  userSettings?.location_preferences.latitude != null && userSettings.location_preferences.longitude != null
+                    ? {
+                        latitude: userSettings.location_preferences.latitude,
+                        longitude: userSettings.location_preferences.longitude,
+                        grantedAt: userSettings.location_preferences.granted_at ?? new Date().toISOString()
+                      }
+                    : null
+                }
               />
             </div>
           </Card>

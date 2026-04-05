@@ -1,23 +1,38 @@
 ﻿import Link from "next/link";
-import { ArrowRight, FileText, Target, Upload } from "lucide-react";
+import { ArrowRight, FileText, MapPinned, Target, Upload, WalletCards } from "lucide-react";
 import type { Route } from "next";
 
 import { CaseCard } from "@/components/app/case-card";
 import { HomeGreeting } from "@/components/app/home-greeting";
 import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
 import { TaskCard } from "@/components/app/task-card";
+import { WelcomeAssistantPanel } from "@/components/app/welcome-assistant-panel";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getHomeGreeting } from "@/lib/home-greeting-v2";
 import { getGoalsCopy } from "@/lib/goals-ui";
 import { getCopy, getDateLocale, getReminderCopy, getUsageCopy } from "@/lib/i18n";
+import { normalizePreferredLanguage } from "@/lib/languages";
+import { getMoneyBackFinderCopy } from "@/lib/money-back-finder-ui";
+import { getProfileFirstName } from "@/lib/profile";
+import { buildWelcomeAssistantOverview, syncDerivedWelcomeStatuses } from "@/lib/welcome-assistant";
+import { getWelcomeCopy } from "@/lib/welcome-ui";
 import {
+  getAllWelcomeStepDocumentLinks,
+  getAllWelcomeStepPreparations,
+  getAllWelcomeStepTaskLinks,
   getCasesWithActionNeeded,
+  getDocumentAnalysisByDocumentId,
+  getDocumentsByIds,
   getGoals,
   getPersonalDataSuggestions,
   getProfile,
   getRecentDocuments,
   getTaskReminderBuckets,
+  getTasksByIds,
+  getUserPersonalData,
+  getWelcomeSteps,
+  getWelcomeProfile,
   getUsageSummaryForCurrentUser
 } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
@@ -53,22 +68,64 @@ function ReminderSection({
 }
 
 export default async function AppHomePage() {
-  const [profile, documents, reminderBuckets, usage, cases, goals] = await Promise.all([
+  const [profile, documents, reminderBuckets, usage, cases, goals, welcomeProfile, welcomeSteps, welcomePreparations, welcomeDocumentLinks, welcomeTaskLinks, personalData] = await Promise.all([
     getProfile(),
     getRecentDocuments(),
     getTaskReminderBuckets(),
     getUsageSummaryForCurrentUser(),
     getCasesWithActionNeeded(),
-    getGoals()
+    getGoals(),
+    getWelcomeProfile(),
+    getWelcomeSteps(),
+    getAllWelcomeStepPreparations(),
+    getAllWelcomeStepDocumentLinks(),
+    getAllWelcomeStepTaskLinks(),
+    getUserPersonalData()
   ]);
   const locale = await getRequestLanguage(profile?.preferred_language);
-  const suggestions = await getPersonalDataSuggestions(locale);
+  const normalizedLocale = normalizePreferredLanguage(locale);
+  const [suggestions, welcomeDocuments, welcomeTasks] = await Promise.all([
+    getPersonalDataSuggestions(locale),
+    getDocumentsByIds(welcomeDocumentLinks.map((item) => item.document_id)),
+    getTasksByIds(welcomeTaskLinks.map((item) => item.task_id))
+  ]);
   const copy = getCopy(locale);
   const goalsCopy = getGoalsCopy(locale);
   const reminderCopy = getReminderCopy(locale);
   const usageCopy = getUsageCopy(locale);
+  const welcomeCopy = getWelcomeCopy(locale);
+  const refundsCopy = getMoneyBackFinderCopy(locale);
   const dateLocale = getDateLocale(locale);
-  const greeting = getHomeGreeting(locale, profile?.full_name ?? null);
+  const greeting = getHomeGreeting(locale, getProfileFirstName(profile));
+  const welcomeAnalyses = new Map(
+    await Promise.all(welcomeDocuments.map(async (document) => [document.id, await getDocumentAnalysisByDocumentId(document.id)] as const))
+  );
+  const syncedWelcomeSteps =
+    (await syncDerivedWelcomeStatuses({
+      steps: welcomeSteps,
+      documentLinks: welcomeDocumentLinks,
+      taskLinks: welcomeTaskLinks,
+      documents: welcomeDocuments,
+      analyses: welcomeAnalyses,
+      tasks: welcomeTasks,
+      preparations: welcomePreparations
+    })) ?? welcomeSteps;
+  const welcomeOverview =
+    welcomeProfile && syncedWelcomeSteps.length
+      ? buildWelcomeAssistantOverview({
+          locale,
+          welcomeProfile,
+          steps: syncedWelcomeSteps,
+          documentLinks: welcomeDocumentLinks,
+          taskLinks: welcomeTaskLinks,
+          documents: welcomeDocuments,
+          analyses: welcomeAnalyses,
+          tasks: welcomeTasks,
+          preparations: welcomePreparations,
+          personalSuggestions: suggestions,
+          personalData
+        })
+      : null;
   const homeUi =
     locale === "zh"
       ? {
@@ -94,9 +151,9 @@ export default async function AppHomePage() {
 
   return (
     <div className="space-y-10">
-      <HomeGreeting
+        <HomeGreeting
         locale={locale}
-        fullName={profile?.full_name ?? null}
+        fullName={getProfileFirstName(profile)}
         greeting={greeting.greeting}
         greetings={greeting.greetings}
         initialSupportLine={greeting.supportLine}
@@ -105,7 +162,7 @@ export default async function AppHomePage() {
 
       <div className="grid gap-8 2xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-12">
-          <div className="grid gap-5 xl:grid-cols-2">
+          <div className="grid gap-5 xl:grid-cols-3">
             <Link href="/app/upload">
               <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
                 <div className="flex items-start justify-between gap-4">
@@ -143,7 +200,49 @@ export default async function AppHomePage() {
                 </div>
               </Card>
             </Link>
+
+            <Link href={"/app/refunds" as Route}>
+              <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <StatusBadge tone="warning">{refundsCopy.homeBadge}</StatusBadge>
+                    <h2 className="text-xl font-semibold">{refundsCopy.homeTitle}</h2>
+                    <p className="text-sm leading-6 text-[var(--muted)]">{refundsCopy.homeText}</p>
+                  </div>
+                  <div className="rounded-2xl bg-[rgba(232,220,207,0.34)] p-3 text-[#8e7a54]">
+                    <WalletCards className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="mt-6 inline-flex items-center text-sm font-medium text-[#8e7a54]">
+                  {refundsCopy.homeAction}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
+              </Card>
+            </Link>
           </div>
+
+          <Link href={"/app/welcome" as Route}>
+            <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <StatusBadge tone="accent">{welcomeCopy.homeBadge}</StatusBadge>
+                  <h2 className="text-xl font-semibold">{welcomeCopy.homeTitle}</h2>
+                  <p className="text-sm leading-6 text-[var(--muted)]">
+                    {welcomeProfile ? welcomeCopy.pageIntro : welcomeCopy.homeText}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-[rgba(174,193,233,0.18)] p-3 text-[#6f8ecb]">
+                  <MapPinned className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-6 inline-flex items-center text-sm font-medium text-[#6f8ecb]">
+                {welcomeCopy.homeAction}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </div>
+            </Card>
+          </Link>
+
+          {welcomeOverview ? <WelcomeAssistantPanel locale={normalizedLocale} overview={welcomeOverview} /> : null}
 
           <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} />
 
@@ -224,13 +323,13 @@ export default async function AppHomePage() {
               <div className="grid gap-3">
                 <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
                   <p className="text-sm font-semibold">
-                    {usage.analysisCount} / {usage.analysisLimit}
+                    {usage.analysisCount} / {usage.analysisLimit ?? usageCopy.unlimited}
                   </p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{usageCopy.analyses}</p>
                 </div>
                 <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
                   <p className="text-sm font-semibold">
-                    {usage.replyCount} / {usage.replyLimit}
+                    {usage.replyCount} / {usage.replyLimit ?? usageCopy.unlimited}
                   </p>
                   <p className="mt-1 text-sm text-[var(--muted)]">{usageCopy.replies}</p>
                 </div>

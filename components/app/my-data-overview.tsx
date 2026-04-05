@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { clearUserPersonalDataFieldAction, clearUserPersonalDataSectionAction, deleteUserPersonalDataAction, saveUserPersonalDataSectionAction } from "@/lib/actions/user-personal-data";
 import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
+import { getDateInputHint, getDateInputLocale } from "@/lib/date-input";
 import {
   formatMetaTimestamp,
   formatMyDataValue,
@@ -32,11 +33,17 @@ function buildInitialDraft(record: UserPersonalDataRecord | null | undefined) {
 export function MyDataOverview({
   locale,
   initialRecord,
-  suggestions
+  suggestions,
+  embedded = false,
+  showSuggestions = true,
+  showSettingsLink = false
 }: {
   locale: string;
   initialRecord: UserPersonalDataRecord | null;
   suggestions: PersonalDataSuggestion[];
+  embedded?: boolean;
+  showSuggestions?: boolean;
+  showSettingsLink?: boolean;
 }) {
   const copy = getMyDataCopy(locale);
   const [record, setRecord] = useState<UserPersonalDataRecord | null>(initialRecord);
@@ -135,11 +142,13 @@ export function MyDataOverview({
 
   return (
     <div className="space-y-6">
-      <section className="space-y-4 pt-2">
-        <Link href="/app/settings" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]">
-          <ArrowLeft className="h-4 w-4" />
-          {copy.backToSettings}
-        </Link>
+      <section className={embedded ? "space-y-4" : "space-y-4 pt-2"}>
+        {!embedded ? (
+          <Link href="/app/settings" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]">
+            <ArrowLeft className="h-4 w-4" />
+            {copy.backToSettings}
+          </Link>
+        ) : null}
         <Card className="border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(243,249,250,0.92))] p-6 sm:p-8">
           <div className="space-y-3">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(95,163,163,0.22)] bg-[rgba(95,163,163,0.1)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
@@ -149,7 +158,21 @@ export function MyDataOverview({
             <h1 className="page-title page-title-accent text-3xl sm:text-5xl">{copy.title}</h1>
             <p className="max-w-3xl text-sm leading-7 text-[var(--foreground)]/86">{copy.intro}</p>
           </div>
+          <div className="mt-6 rounded-[24px] border border-[rgba(214,224,235,0.92)] bg-[rgba(247,250,252,0.92)] p-4 sm:p-5">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-[var(--foreground)]">{copy.trustTitle}</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">{copy.trustText}</p>
+            </div>
+          </div>
           <div className="mt-6 flex flex-wrap gap-3">
+            {showSettingsLink ? (
+              <Link
+                href="/app/settings?section=personal-data"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(232,220,207,0.85)] bg-[rgba(232,220,207,0.32)] px-5 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[rgba(232,220,207,0.48)]"
+              >
+                {copy.backToSettings}
+              </Link>
+            ) : null}
             <Button variant="secondary" onClick={handleDeleteAll} disabled={isPending || !hasAnyValues}>
               <Trash2 className="mr-2 h-4 w-4" />
               {copy.deleteAll}
@@ -170,7 +193,7 @@ export function MyDataOverview({
         </Card>
       ) : null}
 
-      <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} compact />
+      {showSuggestions ? <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} compact /> : null}
 
       <div className="grid gap-6 xl:grid-cols-2">
         {myDataSections.map((section) => {
@@ -184,6 +207,7 @@ export function MyDataOverview({
                 <div className="space-y-2">
                   <h2 className="text-xl font-semibold tracking-[-0.02em]">{getMyDataText(locale, section.title)}</h2>
                   <p className="text-sm leading-6 text-[var(--muted)]">{getMyDataText(locale, section.description)}</p>
+                  <p className="text-xs font-medium uppercase tracking-[0.16em] text-[rgba(79,102,125,0.72)]">{copy.reuseHint}</p>
                   {sectionMeta ? (
                     <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">
                       {sectionMeta.latestUpdatedAt ? <span>{copy.updatedAt}: {formatMetaTimestamp(locale, sectionMeta.latestUpdatedAt)}</span> : null}
@@ -213,6 +237,7 @@ export function MyDataOverview({
                       <span className="text-sm font-medium">{getMyDataText(locale, field.label)}</span>
                       <input
                         type={field.type === "number" ? "number" : field.type ?? "text"}
+                        lang={field.type === "date" ? getDateInputLocale(locale) : undefined}
                         value={draft[section.key]?.[field.key] ?? ""}
                         onChange={(event) =>
                           setDraft((current) => ({
@@ -225,6 +250,7 @@ export function MyDataOverview({
                         }
                         className="min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
                       />
+                      {field.type === "date" ? <p className="text-xs leading-5 text-[var(--muted)]">{getDateInputHint(locale)}</p> : null}
                     </label>
                   ))}
 
@@ -261,7 +287,8 @@ export function MyDataOverview({
                 </div>
               ) : (
                 <div className="mt-6 rounded-[24px] border border-dashed border-[var(--line)] bg-[var(--surface)] px-4 py-5 text-sm leading-6 text-[var(--muted)]">
-                  {getMyDataText(locale, section.empty)}
+                  <p>{getMyDataText(locale, section.empty)}</p>
+                  <p className="mt-2">{copy.emptyInline}</p>
                 </div>
               )}
             </Card>

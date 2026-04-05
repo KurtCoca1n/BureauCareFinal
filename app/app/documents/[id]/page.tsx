@@ -15,7 +15,10 @@ import {
 import type { Route } from "next";
 
 import { AnalyzeDocumentForm } from "@/components/app/analyze-document-form";
+import { ContractClauseExplorer } from "@/components/app/contract-clause-explorer";
 import { DocumentSentForm, DocumentWaitingForm } from "@/components/app/case-status-form";
+import { ContractAnalysisPanel } from "@/components/app/contract-analysis-panel";
+import { ContractQuestionGenerator } from "@/components/app/contract-question-generator";
 import { DocumentSummaryTabs } from "@/components/app/document-summary-tabs";
 import { NearbyHelpLinks } from "@/components/app/nearby-help-links";
 import { Button } from "@/components/ui/button";
@@ -25,7 +28,15 @@ import { getCaseStatusLabel, getCaseText, getDocumentStatusLabel } from "@/lib/c
 import { looksLikePotentiallyIncompleteDocument } from "@/lib/document-name";
 import { getDocumentTypeLabel } from "@/lib/file-types";
 import { getCopy, getDateLocale, getDocumentTrustCopy, getUsageCopy } from "@/lib/i18n";
-import { getCaseById, getDocumentAnalysisByDocumentId, getDocumentById, getProfile, getUsageSummaryForCurrentUser } from "@/lib/queries";
+import {
+  getCaseById,
+  getContractQuestionDraftsByDocumentId,
+  getDocumentAnalysisByDocumentId,
+  getDocumentById,
+  getProfile,
+  getUserSettings,
+  getUsageSummaryForCurrentUser
+} from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 import { createClient } from "@/lib/supabase/server";
 import { hasReachedAnalysisLimit } from "@/lib/usage";
@@ -59,11 +70,13 @@ function getActionModeLabel(mode: string | null, locale: string) {
 
 export default async function DocumentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [document, analysis, profile, usageSummary] = await Promise.all([
+  const [document, analysis, profile, usageSummary, contractQuestionDrafts, userSettings] = await Promise.all([
     getDocumentById(id),
     getDocumentAnalysisByDocumentId(id),
     getProfile(),
-    getUsageSummaryForCurrentUser()
+    getUsageSummaryForCurrentUser(),
+    getContractQuestionDraftsByDocumentId(id),
+    getUserSettings()
   ]);
 
   if (!document) {
@@ -110,6 +123,15 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
         <div className="space-y-6">
           {analysis?.summary_simple ? (
             <>
+              <ContractAnalysisPanel analysis={analysis} locale={locale} />
+              <ContractClauseExplorer clauses={analysis.contract_flagged_clauses ?? []} documentId={document.id} locale={locale} />
+              <ContractQuestionGenerator
+                documentId={document.id}
+                locale={locale}
+                analysis={analysis}
+                existingDrafts={contractQuestionDrafts}
+              />
+
               <Card className="space-y-4 border-[var(--line-strong)] bg-[var(--surface-strong)] p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -451,6 +473,15 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
                     contextText={`${analysis.subject ?? ""} ${(analysis.next_steps ?? []).join(" ")}`}
                     actionMode={analysis.action_mode}
                     actionUrl={analysis.action_url}
+                    initialLocation={
+                      userSettings?.location_preferences.latitude != null && userSettings.location_preferences.longitude != null
+                        ? {
+                            latitude: userSettings.location_preferences.latitude,
+                            longitude: userSettings.location_preferences.longitude,
+                            grantedAt: userSettings.location_preferences.granted_at ?? new Date().toISOString()
+                          }
+                        : null
+                    }
                   />
                 </Card>
               ) : null}

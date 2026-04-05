@@ -7,6 +7,7 @@ import { ReplyGeneratorForm } from "@/components/app/reply-generator-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getAltLanguageLabel, getCopy, getDateLocale } from "@/lib/i18n";
+import { getProfileFullName } from "@/lib/profile";
 import { getDocumentAnalysisByDocumentId, getDocumentById, getDraftRepliesByDocumentId, getProfile } from "@/lib/queries";
 import { getReplyToneRecommendationWithAI } from "@/lib/openai/reply-tone-recommender";
 import { getRequestLanguage } from "@/lib/request-locale";
@@ -72,8 +73,20 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
           : locale === "es"
             ? "Usar sugerencia"
             : "Vorschlag nutzen";
+  const recommendedReasonLabel =
+    locale === "en"
+      ? "Why this is suggested:"
+      : locale === "tr"
+        ? "Neden bu oneriliyor:"
+        : locale === "uk"
+          ? "Chomu tse proponuietsya:"
+          : locale === "es"
+            ? "Por que se sugiere esto:"
+            : "Warum das vorgeschlagen wird:";
   const allowedTones = [copy.reply.neutral, copy.reply.friendly, copy.reply.veryFormal, copy.reply.objection, copy.reply.appeal, copy.reply.needMoreTime];
   const recommendedTone = await getReplyToneRecommendationWithAI({ analysis, locale, allowedTones });
+  const profileFullName = getProfileFullName(profile);
+  const signatureText = profile?.reply_signature?.trim() || (profileFullName ? `Mit freundlichen Gruessen,\n${profileFullName}` : null);
 
   return (
     <div className="space-y-6">
@@ -145,13 +158,19 @@ export default async function ReplyPage({ params }: { params: Promise<{ id: stri
         <ReplyGeneratorForm
           documentId={document.id}
           existingReplies={replies}
-          profileName={profile?.full_name ?? null}
+          profileName={profileFullName}
+          signatureText={signatureText}
           preferredLanguage={profile?.preferred_language ?? null}
+          translationMode={profile?.reply_translation_mode ?? "app_language"}
+          defaultTone={profile?.reply_default_tone ?? "automatic"}
+          defaultStyleNote={profile?.reply_style_note ?? null}
+          defaultIncludeSignature={profile?.reply_include_signature ?? true}
           recommendedTone={recommendedTone}
           labels={{
             tone: copy.reply.tone,
             recommendedTone: recommendedToneLabel,
             useRecommended: useRecommendedLabel,
+            recommendedReason: recommendedReasonLabel,
             format: copy.reply.format,
             asLetter: copy.reply.asLetter,
             asEmail: copy.reply.asEmail,

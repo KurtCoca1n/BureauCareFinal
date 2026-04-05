@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { generateDraftReplyAction, type DraftReplyState } from "@/lib/actions/draft-replies";
 import type { ReplyToneRecommendation } from "@/lib/reply-tone";
+import type { ReplyDefaultTone, ReplyTranslationMode } from "@/lib/types";
 import type { DraftReplyRecord } from "@/lib/types";
 
 const initialState: DraftReplyState = {
@@ -55,19 +56,30 @@ export function ReplyGeneratorForm({
   documentId,
   existingReplies,
   profileName,
+  signatureText,
   preferredLanguage,
+  translationMode,
+  defaultTone,
+  defaultStyleNote,
+  defaultIncludeSignature,
   recommendedTone,
   labels
 }: {
   documentId: string;
   existingReplies: DraftReplyRecord[];
   profileName: string | null;
+  signatureText: string | null;
   preferredLanguage: string | null;
+  translationMode: ReplyTranslationMode;
+  defaultTone: ReplyDefaultTone;
+  defaultStyleNote: string | null;
+  defaultIncludeSignature: boolean;
   recommendedTone?: ReplyToneRecommendation | null;
   labels: {
     tone: string;
     recommendedTone: string;
     useRecommended: string;
+    recommendedReason: string;
     format: string;
     asLetter: string;
     asEmail: string;
@@ -86,8 +98,20 @@ export function ReplyGeneratorForm({
 }) {
   const [state, formAction, pending] = useActionState(generateDraftReplyAction, initialState);
   const [activeLanguage, setActiveLanguage] = useState<"de" | "translated">("de");
-  const [selectedTone, setSelectedTone] = useState(resolveRecommendedToneSelection(recommendedTone?.tone ?? "", labels.tones));
-  const [toneDetails, setToneDetails] = useState(recommendedTone?.toneDetails ?? "");
+  const automaticTone = resolveRecommendedToneSelection(recommendedTone?.tone ?? "", labels.tones);
+  const initialTone =
+    defaultTone === "automatic"
+      ? automaticTone
+      : defaultTone === "friendly"
+        ? labels.tones.find((tone) => /(freund|amable|nazik|friendly|dobro)/.test(normalizeText(tone))) ?? labels.tones[0] ?? ""
+        : defaultTone === "very_formal"
+          ? labels.tones.find((tone) => /(form|resm|formal)/.test(normalizeText(tone))) ?? labels.tones[0] ?? ""
+          : defaultTone === "simple"
+            ? labels.tones.find((tone) => /(neutral|einfach|simple|sade)/.test(normalizeText(tone))) ?? labels.tones[0] ?? ""
+            : labels.tones.find((tone) => /(neutral|notr)/.test(normalizeText(tone))) ?? labels.tones[0] ?? "";
+  const [selectedTone, setSelectedTone] = useState(initialTone);
+  const [toneDetails, setToneDetails] = useState(defaultStyleNote ?? recommendedTone?.toneDetails ?? "");
+  const [includeSignature, setIncludeSignature] = useState(defaultIncludeSignature);
 
   const activeReply = useMemo(() => {
     if (state.generatedReply) {
@@ -121,11 +145,11 @@ export function ReplyGeneratorForm({
   const recommendation = state.recommendedTone ?? recommendedTone ?? null;
 
   useEffect(() => {
-    if (state.recommendedTone) {
+    if (state.recommendedTone && defaultTone === "automatic") {
       setSelectedTone(resolveRecommendedToneSelection(state.recommendedTone.tone, labels.tones));
-      setToneDetails(state.recommendedTone.toneDetails ?? "");
+      setToneDetails((current) => current || state.recommendedTone?.toneDetails || "");
     }
-  }, [labels.tones, state.recommendedTone]);
+  }, [defaultTone, labels.tones, state.recommendedTone]);
 
   return (
     <div className="space-y-4">
@@ -135,24 +159,33 @@ export function ReplyGeneratorForm({
           <input type="hidden" name="regenerate" value="1" />
           <input type="hidden" name="recommendedToneTone" value={recommendedTone?.tone ?? ""} />
           <input type="hidden" name="recommendedToneDetails" value={recommendedTone?.toneDetails ?? ""} />
+          <input type="hidden" name="translationMode" value={translationMode} />
+          <input type="hidden" name="signatureText" value={signatureText ?? ""} />
 
           <div className="space-y-2">
             <p className="text-sm font-medium">{labels.tone}</p>
             {recommendation ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedTone(resolveRecommendedToneSelection(recommendation.tone, labels.tones));
-                  setToneDetails(recommendation.toneDetails ?? "");
-                }}
-                className="w-full rounded-2xl border border-[rgba(95,163,163,0.24)] bg-[linear-gradient(135deg,rgba(95,163,163,0.12),rgba(111,168,220,0.08))] px-4 py-3 text-left text-sm text-[var(--foreground)] transition hover:border-[rgba(95,163,163,0.34)] hover:shadow-[var(--shadow-soft)]"
-              >
-                <span className="font-medium text-[var(--accent-strong)]">{labels.recommendedTone}</span>{" "}
-                <span>{recommendation.displayLabel}</span>
-                <span className="ml-2 inline-flex rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-                  {labels.useRecommended}
-                </span>
-              </button>
+              <div className="space-y-2 rounded-2xl border border-[rgba(95,163,163,0.24)] bg-[linear-gradient(135deg,rgba(95,163,163,0.12),rgba(111,168,220,0.08))] px-4 py-3 text-left text-sm text-[var(--foreground)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTone(resolveRecommendedToneSelection(recommendation.tone, labels.tones));
+                    setToneDetails(recommendation.toneDetails ?? "");
+                  }}
+                  className="w-full text-left transition hover:opacity-95"
+                >
+                  <span className="font-medium text-[var(--accent-strong)]">{labels.recommendedTone}</span>{" "}
+                  <span>{recommendation.displayLabel}</span>
+                  <span className="ml-2 inline-flex rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-[var(--accent-strong)]">
+                    {labels.useRecommended}
+                  </span>
+                </button>
+                {recommendation.reason ? (
+                  <p className="rounded-xl bg-white/70 px-3 py-2 text-sm leading-6 text-[var(--foreground)]/84">
+                    <span className="font-medium">{labels.recommendedReason}</span> {recommendation.reason}
+                  </p>
+                ) : null}
+              </div>
             ) : null}
             <div className="grid grid-cols-2 gap-2 xl:grid-cols-3">
               {labels.tones.map((tone) => (
@@ -203,7 +236,14 @@ export function ReplyGeneratorForm({
           </div>
 
           <label className="flex items-center gap-3 rounded-2xl border border-[var(--line)] bg-white px-4 py-3">
-            <input type="checkbox" name="includeSignature" value="1" className="h-4 w-4 rounded border-[var(--line)]" />
+            <input
+              type="checkbox"
+              name="includeSignature"
+              value="1"
+              checked={includeSignature}
+              onChange={(event) => setIncludeSignature(event.target.checked)}
+              className="h-4 w-4 rounded border-[var(--line)]"
+            />
             <span className="text-sm text-[var(--foreground)]">
               {labels.includeName}
               {profileName ? <span className="text-[var(--muted)]"> ({profileName})</span> : null}

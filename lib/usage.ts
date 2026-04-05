@@ -1,18 +1,34 @@
+import { getAccountRoleForUser, isTesterRole } from "@/lib/account-access";
 import { createClient } from "@/lib/supabase/server";
-import type { UsageEventType } from "@/lib/types";
+import type { AccountRole, UsageEventType } from "@/lib/types";
 
 export const FREE_ANALYSIS_LIMIT = 3;
 export const FREE_REPLY_LIMIT = 5;
 
 export type MonthlyUsageSummary = {
   analysisCount: number;
-  analysisLimit: number;
+  analysisLimit: number | null;
   replyCount: number;
-  replyLimit: number;
+  replyLimit: number | null;
+  uploadCount: number;
+  uploadLimit: number | null;
+  role: AccountRole;
+  isTester: boolean;
 };
 
 export function hasReachedAnalysisLimit(summary: MonthlyUsageSummary) {
+  if (summary.analysisLimit === null) {
+    return false;
+  }
   return summary.analysisCount >= summary.analysisLimit;
+}
+
+export function hasReachedReplyLimit(summary: MonthlyUsageSummary) {
+  if (summary.replyLimit === null) {
+    return false;
+  }
+
+  return summary.replyCount >= summary.replyLimit;
 }
 
 function getMonthStartIso() {
@@ -41,6 +57,8 @@ export async function recordUsageEvent({
 export async function getMonthlyUsageSummary(userId: string): Promise<MonthlyUsageSummary> {
   const supabase = await createClient();
   const monthStart = getMonthStartIso();
+  const role = await getAccountRoleForUser(userId);
+  const isTester = isTesterRole(role);
 
   const [{ data: usageEvents }, { data: documents }] = await Promise.all([
     supabase
@@ -71,8 +89,12 @@ export async function getMonthlyUsageSummary(userId: string): Promise<MonthlyUsa
 
   return {
     analysisCount: analysisEvents || fallbackAnalyses || 0,
-    analysisLimit: FREE_ANALYSIS_LIMIT,
+    analysisLimit: isTester ? null : FREE_ANALYSIS_LIMIT,
     replyCount: replyEvents || fallbackReplies || 0,
-    replyLimit: FREE_REPLY_LIMIT
+    replyLimit: isTester ? null : FREE_REPLY_LIMIT,
+    uploadCount: documents?.length ?? 0,
+    uploadLimit: null,
+    role,
+    isTester
   };
 }

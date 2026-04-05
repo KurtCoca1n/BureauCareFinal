@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, FolderOpen, Home, Settings, SquareCheckBig, Target, Upload } from "lucide-react";
+import { FileText, FolderOpen, Home, MapPinned, Settings, SquareCheckBig, Target, Upload, WalletCards } from "lucide-react";
 
 import { getCasesNavLabel } from "@/lib/case-ui";
 import { getCopy } from "@/lib/i18n";
@@ -70,6 +70,24 @@ export function AppNavigation({ locale }: { locale: string }) {
       idleClass: "bg-[rgba(129,188,178,0.12)] text-[rgba(46,58,72,0.88)]",
       hoverClass: "hover:bg-[rgba(95,163,163,0.2)] hover:text-[rgba(31,41,55,0.96)]",
       activeClass: "bg-[rgba(95,163,163,0.28)] text-[rgba(24,34,48,0.98)]"
+    },
+    {
+      href: "/app/refunds",
+      label: copy.nav.refunds,
+      icon: WalletCards,
+      colorClass: "text-[#8e7a54]",
+      idleClass: "bg-[rgba(232,220,207,0.18)] text-[rgba(46,58,72,0.88)]",
+      hoverClass: "hover:bg-[rgba(232,220,207,0.3)] hover:text-[rgba(31,41,55,0.96)]",
+      activeClass: "bg-[rgba(232,220,207,0.42)] text-[rgba(24,34,48,0.98)]"
+    },
+    {
+      href: "/app/welcome",
+      label: copy.nav.welcome,
+      icon: MapPinned,
+      colorClass: "text-[#6f8ecb]",
+      idleClass: "bg-[rgba(174,193,233,0.14)] text-[rgba(46,58,72,0.88)]",
+      hoverClass: "hover:bg-[rgba(142,171,223,0.22)] hover:text-[rgba(31,41,55,0.96)]",
+      activeClass: "bg-[rgba(124,154,214,0.28)] text-[rgba(24,34,48,0.98)]"
     },
     {
       href: "/app/goals",

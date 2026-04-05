@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { processDocumentForAnalysis } from "@/lib/document-processing";
 import { getServerEnv } from "@/lib/env";
-import type { DocumentRecord } from "@/lib/types";
+import type { ContractClauseCategory, ContractGuidanceItem, DocumentRecord } from "@/lib/types";
 
 const difficultTermSchema = z.object({
   term: z.string().min(1),
@@ -21,11 +21,75 @@ const importantReferenceSchema = z.object({
   page: z.number().int().min(1)
 });
 
+const contractFlaggedPointSchema = z.object({
+  title: z.string().min(1),
+  explanation_simple: z.string().min(1),
+  tone: z.enum(["notice", "watch", "caution"])
+});
+
+const contractFlaggedClauseSchema = z.object({
+  category: z.enum([
+    "duration",
+    "termination",
+    "auto_renewal",
+    "costs",
+    "liability",
+    "user_duties",
+    "provider_rights",
+    "privacy",
+    "unclear_language",
+    "other"
+  ]),
+  secondary_categories: z
+    .array(
+      z.enum([
+        "duration",
+        "termination",
+        "auto_renewal",
+        "costs",
+        "liability",
+        "user_duties",
+        "provider_rights",
+        "privacy",
+        "unclear_language",
+        "other"
+      ])
+    )
+    .max(3),
+  clause_summary_simple: z.string().min(1),
+  clause_reason_simple: z.string().min(1),
+  clause_risk_level: z.enum(["low", "medium", "elevated"]),
+  source_excerpt: z.string().nullable(),
+  source_page: z.number().int().min(1).nullable(),
+  source_section: z.string().nullable(),
+  source_context_label: z.string().nullable(),
+  source_context_reason: z.string().nullable()
+});
+
+const contractGuidanceItemSchema = z.object({
+  category: z.enum([
+    "duration",
+    "termination",
+    "auto_renewal",
+    "costs",
+    "liability",
+    "user_duties",
+    "provider_rights",
+    "privacy",
+    "unclear_language",
+    "other"
+  ]),
+  priority: z.enum(["high", "medium", "general"])
+});
+
 const analysisSchema = z.object({
   sender: z.string().nullable(),
   document_type: z.string().nullable(),
+  contract_type: z.string().nullable(),
+  contract_parties: z.array(z.string().min(1)).max(4),
   subject: z.string().nullable(),
   summary_simple: z.string().min(1),
+  contract_summary_simple: z.string().nullable(),
   summary_simple_short: z.string().min(1),
   summary_simple_long: z.string().min(1),
   is_action_required: z.boolean().nullable(),
@@ -43,6 +107,20 @@ const analysisSchema = z.object({
   action_url: z.string().nullable(),
   action_mode: z.enum(["online", "vor_ort", "per_post", "telefon", "unbekannt"]).nullable(),
   risks_if_ignored: z.string().nullable(),
+  contract_action_points: z.array(contractGuidanceItemSchema).max(8),
+  contract_duration: z.string().nullable(),
+  contract_notice_period: z.string().nullable(),
+  contract_recurring_costs: z.string().nullable(),
+  contract_auto_renewal: z.string().nullable(),
+  contract_clarification_points: z.array(contractGuidanceItemSchema).max(8),
+  contract_flagged_clauses: z.array(contractFlaggedClauseSchema).max(8),
+  contract_flagged_points: z.array(contractFlaggedPointSchema).max(6),
+  contract_possible_disadvantages: z.array(contractGuidanceItemSchema).max(8),
+  contract_pre_signing_checklist: z.array(contractGuidanceItemSchema).max(8),
+  contract_watch_out_for: z.array(z.string().min(1)).max(6),
+  contract_watch_out_points: z.array(z.string().min(1)).max(6),
+  contract_unclear_points: z.array(z.string().min(1)).max(6),
+  contract_risk_level_overview: z.string().nullable(),
   source_excerpt: z.string().nullable(),
   readability: z.enum(["readable", "partial", "unreadable"]),
   readability_reason: z.string().nullable()
@@ -125,6 +203,145 @@ function enrichActionLocation(result: DocumentAnalysisResult, extractedText: str
   };
 }
 
+function normalizeContractFields(result: DocumentAnalysisResult): DocumentAnalysisResult {
+  const looksLikeContract =
+    !!result.contract_type ||
+    !!result.contract_summary_simple ||
+    (result.contract_flagged_points?.length ?? 0) > 0 ||
+    (result.document_type ?? "").toLowerCase().includes("vertrag");
+
+  if (!looksLikeContract) {
+    return {
+      ...result,
+      contract_action_points: [],
+      contract_type: null,
+      contract_parties: [],
+      contract_summary_simple: null,
+      contract_duration: null,
+      contract_notice_period: null,
+      contract_recurring_costs: null,
+      contract_auto_renewal: null,
+      contract_clarification_points: [],
+      contract_flagged_clauses: [],
+      contract_flagged_points: [],
+      contract_possible_disadvantages: [],
+      contract_pre_signing_checklist: [],
+      contract_watch_out_for: [],
+      contract_watch_out_points: [],
+      contract_unclear_points: [],
+      contract_risk_level_overview: null
+    };
+  }
+
+  return {
+    ...result,
+    document_type: "Vertrag"
+  };
+}
+
+function buildGuidanceItem(category: ContractClauseCategory, priority: ContractGuidanceItem["priority"]): ContractGuidanceItem {
+  return { category, priority };
+}
+
+function pushUniqueGuidance(target: ContractGuidanceItem[], item: ContractGuidanceItem) {
+  if (target.some((entry) => entry.category === item.category)) {
+    return;
+  }
+
+  target.push(item);
+}
+
+function getPriorityFromClause(category: ContractClauseCategory, riskLevel: "low" | "medium" | "elevated"): ContractGuidanceItem["priority"] {
+  if (category === "costs" || category === "auto_renewal") {
+    return "high";
+  }
+  if (category === "duration" || category === "termination") {
+    return riskLevel === "low" ? "medium" : "high";
+  }
+  if (riskLevel === "elevated") {
+    return "medium";
+  }
+  return "general";
+}
+
+function rankGuidancePriority(priority: ContractGuidanceItem["priority"]) {
+  if (priority === "high") return 0;
+  if (priority === "medium") return 1;
+  return 2;
+}
+
+function buildContractGuidance(result: DocumentAnalysisResult): DocumentAnalysisResult {
+  const looksLikeContract =
+    !!result.contract_type ||
+    !!result.contract_summary_simple ||
+    (result.contract_flagged_clauses?.length ?? 0) > 0 ||
+    (result.contract_flagged_points?.length ?? 0) > 0 ||
+    (result.document_type ?? "").toLowerCase().includes("vertrag");
+
+  if (!looksLikeContract) {
+    return {
+      ...result,
+      contract_action_points: [],
+      contract_possible_disadvantages: [],
+      contract_clarification_points: [],
+      contract_pre_signing_checklist: []
+    };
+  }
+
+  const actionPoints: ContractGuidanceItem[] = [];
+  const disadvantages: ContractGuidanceItem[] = [];
+  const clarificationPoints: ContractGuidanceItem[] = [];
+  const checklist: ContractGuidanceItem[] = [];
+
+  for (const clause of result.contract_flagged_clauses ?? []) {
+    const priority = getPriorityFromClause(clause.category, clause.clause_risk_level);
+    pushUniqueGuidance(actionPoints, buildGuidanceItem(clause.category, priority));
+    pushUniqueGuidance(disadvantages, buildGuidanceItem(clause.category, priority));
+    pushUniqueGuidance(checklist, buildGuidanceItem(clause.category, priority));
+
+    if (clause.category === "unclear_language" || clause.category === "provider_rights" || clause.clause_risk_level === "elevated") {
+      pushUniqueGuidance(clarificationPoints, buildGuidanceItem(clause.category, priority));
+    }
+  }
+
+  if (result.contract_recurring_costs) {
+    pushUniqueGuidance(actionPoints, buildGuidanceItem("costs", "high"));
+    pushUniqueGuidance(disadvantages, buildGuidanceItem("costs", "high"));
+    pushUniqueGuidance(checklist, buildGuidanceItem("costs", "high"));
+  }
+
+  if (result.contract_auto_renewal) {
+    pushUniqueGuidance(actionPoints, buildGuidanceItem("auto_renewal", "high"));
+    pushUniqueGuidance(checklist, buildGuidanceItem("auto_renewal", "high"));
+  }
+
+  if (result.contract_duration) {
+    pushUniqueGuidance(actionPoints, buildGuidanceItem("duration", "high"));
+    pushUniqueGuidance(checklist, buildGuidanceItem("duration", "high"));
+  }
+
+  if (result.contract_notice_period) {
+    pushUniqueGuidance(actionPoints, buildGuidanceItem("termination", "high"));
+    pushUniqueGuidance(checklist, buildGuidanceItem("termination", "high"));
+  }
+
+  if ((result.contract_unclear_points?.length ?? 0) > 0) {
+    pushUniqueGuidance(clarificationPoints, buildGuidanceItem("unclear_language", "medium"));
+    pushUniqueGuidance(checklist, buildGuidanceItem("unclear_language", "medium"));
+  }
+
+  const sortItems = (items: ContractGuidanceItem[]) =>
+    [...items].sort((a, b) => rankGuidancePriority(a.priority) - rankGuidancePriority(b.priority));
+
+  return {
+    ...result,
+    contract_action_points: sortItems(actionPoints),
+    contract_possible_disadvantages: sortItems(disadvantages),
+    contract_clarification_points: sortItems(clarificationPoints),
+    contract_pre_signing_checklist: sortItems(checklist)
+  };
+}
+
 function buildJsonSchema() {
   return {
     type: "object",
@@ -132,8 +349,15 @@ function buildJsonSchema() {
     properties: {
       sender: { type: ["string", "null"] },
       document_type: { type: ["string", "null"] },
+      contract_type: { type: ["string", "null"] },
+      contract_parties: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 4
+      },
       subject: { type: ["string", "null"] },
       summary_simple: { type: "string" },
+      contract_summary_simple: { type: ["string", "null"] },
       summary_simple_short: { type: "string" },
       summary_simple_long: { type: "string" },
       is_action_required: { type: ["boolean", "null"] },
@@ -204,6 +428,158 @@ function buildJsonSchema() {
         enum: ["online", "vor_ort", "per_post", "telefon", "unbekannt", null]
       },
       risks_if_ignored: { type: ["string", "null"] },
+      contract_action_points: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            category: {
+              type: "string",
+              enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+            },
+            priority: {
+              type: "string",
+              enum: ["high", "medium", "general"]
+            }
+          },
+          required: ["category", "priority"]
+        },
+        maxItems: 8
+      },
+      contract_duration: { type: ["string", "null"] },
+      contract_notice_period: { type: ["string", "null"] },
+      contract_recurring_costs: { type: ["string", "null"] },
+      contract_auto_renewal: { type: ["string", "null"] },
+      contract_clarification_points: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            category: {
+              type: "string",
+              enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+            },
+            priority: {
+              type: "string",
+              enum: ["high", "medium", "general"]
+            }
+          },
+          required: ["category", "priority"]
+        },
+        maxItems: 8
+      },
+      contract_flagged_clauses: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            category: {
+              type: "string",
+              enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+            },
+            secondary_categories: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+              },
+              maxItems: 3
+            },
+            clause_summary_simple: { type: "string" },
+            clause_reason_simple: { type: "string" },
+            clause_risk_level: { type: "string", enum: ["low", "medium", "elevated"] },
+            source_excerpt: { type: ["string", "null"] },
+            source_page: { type: ["integer", "null"], minimum: 1 },
+            source_section: { type: ["string", "null"] },
+            source_context_label: { type: ["string", "null"] },
+            source_context_reason: { type: ["string", "null"] }
+          },
+          required: [
+            "category",
+            "secondary_categories",
+            "clause_summary_simple",
+            "clause_reason_simple",
+            "clause_risk_level",
+            "source_excerpt",
+            "source_page",
+            "source_section",
+            "source_context_label",
+            "source_context_reason"
+          ]
+        },
+        maxItems: 8
+      },
+      contract_flagged_points: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            title: { type: "string" },
+            explanation_simple: { type: "string" },
+            tone: { type: "string", enum: ["notice", "watch", "caution"] }
+          },
+          required: ["title", "explanation_simple", "tone"]
+        },
+        maxItems: 6
+      },
+      contract_possible_disadvantages: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            category: {
+              type: "string",
+              enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+            },
+            priority: {
+              type: "string",
+              enum: ["high", "medium", "general"]
+            }
+          },
+          required: ["category", "priority"]
+        },
+        maxItems: 8
+      },
+      contract_pre_signing_checklist: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            category: {
+              type: "string",
+              enum: ["duration", "termination", "auto_renewal", "costs", "liability", "user_duties", "provider_rights", "privacy", "unclear_language", "other"]
+            },
+            priority: {
+              type: "string",
+              enum: ["high", "medium", "general"]
+            }
+          },
+          required: ["category", "priority"]
+        },
+        maxItems: 8
+      },
+      contract_watch_out_for: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 6
+      },
+      contract_watch_out_points: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 6
+      },
+      contract_unclear_points: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 6
+      },
+      contract_risk_level_overview: { type: ["string", "null"] },
       source_excerpt: { type: ["string", "null"] },
       readability: { type: "string", enum: ["readable", "partial", "unreadable"] },
       readability_reason: { type: ["string", "null"] }
@@ -211,8 +587,11 @@ function buildJsonSchema() {
     required: [
       "sender",
       "document_type",
+      "contract_type",
+      "contract_parties",
       "subject",
       "summary_simple",
+      "contract_summary_simple",
       "summary_simple_short",
       "summary_simple_long",
       "is_action_required",
@@ -230,6 +609,20 @@ function buildJsonSchema() {
       "action_url",
       "action_mode",
       "risks_if_ignored",
+      "contract_action_points",
+      "contract_duration",
+      "contract_notice_period",
+      "contract_recurring_costs",
+      "contract_auto_renewal",
+      "contract_clarification_points",
+      "contract_flagged_clauses",
+      "contract_flagged_points",
+      "contract_possible_disadvantages",
+      "contract_pre_signing_checklist",
+      "contract_watch_out_for",
+      "contract_watch_out_points",
+      "contract_unclear_points",
+      "contract_risk_level_overview",
       "source_excerpt",
       "readability",
       "readability_reason"
@@ -272,8 +665,11 @@ function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof process
   return {
     sender: null,
     document_type: "PDF-Dokument",
+    contract_type: null,
+    contract_parties: [],
     subject: null,
     summary_simple: "Dieses PDF konnte noch nicht zuverlässig gelesen werden.",
+    contract_summary_simple: null,
     summary_simple_short: "Dieses PDF konnte noch nicht zuverlässig gelesen werden.",
     summary_simple_long:
       "Das Dokument scheint wenig direkt lesbaren Text zu enthalten, zum Beispiel weil es ein Scan oder Foto im PDF ist. Bitte lade möglichst eine klarere Datei oder ein einzelnes Bild hoch.",
@@ -292,6 +688,20 @@ function buildUnreadablePdfFallback(processed: Awaited<ReturnType<typeof process
     action_url: null,
     action_mode: null,
     risks_if_ignored: null,
+    contract_action_points: [],
+    contract_duration: null,
+    contract_notice_period: null,
+    contract_recurring_costs: null,
+    contract_auto_renewal: null,
+    contract_clarification_points: [],
+    contract_flagged_clauses: [],
+    contract_flagged_points: [],
+    contract_possible_disadvantages: [],
+    contract_pre_signing_checklist: [],
+    contract_watch_out_for: [],
+    contract_watch_out_points: [],
+    contract_unclear_points: [],
+    contract_risk_level_overview: null,
     source_excerpt: clipExcerpt(processed.extractedText),
     readability: "unreadable",
     readability_reason:
@@ -305,7 +715,7 @@ export async function analyzeDocumentWithOpenAI(document: DocumentRecord, buffer
   const processed = await processDocumentForAnalysis(document, buffer);
 
   const promptPrefix =
-    "Analysiere dieses Dokument für eine Privatperson in Deutschland. Schreibe in sehr einfachem, ruhigem Deutsch mit echten Umlauten und natürlichem ß. Klinge hilfreich, klar und stressarm. Erfinde nichts. Wenn etwas nicht sicher ist, gib null oder formuliere vorsichtig. summary_simple_short soll 2 bis 3 kurze Sätze enthalten. summary_simple_long darf etwas mehr Kontext geben, aber muss leicht verständlich bleiben. page_count muss die bekannte Seitenanzahl widerspiegeln. page_summaries sollen pro erkannter Seite eine kurze Zusammenfassung liefern. important_references sollen nur sichere Hinweise mit Seitenbezug enthalten, zum Beispiel Frist, Betrag, Termin oder Widerspruchshinweis.";
+    "Analysiere dieses Dokument fuer eine Privatperson in Deutschland. Schreibe in sehr einfachem, ruhigem Deutsch mit echten Umlauten und natuerlichem ss. Klinge hilfreich, klar und stressarm. Erfinde nichts. Wenn etwas nicht sicher ist, gib null oder formuliere vorsichtig. summary_simple_short soll 2 bis 3 kurze Saetze enthalten. summary_simple_long darf etwas mehr Kontext geben, aber muss leicht verstaendlich bleiben. page_count muss die bekannte Seitenanzahl widerspiegeln. page_summaries sollen pro erkannter Seite eine kurze Zusammenfassung liefern. important_references sollen nur sichere Hinweise mit Seitenbezug enthalten, zum Beispiel Frist, Betrag, Termin oder Widerspruchshinweis. Wenn das Dokument wahrscheinlich ein Vertrag oder vertragsnahe Bedingungen sind, setze document_type auf Vertrag, fuelle contract_type moeglichst passend aus und erkenne typische Klauselarten auf hoher Ebene. contract_flagged_clauses soll konkrete, kurze Klauselhinweise mit Kategorie, moeglichen Nebenkategorien, einfacher Erklaerung und vorsichtigem Risikoniveau enthalten. Jede auffaellige Klausel soll wenn moeglich auch einen kurzen woertlichen oder fast woertlichen source_excerpt, einen source_page Bezug, eine source_section, einen source_context_label und einen sehr kurzen source_context_reason enthalten. Der Ausschnitt soll nur der relevante Satz oder kleine Absatz sein. Erkenne dabei vor allem Laufzeit, Kuendigung, automatische Verlaengerung, Kosten, Haftung, Pflichten des Nutzers, Rechte der Gegenseite, Datenschutz, unklare Sprache und sonstige Auffaelligkeiten. contract_flagged_points, contract_watch_out_for, contract_watch_out_points und contract_unclear_points muessen in einfacher Sprache bleiben und duerfen keine definitive Rechtsberatung behaupten. Wenn es kein Vertrag ist, lasse alle contract_* Felder leer oder null.";
 
   const content: Array<Record<string, unknown>> = [
     {
@@ -336,7 +746,7 @@ Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, s
     const response = await client.responses.create({
       model: env.OPENAI_MODEL ?? "gpt-5.4",
       instructions:
-        "Du analysierst offizielle Schreiben für BureauCare. Gib die wichtigsten Fakten zuerst an: Wer schreibt, worum es geht, ob etwas getan werden muss, bis wann und wie dringend es ist. summary_simple ist die Hauptzusammenfassung. key_points müssen sehr kurz sein. next_steps sollen alltagstauglich und konkret sein. difficult_terms sollen schwierige Begriffe mit sehr einfacher Erklärung liefern. action_location_name, action_location_address, action_url und action_mode nur ausfüllen, wenn das verlässlich im Dokument steht.",
+        "Du analysierst offizielle Schreiben und Vertraege fuer BureauCare. Gib die wichtigsten Fakten zuerst an: Wer schreibt, worum es geht, ob etwas getan werden muss, bis wann und wie dringend es ist. summary_simple ist die Hauptzusammenfassung. key_points muessen sehr kurz sein. next_steps sollen alltagstauglich und konkret sein. difficult_terms sollen schwierige Begriffe mit sehr einfacher Erklaerung liefern. action_location_name, action_location_address, action_url und action_mode nur ausfuellen, wenn das verlaesslich im Dokument steht. Bei Vertraegen sollst du auffaellige Punkte nur vorsichtig beschreiben, zum Beispiel als streng, unklar oder nachteilig wirkend. contract_flagged_clauses muessen klar einer oder mehreren Risikokategorien zugeordnet werden und moeglichst einen kleinen, gut lesbaren Textausschnitt aus dem Vertrag mitliefern. Behaupte nie, dass eine Klausel sicher unwirksam oder rechtswidrig ist.",
       input: [
         {
           role: "user",
@@ -367,13 +777,23 @@ Nutze das beigefügte Dokument direkt. Wenn der Text nur teilweise lesbar ist, s
 
     const pageCount = Math.max(parsed.data.page_count, processed.pageCount || 1);
 
-    return enrichActionLocation({
-      ...parsed.data,
-      page_count: pageCount,
-      page_summaries: parsed.data.page_summaries.filter((item) => item.page <= pageCount).sort((a, b) => a.page - b.page),
-      important_references: parsed.data.important_references.filter((item) => item.page <= pageCount).sort((a, b) => a.page - b.page),
-      source_excerpt: parsed.data.source_excerpt ?? clipExcerpt(processed.extractedText)
-    }, processed.extractedText);
+    return enrichActionLocation(
+      buildContractGuidance(
+        normalizeContractFields({
+          ...parsed.data,
+          page_count: pageCount,
+          contract_flagged_clauses: parsed.data.contract_flagged_clauses
+            .map((item) => ({
+              ...item,
+              source_page: item.source_page && item.source_page <= pageCount ? item.source_page : null
+            })),
+          page_summaries: parsed.data.page_summaries.filter((item) => item.page <= pageCount).sort((a, b) => a.page - b.page),
+          important_references: parsed.data.important_references.filter((item) => item.page <= pageCount).sort((a, b) => a.page - b.page),
+          source_excerpt: parsed.data.source_excerpt ?? clipExcerpt(processed.extractedText)
+        })
+      ),
+      processed.extractedText
+    );
   } catch (error) {
     console.error("OpenAI document analysis failed", {
       documentId: document.id,

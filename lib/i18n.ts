@@ -20,7 +20,7 @@ export function getDateLocale(locale: AppLocale) {
 }
 
 type Copy = {
-  nav: { home: string; upload: string; cases: string; processes: string; tasks: string; settings: string; desk: string; brand: string };
+  nav: { home: string; upload: string; cases: string; processes: string; refunds: string; welcome: string; tasks: string; settings: string; desk: string; brand: string };
   common: {
     uploaded: string;
     analysisAvailable: string;
@@ -167,7 +167,7 @@ type Copy = {
 };
 
 const de: Copy = {
-  nav: { home: "Home", upload: "Upload", cases: "Fälle", processes: "Anträge & Vorgänge", tasks: "Aufgaben", settings: "Einstellungen", desk: "Dein Büro im Blick", brand: "BureauCare" },
+  nav: { home: "Home", upload: "Upload", cases: "Fälle", processes: "Anträge & Vorgänge", refunds: "Geld zurück", welcome: "Welcome", tasks: "Aufgaben", settings: "Einstellungen", desk: "Dein Büro im Blick", brand: "BureauCare" },
   common: { uploaded: "Hochgeladen", analysisAvailable: "Analyse verfügbar", analysisPending: "Analyse ausstehend", unknown: "Unbekannt", noClearDeadline: "Keine klare Frist", deadline: "Frist", subject: "Thema", sender: "Absender", urgency: "Dringlichkeit", statusOpen: "Offen", statusDone: "Erledigt", document: "Dokument", openDocument: "Dokument öffnen", saveInProgress: "Wird gespeichert...", moreDetails: "Mehr Details", shortExplained: "Kurz erklärt", signOut: "Abmelden", dateUploaded: "Hochgeladen am", currentStatus: "Aktueller Stand", name: "Name", language: "Sprache", session: "Sitzung" },
   urgency: { high: "Hoch", medium: "Mittel", low: "Niedrig", unclear: "Noch unklar" },
   actionMode: { online: "Online möglich", onSite: "Vor Ort", byPost: "Per Post", byPhone: "Telefonisch" },
@@ -181,7 +181,7 @@ const de: Copy = {
 
 const en: Copy = {
   ...de,
-  nav: { home: "Home", upload: "Upload", cases: "Cases", processes: "Applications & processes", tasks: "Tasks", settings: "Settings", desk: "Your desk at a glance", brand: "BureauCare" },
+  nav: { home: "Home", upload: "Upload", cases: "Cases", processes: "Applications & processes", refunds: "Money back", welcome: "Welcome", tasks: "Tasks", settings: "Settings", desk: "Your desk at a glance", brand: "BureauCare" },
   common: { ...de.common, analysisAvailable: "Analysis ready", analysisPending: "Analysis pending", unknown: "Unknown", noClearDeadline: "No clear deadline", deadline: "Deadline", subject: "Subject", sender: "Sender", urgency: "Urgency", statusOpen: "Open", statusDone: "Done", document: "Document", openDocument: "Open document", saveInProgress: "Saving...", moreDetails: "More details", shortExplained: "Quick view", signOut: "Sign out", dateUploaded: "Uploaded on", currentStatus: "Current status", language: "Language", session: "Session" },
   urgency: { high: "High", medium: "Medium", low: "Low", unclear: "Still unclear" },
   actionMode: { online: "Online possible", onSite: "In person", byPost: "By mail", byPhone: "By phone" },
@@ -201,6 +201,8 @@ const tr: Copy = {
     upload: "Yukle",
     cases: "Dosyalar",
     processes: "Basvurular",
+    refunds: "Para iadesi",
+    welcome: "Welcome",
     tasks: "Gorevler",
     settings: "Ayarlar",
     desk: "Masandaki ozet"
@@ -240,6 +242,8 @@ const uk: Copy = {
     upload: "Zavantazhyty",
     cases: "Spravy",
     processes: "Zayavy i protsesy",
+    refunds: "Povernennia koshtiv",
+    welcome: "Welcome",
     tasks: "Zavdannya",
     settings: "Nalashtuvannya",
     desk: "Vse vazhlyve pid rukoyu"
@@ -272,7 +276,7 @@ const uk: Copy = {
 };
 const es: Copy = {
   ...en,
-  nav: { ...en.nav, home: "Inicio", upload: "Subir", cases: "Casos", processes: "Tr谩mites y gestiones", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
+  nav: { ...en.nav, home: "Inicio", upload: "Subir", cases: "Casos", processes: "Tramites y gestiones", refunds: "Dinero de vuelta", welcome: "Welcome", tasks: "Tareas", settings: "Ajustes", desk: "Todo importante a la vista" },
   common: {
     ...en.common,
     uploaded: "Subido",
@@ -425,7 +429,7 @@ const es: Copy = {
 
 const zh: Copy = {
   ...en,
-  nav: { ...en.nav, home: "首页", upload: "上传", cases: "案件", processes: "申请与流程", tasks: "任务", settings: "设置", desk: "你的事务一目了然", brand: "BureauCare" },
+  nav: { ...en.nav, home: "首页", upload: "上传", cases: "案件", processes: "申请与流程", refunds: "退款查找", welcome: "Welcome", tasks: "任务", settings: "设置", desk: "你的事务一目了然", brand: "BureauCare" },
   common: { ...en.common, uploaded: "已上传", analysisAvailable: "分析已完成", analysisPending: "分析进行中", unknown: "未知", noClearDeadline: "没有明确期限", deadline: "期限", subject: "主题", sender: "发件方", urgency: "紧急程度", statusOpen: "进行中", statusDone: "已完成", document: "文件", openDocument: "打开文件", saveInProgress: "正在保存...", moreDetails: "更多详情", shortExplained: "简要说明", signOut: "退出登录", dateUploaded: "上传于", currentStatus: "当前状态", name: "姓名", language: "语言", session: "会话" },
   urgency: { high: "高", medium: "中", low: "低", unclear: "暂不明确" },
   actionMode: { online: "可在线办理", onSite: "需要到现场", byPost: "通过邮寄", byPhone: "通过电话" },
@@ -459,12 +463,12 @@ export function getReminderCopy(locale: string | null | undefined) {
 
 export function getUsageCopy(locale: string | null | undefined) {
   switch (normalizePreferredLanguage(locale)) {
-    case "en": return { title: "Usage this month", analyses: "free analyses used", replies: "reply drafts created", note: "This is a gentle preview of future free plan limits.", limitReached: "You have reached your free monthly analysis limit." };
-    case "tr": return { title: "Bu ay kullan谋m", analyses: "ücretsiz analiz kullan谋ld谋", replies: "yan谋t tasla臒谋 olu艧turuldu", note: "Bu alan ilerideki ücretsiz plan limitleri i莽in hafif bir önizlemedir.", limitReached: "Bu ay i莽in ücretsiz analiz limitine ula艧t谋n." };
-    case "uk": return { title: "袙懈泻芯褉懈褋褌邪薪薪褟 蟹邪 屑褨褋褟褑褜", analyses: "斜械蟹泻芯褕褌芯胁薪懈褏 邪薪邪谢褨蟹褨胁 胁懈泻芯褉懈褋褌邪薪芯", replies: "褔械褉薪械褌芯泻 胁褨写锌芯胁褨写褨 褋褌胁芯褉械薪芯", note: "笑械 薪械薪邪胁鈥櫻徯沸恍感残?锌褨写谐芯褌芯胁泻邪 写芯 屑邪泄斜褍褌薪褨褏 谢褨屑褨褌褨胁 斜械蟹泻芯褕褌芯胁薪芯谐芯 锌谢邪薪褍.", limitReached: "袙懈 写芯褋褟谐谢懈 斜械蟹泻芯褕褌芯胁薪芯谐芯 屑褨褋褟褔薪芯谐芯 谢褨屑褨褌褍 邪薪邪谢褨蟹褨胁." };
-    case "es": return { title: "Uso este mes", analyses: "an谩lisis gratuitos usados", replies: "borradores de respuesta creados", note: "Esto es una vista previa discreta de los futuros l铆mites del plan gratuito.", limitReached: "Has alcanzado tu l铆mite mensual gratuito de an谩lisis." };
-    case "zh": return { title: "本月使用情况", analyses: "已使用的免费分析次数", replies: "已生成的回复草稿", note: "这是对以后免费计划额度的一种温和预览。", limitReached: "你已经达到本月免费的分析上限。" };
-    default: return { title: "Nutzung in diesem Monat", analyses: "kostenlose Analysen genutzt", replies: "Antwortentwürfe erstellt", note: "Das ist eine dezente Vorschau auf spätere Freemium-Limits.", limitReached: "Du hast dein kostenloses Monatslimit für Analysen erreicht." };
+    case "en": return { title: "Usage this month", analyses: "free analyses used", replies: "reply drafts created", note: "This is a gentle preview of future free plan limits.", limitReached: "You have reached your free monthly analysis limit.", unlimited: "Unlimited" };
+    case "tr": return { title: "Bu ay kullan谋m", analyses: "ücretsiz analiz kullan谋ld谋", replies: "yan谋t tasla臒谋 olu艧turuldu", note: "Bu alan ilerideki ücretsiz plan limitleri i莽in hafif bir önizlemedir.", limitReached: "Bu ay i莽in ücretsiz analiz limitine ula艧t谋n.", unlimited: "Sinirsiz" };
+    case "uk": return { title: "袙懈泻芯褉懈褋褌邪薪薪褟 蟹邪 屑褨褋褟褑褜", analyses: "斜械蟹泻芯褕褌芯胁薪懈褏 邪薪邪谢褨蟹褨胁 胁懈泻芯褉懈褋褌邪薪芯", replies: "褔械褉薪械褌芯泻 胁褨写锌芯胁褨写褨 褋褌胁芯褉械薪芯", note: "笑械 薪械薪邪胁鈥櫻徯沸恍感残?锌褨写谐芯褌芯胁泻邪 写芯 屑邪泄斜褍褌薪褨褏 谢褨屑褨褌褨胁 斜械蟹泻芯褕褌芯胁薪芯谐芯 锌谢邪薪褍.", limitReached: "袙懈 写芯褋褟谐谢懈 斜械蟹泻芯褕褌芯胁薪芯谐芯 屑褨褋褟褔薪芯谐芯 谢褨屑褨褌褍 邪薪邪谢褨蟹褨胁.", unlimited: "袘械蟹谢褨屑褨褌薪芯" };
+    case "es": return { title: "Uso este mes", analyses: "an谩lisis gratuitos usados", replies: "borradores de respuesta creados", note: "Esto es una vista previa discreta de los futuros l铆mites del plan gratuito.", limitReached: "Has alcanzado tu l铆mite mensual gratuito de an谩lisis.", unlimited: "Sin limite" };
+    case "zh": return { title: "本月使用情况", analyses: "已使用的免费分析次数", replies: "已生成的回复草稿", note: "这是对以后免费计划额度的一种温和预览。", limitReached: "你已经达到本月免费的分析上限。", unlimited: "不限" };
+    default: return { title: "Nutzung in diesem Monat", analyses: "kostenlose Analysen genutzt", replies: "Antwortentwürfe erstellt", note: "Das ist eine dezente Vorschau auf spätere Freemium-Limits.", limitReached: "Du hast dein kostenloses Monatslimit für Analysen erreicht.", unlimited: "Unbegrenzt" };
   }
 }
 

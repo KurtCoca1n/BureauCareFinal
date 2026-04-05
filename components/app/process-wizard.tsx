@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { saveProcessSessionAction } from "@/lib/actions/process-sessions";
 import { saveUserPersonalDataSectionAction } from "@/lib/actions/user-personal-data";
+import { getDateInputHint, getDateInputLocale } from "@/lib/date-input";
 import {
   blockHasChangesAgainstSaved,
   blockHasKnownData,
@@ -418,6 +419,7 @@ export function ProcessWizard({
         {knownFieldLabel ? <p className="text-xs font-medium text-[var(--accent-strong)]">{reuseCopy.savedFromEarlierLabel}: {knownFieldLabel}</p> : null}
         <Input
           type={field.type === "currency" || field.type === "number" ? "number" : field.type}
+          lang={field.type === "date" ? getDateInputLocale(locale) : undefined}
           value={value}
           min={field.min}
           max={field.max}
@@ -427,6 +429,7 @@ export function ProcessWizard({
           onChange={(event) => updateAnswer(field.id, event.target.value)}
           className={hasError ? "border-[var(--danger)]" : ""}
         />
+        {field.type === "date" ? <p className="text-xs leading-5 text-[var(--muted)]">{getDateInputHint(locale)}</p> : null}
       </label>
     );
   }

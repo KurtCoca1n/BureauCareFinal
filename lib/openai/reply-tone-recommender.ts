@@ -8,6 +8,7 @@ import type { DocumentAnalysisRecord } from "@/lib/types";
 const replyToneSchema = z.object({
   tone: z.string().min(1),
   toneDetails: z.string().max(160),
+  reason: z.string().max(280),
   confidence: z.enum(["high", "medium", "low"])
 });
 
@@ -15,12 +16,13 @@ function buildReplyToneSchema() {
   return {
     type: "object",
     additionalProperties: false,
-    properties: {
-      tone: { type: "string" },
-      toneDetails: { type: "string" },
-      confidence: { type: "string", enum: ["high", "medium", "low"] }
-    },
-    required: ["tone", "toneDetails", "confidence"]
+      properties: {
+        tone: { type: "string" },
+        toneDetails: { type: "string" },
+        reason: { type: "string" },
+        confidence: { type: "string", enum: ["high", "medium", "low"] }
+      },
+    required: ["tone", "toneDetails", "reason", "confidence"]
   };
 }
 
@@ -58,7 +60,7 @@ export async function getReplyToneRecommendationWithAI({
     const response = await client.responses.create({
       model: env.OPENAI_MODEL ?? "gpt-5.4",
       instructions:
-        "Du waehlst fuer BureauCare nur den passendsten Antwortton fuer ein amtliches Schreiben. Bleibe vorsichtig, sachlich und zuverlaessig. Gib genau einen Hauptton aus der erlaubten Liste zurueck. toneDetails soll kurz erklaeren, wie der Text zusaetzlich klingen soll, zum Beispiel kurz, direkt, ruhig oder loesungsorientiert. Erfinde keine harten Zusagen.",
+        "Du waehlst fuer BureauCare nur den passendsten Antwortton fuer ein amtliches Schreiben. Bleibe vorsichtig, sachlich und zuverlaessig. Gib genau einen Hauptton aus der erlaubten Liste zurueck. toneDetails soll kurz erklaeren, wie der Text zusaetzlich klingen soll, zum Beispiel kurz, direkt, ruhig oder loesungsorientiert. reason soll in einfacher Sprache kurz erklaeren, warum dieser Ton hier passt. Erfinde keine harten Zusagen.",
       input: [
         {
           role: "user",
@@ -112,7 +114,8 @@ Waehle lieber einen vorsichtigen, belastbaren Ton als einen uebertrieben genauen
     return {
       tone: resolvedTone,
       toneDetails,
-      displayLabel: buildDisplayLabel(resolvedTone, toneDetails)
+      displayLabel: buildDisplayLabel(resolvedTone, toneDetails),
+      reason: parsed.data.reason.trim() || fallback.reason
     };
   } catch (error) {
     console.error("Reply tone recommendation failed", { error });

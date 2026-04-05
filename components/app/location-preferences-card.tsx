@@ -1,8 +1,14 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { LoaderCircle, MapPin, ShieldCheck } from "lucide-react";
 
+import {
+  markLocationDeniedAction,
+  resetLocationSnapshotAction,
+  saveLocationSnapshotAction
+} from "@/lib/actions/user-settings";
+import type { LocationPreferences } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -16,13 +22,18 @@ type StoredLocation = {
 };
 
 export function LocationPreferencesCard({
-  locale
+  locale,
+  preferences
 }: {
   locale: string;
+  preferences: LocationPreferences;
 }) {
   const [permissionState, setPermissionState] = useState<"idle" | "granted" | "denied" | "prompt">("idle");
   const [storedLocation, setStoredLocation] = useState<StoredLocation | null>(null);
   const [pending, setPending] = useState(false);
+  const [syncError, setSyncError] = useState("");
+  const [syncMessage, setSyncMessage] = useState("");
+  const [isSyncing, startSync] = useTransition();
 
   const copy =
     locale === "en"
@@ -32,7 +43,7 @@ export function LocationPreferencesCard({
           grant: "Allow location",
           granted: "Location access is active.",
           denied: "Location access is blocked. BureauCare still works normally.",
-          saved: "Saved locally on this device only.",
+          saved: "Saved for BureauCare location-based hints and can be reset at any time.",
           reset: "Reset choice",
           refresh: "Update location"
         }
@@ -75,7 +86,7 @@ export function LocationPreferencesCard({
                 grant: "Standort erlauben",
                 granted: "Standortfreigabe ist aktiv.",
                 denied: "Standortfreigabe ist blockiert. BureauCare funktioniert normal weiter.",
-                saved: "Wird nur lokal auf diesem Gerät gespeichert.",
+                saved: "Wird fuer standortbasierte Hinweise in BureauCare gespeichert und kann jederzeit zurueckgesetzt werden.",
                 reset: "Entscheidung zurücksetzen",
                 refresh: "Standort aktualisieren"
               };
@@ -95,7 +106,21 @@ export function LocationPreferencesCard({
       }
     }
 
-    if (!hasGrantedLocation && decision === "denied") {
+    if (!hasGrantedLocation && preferences.latitude != null && preferences.longitude != null) {
+      const nextLocation = {
+        latitude: preferences.latitude,
+        longitude: preferences.longitude,
+        grantedAt: preferences.granted_at ?? new Date().toISOString()
+      } satisfies StoredLocation;
+
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextLocation));
+      window.localStorage.setItem(LOCATION_DECISION_KEY, preferences.permission_status ?? "granted");
+      setStoredLocation(nextLocation);
+      setPermissionState("granted");
+      hasGrantedLocation = true;
+    }
+
+    if (!hasGrantedLocation && (decision === "denied" || preferences.permission_status === "denied")) {
       setPermissionState("denied");
     }
 
@@ -105,7 +130,7 @@ export function LocationPreferencesCard({
         .then((result) => setPermissionState(result.state as "granted" | "denied" | "prompt"))
         .catch(() => undefined);
     }
-  }, []);
+  }, [preferences.granted_at, preferences.latitude, preferences.longitude, preferences.permission_status]);
 
   function requestLocation() {
     if (!("geolocation" in navigator)) {
@@ -114,6 +139,8 @@ export function LocationPreferencesCard({
     }
 
     setPending(true);
+    setSyncError("");
+    setSyncMessage("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const nextLocation = {
@@ -127,15 +154,42 @@ export function LocationPreferencesCard({
         setStoredLocation(nextLocation);
         setPermissionState("granted");
         setPending(false);
+        startSync(async () => {
+          const result = await saveLocationSnapshotAction(nextLocation);
+          setSyncError(result.error);
+          setSyncMessage(result.success);
+        });
       },
       () => {
         window.localStorage.setItem(LOCATION_DECISION_KEY, "denied");
         setPermissionState("denied");
         setPending(false);
+        startSync(async () => {
+          const result = await markLocationDeniedAction();
+          setSyncError(result.error);
+          setSyncMessage(result.success);
+        });
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 * 60 * 60 * 24 }
     );
   }
+
+  function resetLocation() {
+    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(LOCATION_DECISION_KEY);
+    setStoredLocation(null);
+    setPermissionState("prompt");
+    setSyncError("");
+    setSyncMessage("");
+
+    startSync(async () => {
+      const result = await resetLocationSnapshotAction();
+      setSyncError(result.error);
+      setSyncMessage(result.success);
+    });
+  }
+
+  const isBusy = pending || isSyncing;
 
   return (
     <Card className="space-y-4 p-5">
@@ -158,8 +212,8 @@ export function LocationPreferencesCard({
           <p className="mt-2 text-[var(--muted)]">{copy.saved}</p>
         </div>
       ) : (
-        <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={requestLocation} disabled={pending}>
-          {pending ? (
+        <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={requestLocation} disabled={isBusy}>
+          {isBusy ? (
             <>
               <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
               {copy.grant}
@@ -171,22 +225,20 @@ export function LocationPreferencesCard({
       )}
 
       {permissionState === "denied" ? <p className="text-sm text-[var(--muted)]">{copy.denied}</p> : null}
+      {syncError ? <p className="text-sm text-[var(--danger)]">{syncError}</p> : null}
+      {syncMessage ? <p className="text-sm text-[var(--success)]">{syncMessage}</p> : null}
       {permissionState !== "idle" ? (
         <div className="flex flex-col gap-3 sm:flex-row">
           {permissionState === "granted" ? (
-            <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={requestLocation} disabled={pending}>
+            <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={requestLocation} disabled={isBusy}>
               {copy.refresh}
             </Button>
           ) : null}
           <button
             type="button"
-            className="min-h-12 rounded-2xl border border-[var(--line)] bg-white px-5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--line-strong)]"
-            onClick={() => {
-              window.localStorage.removeItem(STORAGE_KEY);
-              window.localStorage.removeItem(LOCATION_DECISION_KEY);
-              setStoredLocation(null);
-              setPermissionState("prompt");
-            }}
+            className="min-h-12 rounded-2xl border border-[var(--line)] bg-white px-5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--line-strong)] disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={resetLocation}
+            disabled={isBusy}
           >
             {copy.reset}
           </button>

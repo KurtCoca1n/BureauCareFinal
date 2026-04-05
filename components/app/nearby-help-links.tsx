@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight, LoaderCircle, MapPin } from "lucide-react";
 
 const STORAGE_KEY = "bureaucare-location";
 
@@ -18,7 +18,8 @@ function getCopy(locale: string) {
       text: "Based on your saved location, BureauCare can open fitting places in Maps for you.",
       route: "Start route",
       routeToNearest: "Route to nearest",
-      openMaps: "Open in Maps"
+      openMaps: "Open in Maps",
+      allowLocation: "Use location for routes"
     };
   }
 
@@ -28,7 +29,8 @@ function getCopy(locale: string) {
       text: "Kaydedilen konumuna göre BureauCare senin i莽in uygun yerleri Haritalar'da a莽abilir.",
       route: "Rota ba艧lat",
       routeToNearest: "En yak谋n谋na rota",
-      openMaps: "Haritada a莽"
+      openMaps: "Haritada a莽",
+      allowLocation: "Rota i莽in konumu kullan"
     };
   }
 
@@ -38,7 +40,8 @@ function getCopy(locale: string) {
       text: "袟 芯谐谢褟写褍 薪邪 蟹斜械褉械卸械薪械 屑褨褋褑械 BureauCare 屑芯卸械 胁褨写泻褉懈褌懈 写谢褟 褌械斜械 胁褨写锌芯胁褨写薪褨 屑褨褋褑褟 薪邪 屑邪锌褨.",
       route: "袩褉芯泻谢邪褋褌懈 屑邪褉褕褉褍褌",
       routeToNearest: "袦邪褉褕褉褍褌 写芯 薪邪泄斜谢懈卸褔芯谐芯",
-      openMaps: "袙褨写泻褉懈褌懈 薪邪 屑邪锌褨"
+      openMaps: "袙褨写泻褉懈褌懈 薪邪 屑邪锌褨",
+      allowLocation: "袙懈泻芯褉懈褋褌邪褌懈 屑褨褋褑械 写谢褟 屑邪褉褕褉褍褌褍"
     };
   }
 
@@ -48,7 +51,8 @@ function getCopy(locale: string) {
       text: "Seg煤n tu ubicaci贸n guardada, BureauCare puede abrir lugares adecuados en el mapa.",
       route: "Iniciar ruta",
       routeToNearest: "Ruta al m谩s cercano",
-      openMaps: "Abrir en Maps"
+      openMaps: "Abrir en Maps",
+      allowLocation: "Usar ubicacion para la ruta"
     };
   }
 
@@ -57,7 +61,8 @@ function getCopy(locale: string) {
     text: "Mit deinem gespeicherten Standort kann BureauCare passende Stellen direkt in Maps für dich öffnen.",
     route: "Route starten",
     routeToNearest: "Route zur nächsten",
-    openMaps: "In Maps öffnen"
+    openMaps: "In Maps öffnen",
+    allowLocation: "Standort fuer Routen nutzen"
   };
 }
 
@@ -68,10 +73,11 @@ function buildSuggestedQueries(seedText: string) {
   const candidates: Array<[RegExp, string]> = [
     [/\bpost|brief|einschreiben|per post\b/, "Postfiliale"],
     [/\bamtsgericht|gericht\b/, "Amtsgericht"],
-    [/\bbürgeramt|einwohnermeldeamt|meldung\b/, "Bürgeramt"],
+    [/\bbürgeramt|buergeramt|einwohnermeldeamt|meldung\b/, "Buergeramt"],
     [/\bjobcenter\b/, "Jobcenter"],
     [/\bfinanzamt|steuer\b/, "Finanzamt"],
     [/\bkrankenkasse|versicherung\b/, "Krankenkasse"],
+    [/\bausländerbehörde|auslaenderbehoerde|immigration office\b/, "Auslaenderbehoerde"],
     [/\bnotar\b/, "Notariat"],
     [/\bwohngeld|sozialamt\b/, "Sozialamt"]
   ];
@@ -91,7 +97,8 @@ export function NearbyHelpLinks({
   address,
   contextText,
   actionMode,
-  actionUrl
+  actionUrl,
+  initialLocation
 }: {
   locale: string;
   locationName?: string | null;
@@ -99,22 +106,28 @@ export function NearbyHelpLinks({
   contextText?: string | null;
   actionMode?: string | null;
   actionUrl?: string | null;
+  initialLocation?: StoredLocation | null;
 }) {
-  const [storedLocation, setStoredLocation] = useState<StoredLocation | null>(null);
+  const [storedLocation, setStoredLocation] = useState<StoredLocation | null>(initialLocation ?? null);
+  const [requestPending, setRequestPending] = useState(false);
   const copy = getCopy(locale);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return;
+    if (raw) {
+      try {
+        setStoredLocation(JSON.parse(raw) as StoredLocation);
+        return;
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
     }
 
-    try {
-      setStoredLocation(JSON.parse(raw) as StoredLocation);
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
+    if (initialLocation) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialLocation));
+      setStoredLocation(initialLocation);
     }
-  }, []);
+  }, [initialLocation]);
 
   const nearbyQueries = useMemo(() => {
     const actionModeSeed =
@@ -128,10 +141,49 @@ export function NearbyHelpLinks({
               ? "online portal service"
               : "";
     const base = [locationName, address, contextText, actionModeSeed].filter(Boolean).join(" ");
-    return buildSuggestedQueries(base);
+    const derived = buildSuggestedQueries(base);
+    const directSeeds = [locationName, address]
+      .filter((value): value is string => Boolean(value))
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+
+    for (const seed of directSeeds) {
+      if (!derived.includes(seed)) {
+        derived.unshift(seed);
+      }
+    }
+
+    return derived.slice(0, 3);
   }, [actionMode, address, contextText, locationName]);
 
-  if (!storedLocation || (!locationName && !address && nearbyQueries.length === 0 && !actionUrl)) {
+  const hasPlaces = Boolean(locationName || address || nearbyQueries.length > 0 || actionUrl);
+
+  function requestLocation() {
+    if (!("geolocation" in navigator)) {
+      return;
+    }
+
+    setRequestPending(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          grantedAt: new Date().toISOString()
+        } satisfies StoredLocation;
+
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextLocation));
+        setStoredLocation(nextLocation);
+        setRequestPending(false);
+      },
+      () => {
+        setRequestPending(false);
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 1000 * 60 * 60 * 24 }
+    );
+  }
+
+  if (!hasPlaces) {
     return null;
   }
 
@@ -144,10 +196,12 @@ export function NearbyHelpLinks({
     : locationName
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationName)}`
       : null;
-  const queryRouteLinks = nearbyQueries.map((query) => ({
-    query,
-    href: `https://www.google.com/maps/dir/?api=1&origin=${storedLocation.latitude},${storedLocation.longitude}&destination=${encodeURIComponent(query)}`
-  }));
+  const queryRouteLinks = storedLocation
+    ? nearbyQueries.map((query) => ({
+        query,
+        href: `https://www.google.com/maps/dir/?api=1&origin=${storedLocation.latitude},${storedLocation.longitude}&destination=${encodeURIComponent(query)}`
+      }))
+    : [];
 
   return (
     <div className="rounded-[20px] border border-[rgba(95,163,163,0.2)] bg-[linear-gradient(135deg,rgba(95,163,163,0.1),rgba(111,168,220,0.08))] p-4">
@@ -162,6 +216,24 @@ export function NearbyHelpLinks({
           </div>
 
           <div className="flex flex-wrap gap-2">
+            {!storedLocation ? (
+              <button
+                type="button"
+                onClick={requestLocation}
+                disabled={requestPending}
+                className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-white px-4 text-sm font-medium text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {requestPending ? (
+                  <>
+                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    {copy.allowLocation}
+                  </>
+                ) : (
+                  copy.allowLocation
+                )}
+              </button>
+            ) : null}
+
             {routeHref ? (
               <a
                 href={routeHref}

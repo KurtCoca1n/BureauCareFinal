@@ -9,6 +9,48 @@ function getMetadataValue(user: User, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function cleanNamePart(value: string | null | undefined) {
+  return value?.trim() || "";
+}
+
+export function buildFullName(firstName: string | null | undefined, lastName: string | null | undefined) {
+  const fullName = [cleanNamePart(firstName), cleanNamePart(lastName)].filter(Boolean).join(" ").trim();
+  return fullName || null;
+}
+
+export function splitFullName(fullName: string | null | undefined) {
+  const normalized = cleanNamePart(fullName);
+  if (!normalized) {
+    return { firstName: "", lastName: "" };
+  }
+
+  const [firstName, ...rest] = normalized.split(/\s+/);
+  return {
+    firstName,
+    lastName: rest.join(" ").trim()
+  };
+}
+
+export function getProfileFirstName(profile: Profile | null | undefined) {
+  if (profile?.first_name?.trim()) {
+    return profile.first_name.trim();
+  }
+
+  return splitFullName(profile?.full_name).firstName || null;
+}
+
+export function getProfileLastName(profile: Profile | null | undefined) {
+  if (profile?.last_name?.trim()) {
+    return profile.last_name.trim();
+  }
+
+  return splitFullName(profile?.full_name).lastName || null;
+}
+
+export function getProfileFullName(profile: Profile | null | undefined) {
+  return buildFullName(profile?.first_name, profile?.last_name) ?? profile?.full_name?.trim() ?? null;
+}
+
 export async function ensureProfile(user: User): Promise<Profile | null> {
   const supabase = await createClient();
 
@@ -28,8 +70,16 @@ export async function ensureProfile(user: User): Promise<Profile | null> {
 
   const fallbackProfile = {
     id: user.id,
+    first_name: getMetadataValue(user, "first_name") || splitFullName(getMetadataValue(user, "full_name")).firstName || null,
+    last_name: getMetadataValue(user, "last_name") || splitFullName(getMetadataValue(user, "full_name")).lastName || null,
     full_name: getMetadataValue(user, "full_name") || user.email?.split("@")[0] || null,
-    preferred_language: normalizePreferredLanguage(getMetadataValue(user, "preferred_language") || "en")
+    phone_number: getMetadataValue(user, "phone_number") || null,
+    preferred_language: normalizePreferredLanguage(getMetadataValue(user, "preferred_language") || "en"),
+    reply_default_tone: "automatic" as const,
+    reply_style_note: null,
+    reply_include_signature: true,
+    reply_signature: null,
+    reply_translation_mode: "app_language" as const
   };
 
   const { data: insertedProfile } = await supabase

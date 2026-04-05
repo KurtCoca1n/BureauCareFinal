@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { getServerEnv } from "@/lib/env";
 import { getLanguageLabel, normalizePreferredLanguage } from "@/lib/languages";
-import type { DocumentAnalysisRecord, DocumentRecord } from "@/lib/types";
+import type { DocumentAnalysisRecord, DocumentRecord, ReplyTranslationMode } from "@/lib/types";
 
 const replySchema = z.object({
   subject_line: z.string().nullable(),
@@ -35,8 +35,10 @@ export async function generateReplyWithOpenAI({
   toneDetails,
   formatType,
   includeSignature,
+  signatureText,
   profileName,
-  preferredLanguage
+  preferredLanguage,
+  translationMode
 }: {
   document: DocumentRecord;
   analysis: DocumentAnalysisRecord;
@@ -44,14 +46,17 @@ export async function generateReplyWithOpenAI({
   toneDetails?: string | null;
   formatType: "brief" | "email";
   includeSignature: boolean;
+  signatureText?: string | null;
   profileName: string | null;
   preferredLanguage: string | null;
+  translationMode: ReplyTranslationMode;
 }) {
   const env = getServerEnv();
   const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
   const languageCode = normalizePreferredLanguage(preferredLanguage);
-  const shouldTranslate = languageCode !== "de";
+  const shouldTranslate = translationMode === "app_language" && languageCode !== "de";
   const targetLanguageLabel = getLanguageLabel(languageCode);
+  const effectiveSignature = signatureText?.trim() || (profileName ? `Mit freundlichen Gruessen,\n${profileName}` : "");
 
   const effectiveTone = [tone, toneDetails].filter(Boolean).join(" + ");
 
@@ -82,7 +87,7 @@ Risiken: ${analysis.risks_if_ignored ?? "nicht klar"}
 Der erste Teil des Tons ist die Hauptstilrichtung. Zusaetzliche Tonwuensche muessen ebenfalls sichtbar im Text ankommen und duerfen nicht verloren gehen.
 Beruecksichtige neben dem Hauptton auch diesen zusaetzlichen Wunsch: ${toneDetails || "kein zusaetzlicher Wunsch"}.
 Die Antwort soll direkt nutzbar sein. Keine Platzhalter für unbekannte Fakten. Wenn etwas nicht belegt ist, bitte allgemein um Prüfung, Fristverlängerung oder Rückmeldung statt Details zu behaupten.
-${includeSignature && profileName ? `Füge am Ende die Signatur "Mit freundlichen Grüßen,\\n${profileName}" ein.` : "Nutze keine persönliche Signatur."}
+${includeSignature && effectiveSignature ? `Fuege am Ende genau diese Signatur ein: "${effectiveSignature.replace(/\n/g, "\\n")}".` : "Nutze keine persoenliche Signatur."}
 ${shouldTranslate ? `Erstelle zusätzlich eine sinngleiche Übersetzung in ${targetLanguageLabel}.` : "Erstelle keine zusätzliche Übersetzung."}`
           }
         ]

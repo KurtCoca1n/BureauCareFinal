@@ -1,10 +1,14 @@
-import { getDateLocale } from "@/lib/i18n";
+﻿import { getDateLocale } from "@/lib/i18n";
 import { normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 import type { UserPersonalDataRecord, UserPersonalDataSectionKey } from "@/lib/types";
 
 type MyDataCopy = {
   title: string;
   intro: string;
+  trustTitle: string;
+  trustText: string;
+  reuseHint: string;
+  emptyInline: string;
   settingsLinkTitle: string;
   settingsLinkText: string;
   openMyData: string;
@@ -54,6 +58,10 @@ export type MyDataSectionDefinition = {
 const deCopy: MyDataCopy = {
   title: "Meine Angaben",
   intro: "Hier siehst du die Angaben, die BureauCare fuer spaetere Antraege verwenden kann. Du kannst alles jederzeit bearbeiten oder entfernen.",
+  trustTitle: "Fuer spaetere Antraege vorbereitet",
+  trustText: "BureauCare nutzt diese Angaben nur dann, wenn sie fuer einen Antrag wirklich hilfreich sind. Du behaeltst jederzeit die Kontrolle.",
+  reuseHint: "Kann fuer passende Antraege wiederverwendet werden",
+  emptyInline: "Sobald du Angaben in Antraegen speicherst, erscheinen sie hier.",
   settingsLinkTitle: "Meine Angaben verwalten",
   settingsLinkText: "Oeffne deine gespeicherten Angaben und halte sie fuer kommende Antraege aktuell.",
   openMyData: "Meine Angaben oeffnen",
@@ -91,6 +99,10 @@ const copyMap: Record<SupportedLanguage, MyDataCopy> = {
   en: {
     title: "My details",
     intro: "Here you can see the details BureauCare can reuse for later applications. You can edit or remove everything at any time.",
+    trustTitle: "Prepared for future applications",
+    trustText: "BureauCare only uses these details when they are actually helpful for an application. You stay in control at all times.",
+    reuseHint: "Can be reused for matching applications",
+    emptyInline: "As soon as you save details in applications, they will appear here.",
     settingsLinkTitle: "Manage my details",
     settingsLinkText: "Open your saved details and keep them up to date for future applications.",
     openMyData: "Open my details",
@@ -127,38 +139,42 @@ const copyMap: Record<SupportedLanguage, MyDataCopy> = {
   es: deCopy,
   zh: {
     ...deCopy,
-    title: "我的信息",
-    intro: "你可以在这里查看 BureauCare 之后可重复使用的信息，也可以随时修改或删除。",
-    settingsLinkTitle: "管理我的信息",
-    settingsLinkText: "打开已保存的信息，并为之后的申请保持最新状态。",
-    openMyData: "打开我的信息",
-    sectionEmpty: "还没有保存任何信息。",
-    pageEmptyTitle: "还没有保存任何信息",
-    pageEmptyText: "当你在申请中选择保存信息后，这里就会显示出来。",
-    suggestionsTitle: "这些内容可能和你有关",
-    suggestionsText: "这些建议会刻意保持谨慎，只基于你已保存的信息。",
-    edit: "编辑",
-    editing: "编辑中",
-    save: "保存",
-    saving: "正在保存...",
-    cancel: "取消",
-    deleteField: "移除",
-    deleteSection: "删除整个区块",
-    deleting: "正在移除...",
-    confirmDeleteField: "你确定要删除这条信息吗？",
-    confirmDeleteSection: "你确定要删除整个区块吗？",
-    updatedAt: "最近更新",
-    sourceUserInput: "由你输入",
-    sourceApplicationImport: "来自较早的申请",
-    sourceDocumentExtracted: "从文件中识别",
-    sourceSystemInferred: "由 BureauCare 预先整理",
-    confirmedByUser: "已由你确认",
-    notConfirmed: "尚未确认",
-    backToSettings: "返回设置",
-    deleteAll: "删除全部信息",
-    confirmDeleteAll: "你确定要删除所有已保存的信息吗？",
-    deleted: "已移除",
-    saved: "已保存"
+    title: "\u6211\u7684\u4fe1\u606f",
+    intro: "\u4f60\u53ef\u4ee5\u5728\u8fd9\u91cc\u67e5\u770b BureauCare \u4e4b\u540e\u53ef\u4ee5\u91cd\u590d\u4f7f\u7528\u7684\u4fe1\u606f\uff0c\u4e5f\u53ef\u4ee5\u968f\u65f6\u4fee\u6539\u6216\u5220\u9664\u3002",
+    trustTitle: "\u53ef\u7528\u4e8e\u4e4b\u540e\u7684\u7533\u8bf7",
+    trustText: "\u53ea\u6709\u5728\u8fd9\u4e9b\u4fe1\u606f\u786e\u5b9e\u5bf9\u7533\u8bf7\u6709\u5e2e\u52a9\u65f6\uff0cBureauCare \u624d\u4f1a\u4f7f\u7528\u5b83\u4eec\u3002\u63a7\u5236\u6743\u59cb\u7ec8\u5728\u4f60\u624b\u91cc\u3002",
+    reuseHint: "\u53ef\u7528\u4e8e\u5408\u9002\u7684\u7533\u8bf7",
+    emptyInline: "\u5f53\u4f60\u5728\u7533\u8bf7\u4e2d\u4fdd\u5b58\u4fe1\u606f\u540e\uff0c\u8fd9\u91cc\u5c31\u4f1a\u663e\u793a\u51fa\u6765\u3002",
+    settingsLinkTitle: "\u7ba1\u7406\u6211\u7684\u4fe1\u606f",
+    settingsLinkText: "\u6253\u5f00\u5df2\u4fdd\u5b58\u7684\u4fe1\u606f\uff0c\u5e76\u4e3a\u4e4b\u540e\u7684\u7533\u8bf7\u4fdd\u6301\u6700\u65b0\u72b6\u6001\u3002",
+    openMyData: "\u6253\u5f00\u6211\u7684\u4fe1\u606f",
+    sectionEmpty: "\u8fd8\u6ca1\u6709\u4fdd\u5b58\u4efb\u4f55\u4fe1\u606f\u3002",
+    pageEmptyTitle: "\u8fd8\u6ca1\u6709\u4fdd\u5b58\u4efb\u4f55\u4fe1\u606f",
+    pageEmptyText: "\u5f53\u4f60\u5728\u7533\u8bf7\u4e2d\u9009\u62e9\u4fdd\u5b58\u4fe1\u606f\u540e\uff0c\u8fd9\u91cc\u5c31\u4f1a\u663e\u793a\u51fa\u6765\u3002",
+    suggestionsTitle: "\u8fd9\u4e9b\u5185\u5bb9\u53ef\u80fd\u4e0e\u4f60\u6709\u5173",
+    suggestionsText: "\u8fd9\u4e9b\u5efa\u8bae\u4f1a\u4fdd\u6301\u8c28\u614e\uff0c\u53ea\u57fa\u4e8e\u4f60\u5df2\u4fdd\u5b58\u7684\u4fe1\u606f\u3002",
+    edit: "\u7f16\u8f91",
+    editing: "\u7f16\u8f91\u4e2d",
+    save: "\u4fdd\u5b58",
+    saving: "\u6b63\u5728\u4fdd\u5b58...",
+    cancel: "\u53d6\u6d88",
+    deleteField: "\u79fb\u9664",
+    deleteSection: "\u5220\u9664\u6574\u4e2a\u533a\u5757",
+    deleting: "\u6b63\u5728\u79fb\u9664...",
+    confirmDeleteField: "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u8fd9\u6761\u4fe1\u606f\u5417\uff1f",
+    confirmDeleteSection: "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u6574\u4e2a\u533a\u5757\u5417\uff1f",
+    updatedAt: "\u6700\u8fd1\u66f4\u65b0",
+    sourceUserInput: "\u7531\u4f60\u8f93\u5165",
+    sourceApplicationImport: "\u6765\u81ea\u8f83\u65e9\u7684\u7533\u8bf7",
+    sourceDocumentExtracted: "\u4ece\u6587\u4ef6\u4e2d\u8bc6\u522b",
+    sourceSystemInferred: "\u7531 BureauCare \u9884\u5148\u6574\u7406",
+    confirmedByUser: "\u5df2\u7531\u4f60\u786e\u8ba4",
+    notConfirmed: "\u5c1a\u672a\u786e\u8ba4",
+    backToSettings: "\u8fd4\u56de\u8bbe\u7f6e",
+    deleteAll: "\u5220\u9664\u5168\u90e8\u4fe1\u606f",
+    confirmDeleteAll: "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u6240\u6709\u5df2\u4fdd\u5b58\u7684\u4fe1\u606f\u5417\uff1f",
+    deleted: "\u5df2\u79fb\u9664",
+    saved: "\u5df2\u4fdd\u5b58"
   }
 };
 
@@ -169,7 +185,7 @@ export const myDataSections: MyDataSectionDefinition[] = [
     description: {
       de: "Basisdaten, die in vielen Antraegen immer wieder gebraucht werden.",
       en: "Basic details that are needed again and again in many applications.",
-      tr: "Birçok basvuruda tekrar gereken temel bilgiler.",
+      tr: "Bir莽ok basvuruda tekrar gereken temel bilgiler.",
       uk: "Bazovi dani, yaki chasto potribni v riznykh zayavakh.",
       es: "Datos basicos que se vuelven a necesitar en muchas solicitudes."
     },
