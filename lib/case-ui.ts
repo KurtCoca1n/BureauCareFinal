@@ -19,20 +19,57 @@ export function getCasesNavLabel(locale: string | null | undefined) {
 }
 
 export function getCaseStatusLabel(status: CaseStatus | string | null, locale: string | null | undefined) {
-  switch (normalizePreferredLanguage(locale)) {
-    case "en":
-      return status === "done" ? "Done" : status === "waiting" ? "Waiting" : "Open";
-    case "tr":
-      return status === "done" ? "Tamamlandı" : status === "waiting" ? "Bekliyor" : "Açık";
-    case "uk":
-      return status === "done" ? "Виконано" : status === "waiting" ? "Очікування" : "Відкрито";
-    case "es":
-      return status === "done" ? "Hecho" : status === "waiting" ? "En espera" : "Abierto";
-    case "zh":
-      return status === "done" ? "已完成" : status === "waiting" ? "等待中" : "进行中";
-    default:
-      return status === "done" ? "Erledigt" : status === "waiting" ? "Warten" : "Offen";
+  const lang = normalizePreferredLanguage(locale);
+  if (status === "done") {
+    return lang === "en"
+      ? "Done"
+      : lang === "tr"
+        ? "Tamamlandı"
+        : lang === "uk"
+          ? "Виконано"
+          : lang === "es"
+            ? "Hecho"
+            : lang === "zh"
+              ? "已完成"
+              : "Erledigt";
   }
+  if (status === "waiting") {
+    return lang === "en"
+      ? "Waiting for a reply"
+      : lang === "tr"
+        ? "Yanıt bekleniyor"
+        : lang === "uk"
+          ? "Очікуємо відповідь"
+          : lang === "es"
+            ? "Esperando respuesta"
+            : lang === "zh"
+              ? "等待回复"
+              : "Warten auf Antwort";
+  }
+  if (status === "in_progress") {
+    return lang === "en"
+      ? "In progress"
+      : lang === "tr"
+        ? "İşlemde"
+        : lang === "uk"
+          ? "В роботі"
+          : lang === "es"
+            ? "En curso"
+            : lang === "zh"
+              ? "处理中"
+              : "In Bearbeitung";
+  }
+  return lang === "en"
+    ? "Open"
+    : lang === "tr"
+      ? "Açık"
+      : lang === "uk"
+        ? "Відкрито"
+        : lang === "es"
+          ? "Abierto"
+          : lang === "zh"
+            ? "待处理"
+            : "Offen";
 }
 
 export function getDocumentStatusLabel(status: DocumentStatus | string | null, locale: string | null | undefined) {
@@ -289,6 +326,160 @@ export function getCaseText(locale: string | null | undefined) {
         confirmCaseDelete: "Willst du diesen Fall wirklich löschen? Die Dokumente bleiben gespeichert, aber der Fall verschwindet aus deinen Fällen.",
         confirmDoneAndDelete: "Ist wirklich alles erledigt? Dann wird dieser Fall als abgeschlossen behandelt und aus deinen Fällen entfernt.",
         openCount: "offen"
+      };
+  }
+}
+
+/** Decision Screen: Fall optional vor der Analyse anlegen */
+export function getDecisionCaseSaveCopy(locale: string | null | undefined) {
+  switch (normalizePreferredLanguage(locale)) {
+    case "en":
+      return {
+        cardTitle: "Save as a case",
+        cardIntro:
+          "Keep this document in your cases before analysis – so nothing feels one-off. You can run the analysis right after.",
+        button: "Save as case",
+        pending: "Saving…",
+        linkedBadge: "In your cases",
+        linkedLead: "This upload is already linked to a case.",
+        linkedCta: "Open case"
+      };
+    case "es":
+      return {
+        cardTitle: "Guardar como caso",
+        cardIntro:
+          "Conserva este documento como un caso antes del análisis, así no se pierde ese trabajo pendiente.",
+        button: "Guardar como caso",
+        pending: "Guardando…",
+        linkedBadge: "En tus casos",
+        linkedLead: "Esta subida ya está vinculada a un caso.",
+        linkedCta: "Abrir caso"
+      };
+    case "zh":
+      return {
+        cardTitle: "保存为案件",
+        cardIntro: "在分析前把这份文件归入案件，避免上传后「消失不见」。之后仍可继续分析。",
+        button: "保存为案件",
+        pending: "保存中…",
+        linkedBadge: "已在案件中",
+        linkedLead: "此上传已关联到案件。",
+        linkedCta: "打开案件"
+      };
+    case "tr":
+      return {
+        cardTitle: "Dava olarak kaydet",
+        cardIntro:
+          "Analizden önce belgeyi dosyalarda tut – böylece tek seferlik hissi kalkar. Ardından analize devam edebilirsin.",
+        button: "Dava olarak kaydet",
+        pending: "Kaydediliyor…",
+        linkedBadge: "Dosyalarında",
+        linkedLead: "Bu yükleme zaten bir dosyaya bağlı.",
+        linkedCta: "Dosyayı aç"
+      };
+    case "uk":
+      return {
+        cardTitle: "Зберегти як справу",
+        cardIntro:
+          "Приберіть документ у своїх справах ще до повного аналізу — так нічого не здається разовим вирішенням.",
+        button: "Зберегти справу",
+        pending: "Зберігаємо…",
+        linkedBadge: "У твоїх справах",
+        linkedLead: "Це вже прив’язано до справи.",
+        linkedCta: "Відкрити справу"
+      };
+    default:
+      return {
+        cardTitle: "Als Fall speichern",
+        cardIntro:
+          "Behalte dieses Dokument schon vor der Analyse in deinen Fällen – so wirkt nichts wie ein einmaliger Upload. Die Analyse kannst du direkt danach starten.",
+        button: "Als Fall speichern",
+        pending: "Wird gespeichert…",
+        linkedBadge: "In deinen Fällen",
+        linkedLead: "Dieser Upload ist bereits mit einem Fall verknüpft.",
+        linkedCta: "Zum Fall"
+      };
+  }
+}
+
+export function getCaseOverviewLabels(locale: string | null | undefined) {
+  switch (normalizePreferredLanguage(locale)) {
+    case "en":
+      return {
+        title: "At a glance",
+        kind: "Document type",
+        summary: "Summary",
+        uploaded: "Uploaded",
+        analyzed: "Last analyzed",
+        deadline: "Deadline",
+        next: "Suggested next steps",
+        risk: "Worth watching",
+        openDoc: "Open document",
+        none: "—"
+      };
+    case "es":
+      return {
+        title: "De un vistazo",
+        kind: "Tipo de documento",
+        summary: "Resumen",
+        uploaded: "Subido",
+        analyzed: "Último análisis",
+        deadline: "Plazo",
+        next: "Próximos pasos",
+        risk: "A tener en cuenta",
+        openDoc: "Abrir documento",
+        none: "—"
+      };
+    case "zh":
+      return {
+        title: "一览",
+        kind: "文件类型",
+        summary: "摘要",
+        uploaded: "上传时间",
+        analyzed: "最近分析",
+        deadline: "期限",
+        next: "建议的下一步",
+        risk: "需要留意",
+        openDoc: "打开文件",
+        none: "—"
+      };
+    case "tr":
+      return {
+        title: "Özet",
+        kind: "Belge türü",
+        summary: "Özet",
+        uploaded: "Yüklendi",
+        analyzed: "Son analiz",
+        deadline: "Son tarih",
+        next: "Önerilen adımlar",
+        risk: "Dikkat",
+        openDoc: "Belgeyi aç",
+        none: "—"
+      };
+    case "uk":
+      return {
+        title: "Коротко",
+        kind: "Тип документа",
+        summary: "Зміст",
+        uploaded: "Завантажено",
+        analyzed: "Останній аналіз",
+        deadline: "Строк",
+        next: "Наступні кроки",
+        risk: "На що звернути увагу",
+        openDoc: "Відкрити документ",
+        none: "—"
+      };
+    default:
+      return {
+        title: "Fall im Überblick",
+        kind: "Dokumenttyp",
+        summary: "Kurzfassung",
+        uploaded: "Hochgeladen",
+        analyzed: "Zuletzt analysiert",
+        deadline: "Frist",
+        next: "Empfohlene nächste Schritte",
+        risk: "Auffällig / Risiko",
+        openDoc: "Zum Dokument",
+        none: "—"
       };
   }
 }

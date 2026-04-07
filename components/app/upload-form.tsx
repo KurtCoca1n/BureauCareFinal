@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { FileUp, LoaderCircle, UploadCloud } from "lucide-react";
+import { Camera, FileUp, LoaderCircle, UploadCloud } from "lucide-react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,8 @@ const initialState: UploadFormState = {
 
 export function UploadForm({
   labels,
-  caseId
+  caseId,
+  autoOpenCamera = false
 }: {
   labels: {
     title: string;
@@ -23,16 +25,42 @@ export function UploadForm({
     dropzoneTitle: string;
     dropzoneText: string;
     pickFile: string;
+    takePhoto: string;
     submit: string;
     submitting: string;
+    afterUploadHint?: string;
   };
   caseId?: string | null;
+  autoOpenCamera?: boolean;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const autoCameraStartedRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [state, formAction, pending] = useActionState(uploadDocumentAction, initialState);
+
+  function assignToDocumentInput(file: File) {
+    if (!inputRef.current) {
+      return;
+    }
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    inputRef.current.files = transfer.files;
+    setSelectedFile(file.name);
+  }
+
+  useEffect(() => {
+    if (!autoOpenCamera || autoCameraStartedRef.current) {
+      return;
+    }
+    autoCameraStartedRef.current = true;
+    const id = window.setTimeout(() => {
+      cameraInputRef.current?.click();
+    }, 400);
+    return () => window.clearTimeout(id);
+  }, [autoOpenCamera]);
 
   useEffect(() => {
     if (!state.documentId) {
@@ -40,7 +68,7 @@ export function UploadForm({
     }
 
     const timer = window.setTimeout(() => {
-      router.push(`/app/documents/${state.documentId}`);
+      router.push(`/app/documents/${state.documentId}/decision` as Route);
     }, 700);
 
     return () => window.clearTimeout(timer);
@@ -103,12 +131,41 @@ export function UploadForm({
             required
             onChange={(event) => setSelectedFile(event.target.files?.[0]?.name ?? "")}
           />
+          <input
+            ref={cameraInputRef}
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            type="file"
+            accept="image/jpeg,image/jpg,image/png"
+            capture="environment"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) {
+                return;
+              }
+              assignToDocumentInput(file);
+            }}
+          />
         </label>
 
-        <Button type="button" variant="secondary" className="w-full" onClick={() => inputRef.current?.click()} disabled={pending}>
-          <FileUp className="mr-2 h-4 w-4" />
-          {labels.pickFile}
-        </Button>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full"
+            onClick={() => cameraInputRef.current?.click()}
+            disabled={pending}
+          >
+            <Camera className="mr-2 h-4 w-4" />
+            {labels.takePhoto}
+          </Button>
+          <Button type="button" variant="secondary" className="w-full" onClick={() => inputRef.current?.click()} disabled={pending}>
+            <FileUp className="mr-2 h-4 w-4" />
+            {labels.pickFile}
+          </Button>
+        </div>
 
         {state.error ? <p className="text-sm text-[var(--danger)]">{state.error}</p> : null}
         {state.success ? <p className="text-sm text-[var(--success)]">{state.success}</p> : null}
@@ -124,6 +181,12 @@ export function UploadForm({
           )}
         </Button>
       </form>
+
+      {labels.afterUploadHint ? (
+        <div className="rounded-[22px] border border-[rgba(95,163,163,0.14)] bg-[rgba(238,246,245,0.55)] px-4 py-3.5">
+          <p className="text-sm leading-relaxed text-[var(--muted)]">{labels.afterUploadHint}</p>
+        </div>
+      ) : null}
     </Card>
   );
 }

@@ -55,6 +55,7 @@ export async function analyzeDocumentAction(
 
   if (existingAnalysis?.summary_simple && !forceRefresh) {
     revalidatePath(`/app/documents/${documentId}`);
+    revalidatePath(`/app/documents/${documentId}/decision`);
     return { error: "", success: "Die vorhandene Analyse wurde geladen.", redirectTo: `/app/documents/${documentId}` };
   }
 
@@ -142,7 +143,12 @@ export async function analyzeDocumentAction(
         sender: analysis.sender,
         subject: analysis.subject,
         deadline_date: analysis.deadline_date,
-        is_action_required: analysis.is_action_required
+        is_action_required: analysis.is_action_required,
+        document_type: analysis.document_type,
+        summary_simple: analysis.summary_simple,
+        summary_simple_short: analysis.summary_simple_short,
+        next_steps: analysis.next_steps,
+        risks_if_ignored: analysis.risks_if_ignored
       }
     });
 
@@ -196,6 +202,7 @@ export async function analyzeDocumentAction(
     revalidatePath("/app/cases");
     revalidatePath("/app/tasks");
     revalidatePath(`/app/documents/${documentId}`);
+    revalidatePath(`/app/documents/${documentId}/decision`);
     revalidatePath(`/app/cases/${caseSync.caseRecord.id}`);
 
     return { error: "", success: "Dokument erfolgreich analysiert.", redirectTo: `/app/documents/${documentId}` };

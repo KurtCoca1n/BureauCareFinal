@@ -6,6 +6,7 @@ import { CaseCard } from "@/components/app/case-card";
 import { HomeGreeting } from "@/components/app/home-greeting";
 import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
 import { TaskCard } from "@/components/app/task-card";
+import { WeeklyOverview } from "@/components/app/weekly-overview";
 import { WelcomeAssistantPanel } from "@/components/app/welcome-assistant-panel";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -159,6 +160,8 @@ export default async function AppHomePage() {
         initialSupportLine={greeting.supportLine}
         supportLines={greeting.supportLines}
       />
+
+      <WeeklyOverview locale={locale} dateLocale={dateLocale} />
 
       <div className="grid gap-8 2xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-12">

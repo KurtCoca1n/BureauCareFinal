@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Copy, Laptop2, LoaderCircle, QrCode, RefreshCw, Smartphone } from "lucide-react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -96,7 +97,7 @@ export function MobileScanCard({
         window.clearInterval(interval);
         router.refresh();
         window.setTimeout(() => {
-          router.push(`/app/documents/${data.documentId}`);
+          router.push(`/app/documents/${data.documentId}/decision` as Route);
         }, 900);
       }
     }, 3000);

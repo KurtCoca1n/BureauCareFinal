@@ -1,4 +1,6 @@
-﻿import { MobileScanCard } from "@/components/app/mobile-scan-card";
+import { MobileScanCard } from "@/components/app/mobile-scan-card";
+import { UploadDocumentKinds } from "@/components/app/upload-document-kinds";
+import { UploadJourneyTrust } from "@/components/app/upload-journey-trust";
 import { UploadForm } from "@/components/app/upload-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -10,10 +12,12 @@ import { getRequestLanguage } from "@/lib/request-locale";
 export default async function UploadPage({
   searchParams
 }: {
-  searchParams?: Promise<{ caseId?: string }>;
+  searchParams?: Promise<{ caseId?: string; camera?: string }>;
 }) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const caseId = resolvedSearchParams?.caseId?.trim() || null;
+  const autoOpenCamera =
+    resolvedSearchParams?.camera === "1" || resolvedSearchParams?.camera === "true";
   const profile = await getProfile();
   const linkedCase = caseId ? await getCaseById(caseId) : null;
   const locale = await getRequestLanguage(profile?.preferred_language);
@@ -38,19 +42,59 @@ export default async function UploadPage({
       <section className="space-y-4 pt-4">
         <StatusBadge tone="accent">{copy.upload.badge}</StatusBadge>
         <h1 className="page-title page-title-accent text-3xl sm:text-4xl">{copy.upload.title}</h1>
+        <p className="max-w-2xl text-lg font-medium leading-relaxed text-[var(--foreground)]/90">{copy.upload.heroLine}</p>
+        <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted)]">{copy.upload.intro}</p>
+        <p className="max-w-2xl border-l-2 border-[rgba(95,163,163,0.35)] pl-4 text-sm leading-relaxed text-[var(--foreground)]/88">
+          {copy.upload.valuePromise}
+        </p>
       </section>
+
+      <UploadDocumentKinds
+        copy={{
+          kindsInvitation: copy.upload.kindsInvitation,
+          kindsTitle: copy.upload.kindsTitle,
+          kindsIntro: copy.upload.kindsIntro,
+          kindContracts: copy.upload.kindContracts,
+          kindOfficial: copy.upload.kindOfficial,
+          kindInvoices: copy.upload.kindInvoices,
+          kindReminders: copy.upload.kindReminders,
+          kindTerminations: copy.upload.kindTerminations,
+          kindForms: copy.upload.kindForms,
+          kindTravel: copy.upload.kindTravel,
+          kindTickets: copy.upload.kindTickets,
+          kindOther: copy.upload.kindOther
+        }}
+      />
+
+      <UploadJourneyTrust
+        copy={{
+          trustCardTitle: copy.upload.trustCardTitle,
+          journeyTitle: copy.upload.journeyTitle,
+          journeyStep1: copy.upload.journeyStep1,
+          journeyStep2: copy.upload.journeyStep2,
+          journeyStep3: copy.upload.journeyStep3,
+          journeyStep4: copy.upload.journeyStep4,
+          journeyStep5: copy.upload.journeyStep5,
+          trustPillar1: copy.upload.trustPillar1,
+          trustPillar2: copy.upload.trustPillar2,
+          trustPillar3: copy.upload.trustPillar3
+        }}
+      />
 
       <section className="grid gap-8 xl:grid-cols-2 xl:items-stretch">
         <UploadForm
           caseId={linkedCase?.id ?? null}
+          autoOpenCamera={autoOpenCamera}
           labels={{
             title: copy.upload.cardTitle,
             allowedFormats: copy.upload.allowedFormats,
             dropzoneTitle: copy.upload.dropzoneTitle,
             dropzoneText: copy.upload.dropzoneText,
             pickFile: copy.upload.pickFile,
+            takePhoto: copy.upload.takePhoto,
             submit: copy.upload.submit,
-            submitting: copy.upload.submitting
+            submitting: copy.upload.submitting,
+            afterUploadHint: copy.upload.afterUploadHint
           }}
         />
 

@@ -12,31 +12,37 @@ export default async function CasesPage() {
     locale === "en"
       ? {
           title: "Your cases",
-          empty: "No cases yet. As soon as a document is analyzed, BureauCare assigns it to a case automatically."
+          empty:
+            "No cases yet. BureauCare creates a case when you analyze a document—and you can also save one early from the decision screen after upload."
         }
       : locale === "tr"
         ? {
             title: "Dosyaların",
-            empty: "Henüz dosya yok. Bir belge analiz edildiğinde BureauCare onu otomatik olarak bir dosyaya atar."
+            empty:
+              "Henüz dosya yok. Bir belge analiz edildiğinde BureauCare bir dosya oluşturur; istersen yüklemeden sonra karar ekranından da kaydedebilirsin."
           }
         : locale === "uk"
           ? {
               title: "Твої справи",
-              empty: "Справ ще немає. Щойно документ буде проаналізовано, BureauCare автоматично віднесе його до справи."
+              empty:
+                "Справ ще немає. BureauCare створює справу після аналізу документа — або ти можеш зберегти її раніше з екрана рішення після завантаження."
             }
           : locale === "es"
             ? {
                 title: "Tus casos",
-                empty: "Todavía no hay casos. En cuanto se analice un documento, BureauCare lo asignará automáticamente a un caso."
+                empty:
+                  "Todavía no hay casos. BureauCare crea uno al analizar un documento; también puedes guardarlo desde la pantalla de decisión tras subirlo."
               }
             : locale === "zh"
               ? {
                   title: "你的案件",
-                  empty: "目前还没有案件。一旦文件完成分析，BureauCare 会自动把它归入对应案件。"
+                  empty:
+                    "目前还没有案件。分析文件时 BureauCare 会创建案件；你也可以在上传后的决策页提前保存为案件。"
                 }
               : {
                   title: "Deine Fälle",
-                  empty: "Noch keine Fälle vorhanden. Sobald ein Dokument analysiert wurde, ordnet BureauCare es automatisch einem Fall zu."
+                  empty:
+                    "Noch keine Fälle. BureauCare legt einen Fall an, sobald du ein Dokument analysierst – du kannst ihn aber auch schon nach dem Upload auf der Entscheidungsseite speichern."
                 };
 
   return (

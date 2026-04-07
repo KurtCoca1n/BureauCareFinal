@@ -25,9 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getCaseStatusLabel, getCaseText, getDocumentStatusLabel } from "@/lib/case-ui";
+import { normalizeDocumentKindDetection } from "@/lib/document-kind";
 import { looksLikePotentiallyIncompleteDocument } from "@/lib/document-name";
 import { getDocumentTypeLabel } from "@/lib/file-types";
 import { getCopy, getDateLocale, getDocumentTrustCopy, getUsageCopy } from "@/lib/i18n";
+import { getGeneralExplainPreAnalyzeBanner, getOptionalContractDepthHint } from "@/lib/general-explain-flow-ui";
+import { getNoticeScannerPreAnalyzeBanner } from "@/lib/notice-scanner-flow-ui";
 import {
   getCaseById,
   getContractQuestionDraftsByDocumentId,
@@ -68,8 +71,21 @@ function getActionModeLabel(mode: string | null, locale: string) {
   }
 }
 
-export default async function DocumentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function DocumentDetailPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
+  const resolvedSearch = searchParams ? await searchParams : {};
+  const scannerParam = resolvedSearch.scanner;
+  const flowParam = resolvedSearch.flow;
+  const showNoticeScannerPrep =
+    (Array.isArray(scannerParam) ? scannerParam[0] : scannerParam) === "notice";
+  const showGeneralExplainPrep =
+    (Array.isArray(flowParam) ? flowParam[0] : flowParam) === "explain" && !showNoticeScannerPrep;
   const [document, analysis, profile, usageSummary, contractQuestionDrafts, userSettings] = await Promise.all([
     getDocumentById(id),
     getDocumentAnalysisByDocumentId(id),
@@ -106,6 +122,14 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
   const pageCount = Math.max(analysis?.page_count ?? 1, 1);
   const likelyMissingPages = pageCount === 1 && looksLikePotentiallyIncompleteDocument(analysis?.raw_extracted_text);
   const hasLimitReached = !analysis?.summary_simple && !!usageSummary && hasReachedAnalysisLimit(usageSummary);
+  const prepAnalyzeBanner = showNoticeScannerPrep
+    ? getNoticeScannerPreAnalyzeBanner(locale)
+    : showGeneralExplainPrep
+      ? getGeneralExplainPreAnalyzeBanner(locale)
+      : null;
+  const kindDetection = normalizeDocumentKindDetection(document.kind_detection);
+  const contractDepthHint =
+    analysis?.summary_simple && analysis ? getOptionalContractDepthHint(locale, kindDetection, analysis) : null;
 
   return (
     <div className="space-y-6">
@@ -124,7 +148,20 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
           {analysis?.summary_simple ? (
             <>
               <ContractAnalysisPanel analysis={analysis} locale={locale} />
-              <ContractClauseExplorer clauses={analysis.contract_flagged_clauses ?? []} documentId={document.id} locale={locale} />
+              <div id="contract-clause-explorer" className="scroll-mt-24">
+                <ContractClauseExplorer clauses={analysis.contract_flagged_clauses ?? []} documentId={document.id} locale={locale} />
+              </div>
+              {contractDepthHint ? (
+                <Card className="space-y-3 border border-dashed border-[var(--line)] bg-[rgba(248,252,251,0.65)] p-4 sm:p-5">
+                  <p className="text-sm leading-relaxed text-[var(--muted)]">{contractDepthHint.text}</p>
+                  <Link
+                    href="#contract-clause-explorer"
+                    className="inline-flex text-sm font-semibold text-[var(--accent)] hover:underline"
+                  >
+                    {contractDepthHint.anchorLabel}
+                  </Link>
+                </Card>
+              ) : null}
               <ContractQuestionGenerator
                 documentId={document.id}
                 locale={locale}
@@ -337,7 +374,20 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
               </Card>
             </>
           ) : (
-            <Card className="space-y-4 p-5">
+            <>
+              {prepAnalyzeBanner ? (
+                <Card className="space-y-3 border border-[rgba(95,163,163,0.2)] bg-[rgba(238,246,245,0.55)] p-5 sm:p-6">
+                  <div className="flex items-center gap-2">
+                    <StatusBadge tone="accent">{prepAnalyzeBanner.title}</StatusBadge>
+                  </div>
+                  <div className="space-y-2 text-sm leading-relaxed text-[var(--muted)]">
+                    {prepAnalyzeBanner.lines.map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
+                  </div>
+                </Card>
+              ) : null}
+              <Card id="document-analyze" className="scroll-mt-24 space-y-4 p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-[var(--background-strong)] p-3 text-[var(--foreground)]">
                   <Bot className="h-5 w-5" />
@@ -361,10 +411,19 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
                 disabled={hasLimitReached}
                 helperText={hasLimitReached ? usageCopy.limitReached : undefined}
               />
+              <Link
+                href={`/app/documents/${document.id}/decision` as Route}
+                className="block text-center text-sm font-medium text-[var(--accent)] hover:underline"
+              >
+                {locale === "de"
+                  ? "Einordnung & nächste Schritte nochmal ansehen"
+                  : "Review sorting and next steps again"}
+              </Link>
               <Button variant="secondary" className="w-full" disabled>
                 {copy.documents.createReply}
               </Button>
             </Card>
+            </>
           )}
         </div>
 
@@ -421,7 +480,17 @@ export default async function DocumentDetailPage({ params }: { params: Promise<{
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <StatusBadge tone={caseItem.status === "done" ? "success" : caseItem.status === "waiting" ? "warning" : "accent"}>
+                <StatusBadge
+                  tone={
+                    caseItem.status === "done"
+                      ? "success"
+                      : caseItem.status === "waiting"
+                        ? "warning"
+                        : caseItem.status === "in_progress"
+                          ? "accent"
+                          : "neutral"
+                  }
+                >
                   {getCaseStatusLabel(caseItem.status, locale)}
                 </StatusBadge>
                 <StatusBadge tone="neutral">{caseText.caseLabel}</StatusBadge>

@@ -1,4 +1,12 @@
+import {
+  buildCaseBriefFromDetection,
+  caseBriefToJson,
+  mergeCaseBriefWithAnalysis,
+  parseCaseBrief
+} from "@/lib/case-brief";
+import { createCaseEvent } from "@/lib/case-events";
 import { createClient } from "@/lib/supabase/server";
+import type { DocumentKindDetection } from "@/lib/document-kind";
 import type { CaseRecord, DocumentAnalysisRecord, DocumentRecord } from "@/lib/types";
 
 function normalize(value: string | null | undefined) {
@@ -94,7 +102,18 @@ export async function syncDocumentCaseAndStatus({
   analysis
 }: {
   document: DocumentRecord;
-  analysis: Pick<DocumentAnalysisRecord, "sender" | "subject" | "deadline_date" | "is_action_required">;
+  analysis: Pick<
+    DocumentAnalysisRecord,
+    | "sender"
+    | "subject"
+    | "deadline_date"
+    | "is_action_required"
+    | "document_type"
+    | "summary_simple"
+    | "summary_simple_short"
+    | "next_steps"
+    | "risks_if_ignored"
+  >;
 }) {
   const supabase = await createClient();
   const existingCase =
@@ -110,7 +129,15 @@ export async function syncDocumentCaseAndStatus({
       });
 
   const nextDocumentStatus = "analysiert" as const;
-  const nextCaseStatus = analysis.is_action_required ? "open" : "waiting";
+  const nextCaseStatus = analysis.is_action_required ? "in_progress" : "open";
+  const mergedBrief = mergeCaseBriefWithAnalysis(parseCaseBrief(resolved.caseRecord.case_brief), document, {
+    document_type: analysis.document_type,
+    summary_simple: analysis.summary_simple,
+    summary_simple_short: analysis.summary_simple_short,
+    deadline_date: analysis.deadline_date,
+    next_steps: analysis.next_steps,
+    risks_if_ignored: analysis.risks_if_ignored
+  });
 
   await supabase
     .from("documents")
@@ -129,14 +156,76 @@ export async function syncDocumentCaseAndStatus({
       organization: analysis.sender ?? resolved.caseRecord.organization,
       title: buildCaseTitle(analysis.sender ?? resolved.caseRecord.organization, analysis.subject ?? document.subject),
       status: nextCaseStatus,
+      case_brief: caseBriefToJson(mergedBrief),
       updated_at: new Date().toISOString()
     })
     .eq("id", resolved.caseRecord.id);
 
+  const { data: refreshed } = await supabase.from("cases").select("*").eq("id", resolved.caseRecord.id).maybeSingle();
+
   return {
-    caseRecord: resolved.caseRecord,
+    caseRecord: (refreshed as CaseRecord) ?? resolved.caseRecord,
     created: resolved.created,
     documentStatus: nextDocumentStatus,
     caseStatus: nextCaseStatus
   };
+}
+
+/** Vor der vollen Analyse: Fall anlegen und Dokument verknüpfen (optional auf dem Decision Screen) */
+export async function createEarlyCaseForDocument({
+  userId,
+  document,
+  detection,
+  title,
+  organization
+}: {
+  userId: string;
+  document: DocumentRecord;
+  detection: DocumentKindDetection | null;
+  title: string;
+  organization: string | null;
+}): Promise<{ caseRecord: CaseRecord; created: true } | { caseRecord: CaseRecord; created: false }> {
+  const supabase = await createClient();
+
+  if (document.case_id) {
+    const { data: existing } = await supabase.from("cases").select("*").eq("id", document.case_id).maybeSingle();
+    if (existing) {
+      return { caseRecord: existing as CaseRecord, created: false };
+    }
+  }
+
+  const now = new Date().toISOString();
+  const brief = buildCaseBriefFromDetection(document, detection);
+
+  const { data: createdCase, error } = await supabase
+    .from("cases")
+    .insert({
+      user_id: userId,
+      title: title.trim().slice(0, 240) || document.original_filename,
+      organization: organization?.trim() || null,
+      status: "open",
+      updated_at: now,
+      case_brief: caseBriefToJson(brief)
+    })
+    .select("*")
+    .single();
+
+  if (error || !createdCase) {
+    throw new Error(error?.message ?? "Fall konnte nicht angelegt werden.");
+  }
+
+  await supabase
+    .from("documents")
+    .update({ case_id: createdCase.id })
+    .eq("id", document.id)
+    .eq("user_id", userId);
+
+  await createCaseEvent({
+    caseId: createdCase.id,
+    documentId: document.id,
+    eventType: "document_uploaded",
+    note: "Fall angelegt und Dokument verknüpft."
+  });
+
+  return { caseRecord: createdCase as CaseRecord, created: true };
 }

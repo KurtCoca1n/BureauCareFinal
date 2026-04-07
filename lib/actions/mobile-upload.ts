@@ -121,6 +121,7 @@ export async function completeMobileUploadAction(
     revalidatePath("/app/tasks");
     revalidatePath("/app/cases");
     revalidatePath(`/app/documents/${documentId}`);
+    revalidatePath(`/app/documents/${documentId}/decision`);
 
     return {
       error: "",

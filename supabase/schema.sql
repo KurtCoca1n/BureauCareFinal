@@ -83,7 +83,10 @@ create table if not exists public.cases (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+alter table public.cases add column if not exists case_brief jsonb;
+
 alter table public.documents add column if not exists case_id uuid;
+alter table public.documents add column if not exists kind_detection jsonb;
 alter table public.documents add column if not exists status text default 'neu';
 alter table public.documents add column if not exists document_date date;
 alter table public.documents add column if not exists sender text;
@@ -108,7 +111,7 @@ alter table public.cases
 
 alter table public.cases
   add constraint cases_status_check
-  check (status in ('open', 'waiting', 'done'));
+  check (status in ('open', 'in_progress', 'waiting', 'done'));
 
 create table if not exists public.document_analyses (
   id uuid primary key default gen_random_uuid(),

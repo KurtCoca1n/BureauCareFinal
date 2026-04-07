@@ -70,13 +70,13 @@ export function HomeGreeting({
   }, [fallbackGreetings, fallbackLines, fullName, greeting, initialSupportLine, locale]);
 
   return (
-    <section className="space-y-4 pt-4" data-day-phase={phase}>
-      <h1 className="page-title page-title-accent max-w-[18ch] text-[clamp(2.4rem,4vw,4.35rem)]">
-        {headline}
-      </h1>
-      <p className="max-w-3xl text-lg font-medium leading-8 text-[color:color-mix(in_srgb,var(--foreground)_72%,var(--muted))]">
-        {supportLine}
-      </p>
-    </section>
-  );
+    <section className="space-y-4 pt-8 md:pt-10" data-day-phase={phase}>
+  <h1 className="page-title page-title-accent max-w-[18ch] text-[clamp(2.4rem,4vw,4.35rem)] leading-[0.98]">
+    {headline}
+  </h1>
+  <p className="max-w-3xl text-lg font-medium leading-8 text-[color:color-mix(in_srgb,var(--foreground)_72%,var(--muted))]">
+    {supportLine}
+  </p>
+</section>  
+);
 }

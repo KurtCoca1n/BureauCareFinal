@@ -186,6 +186,7 @@ export async function uploadWelcomeStepDocumentAction(
 
     revalidatePath(`/app/welcome/${stepKey}`);
     revalidatePath(`/app/documents/${result.documentId}`);
+    revalidatePath(`/app/documents/${result.documentId}/decision`);
 
     return { error: "", success: "Dokument wurde diesem Schritt hinzugefuegt." };
   } catch (error) {

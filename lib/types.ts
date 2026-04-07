@@ -69,7 +69,7 @@ export type GoalAnalysisResult = {
 };
 export type AccountRole = "user" | "tester" | "admin" | "super_admin";
 export type UsageEventType = "analysis_generated" | "reply_generated";
-export type CaseStatus = "open" | "waiting" | "done";
+export type CaseStatus = "open" | "in_progress" | "waiting" | "done";
 export type DocumentStatus = "neu" | "analysiert" | "antwort_erstellt" | "gesendet" | "warten" | "erledigt";
 export type ProcessSessionStatus = "in_progress" | "ready";
 export type ReplyDefaultTone = "automatic" | "neutral" | "friendly" | "very_formal" | "simple";
@@ -336,6 +336,7 @@ export type Database = {
           document_date: string | null;
           file_path: string;
           id: string;
+          kind_detection: Json | null;
           mime_type: string | null;
           original_filename: string;
           sender: string | null;
@@ -349,6 +350,7 @@ export type Database = {
           document_date?: string | null;
           file_path: string;
           id?: string;
+          kind_detection?: Json | null;
           mime_type?: string | null;
           original_filename: string;
           sender?: string | null;
@@ -498,6 +500,7 @@ export type Database = {
       };
       cases: {
         Row: {
+          case_brief: Json | null;
           created_at: string;
           id: string;
           organization: string | null;
@@ -507,6 +510,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          case_brief?: Json | null;
           created_at?: string;
           id?: string;
           organization?: string | null;

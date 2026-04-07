@@ -174,6 +174,7 @@ export async function uploadDocumentAction(_: UploadFormState, formData: FormDat
   }
   revalidatePath("/app/upload");
   revalidatePath(`/app/documents/${documentId}`);
+  revalidatePath(`/app/documents/${documentId}/decision`);
 
   return { error: "", success: "Dokument erfolgreich hochgeladen. Du wirst weitergeleitet.", documentId };
 }

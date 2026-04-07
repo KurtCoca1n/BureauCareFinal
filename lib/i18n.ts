@@ -1,4 +1,4 @@
-﻿import { getLanguageLabel, normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
+import { getLanguageLabel, normalizePreferredLanguage, type SupportedLanguage } from "@/lib/languages";
 
 export type AppLocale = SupportedLanguage;
 
@@ -78,7 +78,32 @@ type Copy = {
   upload: {
     badge: string;
     title: string;
+    heroLine: string;
     intro: string;
+    kindsTitle: string;
+    kindsIntro: string;
+    kindContracts: string;
+    kindOfficial: string;
+    kindInvoices: string;
+    kindReminders: string;
+    kindTerminations: string;
+    kindForms: string;
+    kindTravel: string;
+    kindTickets: string;
+    kindOther: string;
+    valuePromise: string;
+    kindsInvitation: string;
+    journeyTitle: string;
+    journeyStep1: string;
+    journeyStep2: string;
+    journeyStep3: string;
+    journeyStep4: string;
+    journeyStep5: string;
+    trustPillar1: string;
+    trustPillar2: string;
+    trustPillar3: string;
+    trustCardTitle: string;
+    afterUploadHint: string;
     saveInfoTitle: string;
     saveInfoText: string;
     cardTitle: string;
@@ -86,6 +111,7 @@ type Copy = {
     dropzoneTitle: string;
     dropzoneText: string;
     pickFile: string;
+    takePhoto: string;
     submit: string;
     submitting: string;
   };
@@ -173,7 +199,51 @@ const de: Copy = {
   actionMode: { online: "Online möglich", onSite: "Vor Ort", byPost: "Per Post", byPhone: "Telefonisch" },
   home: { welcome: "Willkommen zurück", titleFallback: "Dein BureauCare", intro: "Alle wichtigen Dokumente an einem geschützten Ort, mit klaren Erklärungen, Fristen und nächsten Schritten.", newLetter: "Neues Dokument", uploadTitle: "Neues Dokument hochladen", uploadText: "Lade ein amtliches Dokument oder ein offizielles Schreiben hoch und speichere es sicher in deinem Konto.", latestDocuments: "Letzte Dokumente", entries: "Einträge", noDocuments: "Noch keine Dokumente vorhanden. Lade dein erstes Dokument hoch, um hier eine Übersicht zu sehen.", openDeadlines: "Offene Fristen", tasks: "Aufgaben", noDeadlinesTitle: "Noch keine offenen Fristen", noDeadlinesText: "Sobald ein Dokument mit Frist erkannt wird, erscheint hier automatisch dein nächster To-do-Punkt." },
   settings: { section: "Einstellungen", title: "Konto und Sprache", intro: "Lege fest, wie dein Name in Antworten erscheint und in welche Sprache BureauCare zusätzlich übersetzen soll.", currentState: "Aktueller Stand", noName: "Kein Name hinterlegt", sessionText: "Du kannst dich jederzeit sicher abmelden. Deine Dokumente bleiben in deinem geschützten Bereich.", fullName: "Dein Name", translationLanguage: "Sprache für Übersetzungen", save: "Einstellungen speichern", saving: "Wird gespeichert...", namePlaceholder: "Max Mustermann" },
-  upload: { badge: "Dokument hochladen", title: "Dokument sicher in BureauCare speichern", intro: "Lade hier ein amtliches Dokument oder ein offizielles Schreiben hoch. BureauCare erklärt dir, was du tun musst.", saveInfoTitle: "So wird gespeichert", saveInfoText: "Deine Datei landet im privaten Supabase-Bucket documents. Jeder Pfad wird unter deiner Nutzer-ID gespeichert, damit ausschließlich du Zugriff auf deine Dokumente hast.", cardTitle: "Datei sicher hochladen", allowedFormats: "Erlaubte Formate: PDF, JPG, JPEG, PNG. Maximale Dateigröße: 15 MB.", dropzoneTitle: "Datei hier hineinziehen", dropzoneText: "Am Desktop kannst du die Datei per Drag & Drop ablegen oder unten direkt auswählen.", pickFile: "Datei auswählen", submit: "Dokument hochladen", submitting: "Datei wird hochgeladen..." },
+  upload: {
+    badge: "Dokument hochladen",
+    title: "Dein Eingang für wichtige Dokumente",
+    heroLine:
+      "Lade Unterlagen hoch – BureauCare schaut sie an, ordnet sie ein und macht Wichtiges für dich sichtbar.",
+    intro:
+      "Lade Verträge, Bescheide, Rechnungen oder andere wichtige Dokumente hoch. BureauCare erkennt, worum es geht, erklärt den Inhalt und zeigt dir den nächsten sinnvollen Schritt.",
+    kindsTitle: "Was wir uns für dich ansehen können",
+    kindsIntro: "Vom Alltag bis zur Ausnahme: Wenn es für dich wichtig ist, passt es hierher – ohne feste Systemgrenzen.",
+    kindsInvitation: "Kein Formularstau, sondern eine ruhige Einladung: Lad hoch, was dich beschäftigt.",
+    kindContracts: "Verträge",
+    kindOfficial: "Bescheide & Behörden",
+    kindInvoices: "Rechnungen",
+    kindReminders: "Mahnungen",
+    kindTerminations: "Kündigungen",
+    kindForms: "Formulare & Anträge",
+    kindTravel: "Reisebuchungen",
+    kindTickets: "Tickets & Passes",
+    kindOther: "Sonstiges Wichtiges",
+    valuePromise:
+      "Egal ob Frist, Risiko, Rückerstattung oder einfach Klarheit – BureauCare hilft dir, schneller zu verstehen, was zählt.",
+    journeyTitle: "So läuft es nach dem Upload",
+    journeyStep1: "Dokument erkennen",
+    journeyStep2: "Inhalt einordnen",
+    journeyStep3: "Fristen sichtbar machen",
+    journeyStep4: "Passende Analyse empfehlen",
+    journeyStep5: "Nächste Schritte erklären",
+    trustPillar1: "Klartext statt Behördendschungel",
+    trustPillar2: "Einordnung statt Rätselraten",
+    trustPillar3: "Vorschlag fürs Modul – du entscheidest",
+    trustCardTitle: "Darauf legen wir Wert",
+    afterUploadHint:
+      "Nach dem Upload erkennt BureauCare den Dokumenttyp, fasst den Inhalt zusammen und schlägt die passende Analyse vor – Fristen, Risiken und Chancen werden klar.",
+    saveInfoTitle: "So wird gespeichert",
+    saveInfoText:
+      "Deine Datei landet im privaten Supabase-Bucket documents. Jeder Pfad wird unter deiner Nutzer-ID gespeichert, damit ausschließlich du Zugriff auf deine Dokumente hast.",
+    cardTitle: "Datei sicher hochladen",
+    allowedFormats: "Erlaubte Formate: PDF, JPG, JPEG, PNG. Maximale Dateigröße: 15 MB.",
+    dropzoneTitle: "Datei hier hineinziehen",
+    dropzoneText: "Am Desktop kannst du die Datei per Drag & Drop ablegen oder unten direkt auswählen.",
+    pickFile: "Datei auswählen",
+    takePhoto: "Dokument fotografieren",
+    submit: "Dokument hochladen",
+    submitting: "Datei wird hochgeladen..."
+  },
   tasks: { section: "Aufgaben", title: "Offene Fristen im Blick", intro: "Hier siehst du, was gerade wichtig ist, warum es zählt und wie du direkt zum passenden Dokument kommst.", none: "Noch keine Aufgaben vorhanden.", topic: "Thema", whatToDo: "Was zu tun ist", noLinkedDocument: "Kein Dokument verknüpft", toDocument: "Zum Dokument und nächsten Schritt", markDone: "Als erledigt markieren", openOfficialLink: "Offiziellen Link öffnen" },
   documents: { badge: "Dokument", introReady: "Hier ist in einfachen Worten, was das Dokument von dir will.", introPending: "Dokument hochgeladen. Analyse folgt.", topBox: "Das Wichtigste", topTitle: "Sofort erkennen, was jetzt wichtig ist", reactionNeeded: "Reaktion nötig", noDirectPressure: "Kein direkter Handlungsdruck", keyPoints: "Kernpunkte", keyPointsText: "Die wichtigsten Aussagen in sehr kurzer Form.", explainTitle: "Vereinfacht erklärt", explainText: "Kurz oder mit etwas mehr Kontext, aber ohne Behördensprache.", nextStepsTitle: "Was du jetzt tun solltest", nextStepsText: "Die nächsten sinnvollen Schritte aus dem Dokument.", noNextStep: "Noch kein klarer nächster Schritt erkannt.", ifIgnoredTitle: "Wenn du nichts machst", ifIgnoredText: "Mögliche Folgen, soweit aus dem Dokument erkennbar.", noClearConsequence: "Dazu war im Dokument keine klare Folge erkennbar.", understandTitle: "Dokument verstehen", understandText: "BureauCare liest das Dokument serverseitig und erklärt es dir in einfachen Worten.", beforeAnalysis: "Vor der Analyse", beforeAnalysisText: "Wir prüfen, wer das Dokument geschickt hat, worum es geht, ob du etwas tun musst, bis wann Zeit ist und was du jetzt am besten machen solltest.", analyzeDocument: "Dokument analysieren", analyzingDocument: "Dokument wird analysiert...", createReply: "Antwort erstellen", whereToDoIt: "Wo du das erledigen kannst", kind: "Art", office: "Stelle", address: "Adresse", openOfficialLink: "Offiziellen Link öffnen", nextStep: "Nächster Schritt", nextStepText: "Hier kannst du direkt eine passende Antwort vorbereiten.", unknownFileType: "Unbekannter Dateityp", noDownloadLink: "Für diese Datei konnte kein Download-Link erzeugt werden." },
   reply: { back: "Zurück zum Dokument", badge: "Antwortgenerator", title: "Passende Antwort vorbereiten", intro: "Wähle einen Ton und lasse dir einen direkt nutzbaren Entwurf für dieses Schreiben erstellen.", unknownSender: "Unbekannter Absender", situation: "Ausgangslage", situationText: "Diese vereinfachte Zusammenfassung fließt in die Antwort ein.", note: "Hinweis", noteText: "Prüfe den Entwurf kurz, bevor du ihn verschickst.", tone: "Antwortton", format: "Format", asLetter: "Als Schreiben", asEmail: "Als E-Mail", includeName: "Meinen Namen am Ende einfügen", create: "Antwort generieren", creating: "Antwort wird erstellt...", regenerate: "Neue Antwort generieren", regenerating: "Neue Version wird erstellt...", previousDrafts: "Frühere Entwürfe", german: "Deutsch", neutral: "Neutral", friendly: "Freundlich", veryFormal: "Sehr formell", objection: "Widerspruch", appeal: "Einspruch", needMoreTime: "Ich brauche mehr Zeit" }
@@ -187,7 +257,51 @@ const en: Copy = {
   actionMode: { online: "Online possible", onSite: "In person", byPost: "By mail", byPhone: "By phone" },
   home: { ...de.home, welcome: "Welcome back", titleFallback: "Your BureauCare", intro: "All important documents in one protected place, with clear explanations, deadlines and next steps.", newLetter: "New document", uploadTitle: "Upload a new document", uploadText: "Upload an official document or notice and keep it safe in your account.", latestDocuments: "Recent documents", entries: "entries", noDocuments: "No documents yet. Upload your first document to see an overview here.", openDeadlines: "Open deadlines", tasks: "tasks", noDeadlinesTitle: "No open deadlines yet", noDeadlinesText: "As soon as a document with a deadline is detected, your next task appears here automatically." },
   settings: { ...de.settings, section: "Settings", title: "Account and language", intro: "Choose how your name appears in replies and which language BureauCare should additionally translate into.", currentState: "Current status", noName: "No name saved", sessionText: "You can sign out safely at any time. Your documents stay in your protected area.", fullName: "Your name", translationLanguage: "Translation language", save: "Save settings", saving: "Saving..." },
-  upload: { ...de.upload, badge: "Upload document", title: "Store your document safely in BureauCare", intro: "Upload an official document or notice here. BureauCare explains what you need to do.", saveInfoTitle: "How it is stored", saveInfoText: "Your file is stored in the private Supabase bucket documents. Each path is saved under your user ID so only you can access your documents.", cardTitle: "Upload file securely", allowedFormats: "Allowed formats: PDF, JPG, JPEG, PNG. Maximum file size: 15 MB.", dropzoneTitle: "Drop your file here", dropzoneText: "On desktop you can drag and drop the file here or choose it below.", pickFile: "Choose file", submit: "Upload document", submitting: "Uploading file..." },
+  upload: {
+    ...de.upload,
+    badge: "Upload document",
+    title: "Your entry point for important documents",
+    heroLine: "Upload your papers – BureauCare reads them, sorts them out, and highlights what matters for you.",
+    intro:
+      "Upload contracts, official letters, invoices or other important documents. BureauCare figures out what it is, explains the content, and suggests a sensible next step.",
+    kindsTitle: "What we can take a careful look at for you",
+    kindsIntro: "From everyday papers to the odd one out: if it matters to you, it belongs here.",
+    kindsInvitation: "No cold upload slot – just a calm invite to bring whatever is on your mind.",
+    kindContracts: "Contracts",
+    kindOfficial: "Decisions & authority letters",
+    kindInvoices: "Invoices",
+    kindReminders: "Reminders & dunning",
+    kindTerminations: "Terminations",
+    kindForms: "Forms & applications",
+    kindTravel: "Trip & hotel bookings",
+    kindTickets: "Tickets & boarding passes",
+    kindOther: "Other important papers",
+    valuePromise:
+      "Deadlines, risk, refunds or simply clarity – BureauCare helps you see what matters sooner, without the hype.",
+    journeyTitle: "After you upload",
+    journeyStep1: "Spot the document type",
+    journeyStep2: "Sort the content",
+    journeyStep3: "Surface likely deadlines",
+    journeyStep4: "Recommend the right analysis",
+    journeyStep5: "Explain sensible next steps",
+    trustPillar1: "Plain language, less bureaucracy fog",
+    trustPillar2: "Structure instead of guessing",
+    trustPillar3: "We suggest the path – you stay in charge",
+    trustCardTitle: "What we care about here",
+    afterUploadHint:
+      "After upload, BureauCare detects the document type, summarises the content, and suggests the right analysis – deadlines, risks and opportunities become visible.",
+    saveInfoTitle: "How it is stored",
+    saveInfoText:
+      "Your file is stored in the private Supabase bucket documents. Each path is saved under your user ID so only you can access your documents.",
+    cardTitle: "Upload file securely",
+    allowedFormats: "Allowed formats: PDF, JPG, JPEG, PNG. Maximum file size: 15 MB.",
+    dropzoneTitle: "Drop your file here",
+    dropzoneText: "On desktop you can drag and drop the file here or choose it below.",
+    pickFile: "Choose file",
+    takePhoto: "Take a photo",
+    submit: "Upload document",
+    submitting: "Uploading file..."
+  },
   tasks: { ...de.tasks, section: "Tasks", title: "Keep deadlines in view", intro: "Here you can see what matters now, why it matters, and how to jump to the right document.", none: "No tasks yet.", topic: "Subject", whatToDo: "What to do", noLinkedDocument: "No linked document", toDocument: "Open document and next step", markDone: "Mark as done", openOfficialLink: "Open official link" },
   documents: { ...de.documents, introReady: "Here is what the document wants from you, in simple words.", introPending: "Document uploaded. Analysis is coming.", topBox: "What matters most", topTitle: "See right away what matters now", reactionNeeded: "Action needed", noDirectPressure: "No immediate pressure", keyPoints: "Key points", keyPointsText: "The most important statements in a very short form.", explainTitle: "Explained simply", explainText: "Short or with more context, but without official jargon.", nextStepsTitle: "What you should do now", nextStepsText: "The next sensible steps from the document.", noNextStep: "No clear next step detected yet.", ifIgnoredTitle: "If you do nothing", ifIgnoredText: "Possible consequences, as far as they can be seen in the document.", noClearConsequence: "No clear consequence could be identified from the document.", understandTitle: "Understand the document", understandText: "BureauCare reads the document on the server and explains it in simple words.", beforeAnalysis: "Before the analysis", beforeAnalysisText: "We check who sent the document, what it is about, whether you need to do something, by when, and what you should do next.", analyzeDocument: "Analyze document", analyzingDocument: "Document is being analyzed...", createReply: "Create reply", whereToDoIt: "Where you can do this", kind: "Type", office: "Office", address: "Address", openOfficialLink: "Open official link", nextStep: "Next step", nextStepText: "Here you can prepare a fitting reply right away.", unknownFileType: "Unknown file type", noDownloadLink: "No download link could be created for this file." },
   reply: { ...de.reply, back: "Back to document", badge: "Reply generator", title: "Prepare a suitable reply", intro: "Choose a tone and generate a ready-to-use draft for this message.", unknownSender: "Unknown sender", situation: "Situation", situationText: "This simplified summary is used for the reply.", note: "Note", noteText: "Please check the draft briefly before sending it.", tone: "Reply tone", format: "Format", asLetter: "As message", asEmail: "As email", includeName: "Add my name at the end", create: "Generate reply", creating: "Generating reply...", regenerate: "Generate a new reply", regenerating: "Creating a new version...", previousDrafts: "Earlier drafts", german: "German", neutral: "Neutral", friendly: "Friendly", veryFormal: "Very formal", objection: "Objection", appeal: "Appeal", needMoreTime: "I need more time" }
@@ -335,14 +449,44 @@ const es: Copy = {
   upload: {
     ...en.upload,
     badge: "Subir documento",
-    title: "Guardar tu documento de forma segura en BureauCare",
-    intro: "Sube aqu铆 un documento oficial o una notificaci贸n. BureauCare te explica qu茅 debes hacer.",
-    saveInfoTitle: "C贸mo se guarda",
-    saveInfoText: "Tu archivo se guarda en el bucket privado documents de Supabase. Cada ruta se guarda bajo tu ID de usuario, as铆 que solo t煤 puedes acceder a tus documentos.",
+    title: "Tu punto de entrada para documentos importantes",
+    heroLine:
+      "Sube tus documentos: BureauCare los lee, los ordena y resalta lo que importa.",
+    intro:
+      "Sube contratos, notificaciones oficiales, facturas u otros documentos importantes. BureauCare identifica de qué se trata, explica el contenido y te propone el siguiente paso razonable.",
+    kindsTitle: "Qué puede ayudarte a entender BureauCare",
+    kindsIntro: "Una guía rápida – también valen documentos mixtos o poco habituales.",
+    kindContracts: "Contratos",
+    kindOfficial: "Cartas de la administración",
+    kindInvoices: "Facturas",
+    kindReminders: "Avisos y reclamaciones",
+    kindTerminations: "Rescisiones y bajas",
+    kindForms: "Formularios y solicitudes",
+    kindTravel: "Reservas de viaje y hotel",
+    kindTickets: "Billetes y abonos de transporte",
+    kindsInvitation: "Sin frío trámite digital: sube lo que te preocupa y lo miramos con calma.",
+    valuePromise:
+      "Plazo, riesgo, devolución o solo entender el papel: BureauCare te ayuda a ver qué importa, sin drama.",
+    journeyTitle: "Después de subirlo",
+    journeyStep1: "Detectar el tipo de documento",
+    journeyStep2: "Ordenar el contenido",
+    journeyStep3: "Aclarar plazos si las hay",
+    journeyStep4: "Recomendar el análisis adecuado",
+    journeyStep5: "Explicar los próximos pasos",
+    trustPillar1: "Lenguaje claro, menos laberinto",
+    trustPillar2: "Orden en lugar de adivinar",
+    trustPillar3: "Te sugerimos el camino, tú decides",
+    trustCardTitle: "En lo que nos enfocamos",
+    kindOther: "Otros documentos importantes",
+    afterUploadHint:
+      "Tras la subida, BureauCare detecta el tipo de documento, resume el contenido y sugiere el análisis adecuado: plazos, riesgos y oportunidades quedan claros.",
+    saveInfoTitle: "Cómo se guarda",
+    saveInfoText:
+      "Tu archivo se guarda en el bucket privado documents de Supabase. Cada ruta se guarda bajo tu ID de usuario, así que solo tú puedes acceder a tus documentos.",
     cardTitle: "Subir archivo de forma segura",
-    allowedFormats: "Formatos permitidos: PDF, JPG, JPEG, PNG. Tama帽o m谩ximo: 15 MB.",
-    dropzoneTitle: "Suelta tu archivo aqu铆",
-    dropzoneText: "En escritorio puedes arrastrar el archivo aqu铆 o elegirlo abajo.",
+    allowedFormats: "Formatos permitidos: PDF, JPG, JPEG, PNG. Tamaño máximo: 15 MB.",
+    dropzoneTitle: "Suelta tu archivo aquí",
+    dropzoneText: "En escritorio puedes arrastrar el archivo aquí o elegirlo abajo.",
     pickFile: "Elegir archivo",
     submit: "Subir documento",
     submitting: "Subiendo archivo..."
@@ -435,7 +579,49 @@ const zh: Copy = {
   actionMode: { online: "可在线办理", onSite: "需要到现场", byPost: "通过邮寄", byPhone: "通过电话" },
   home: { ...en.home, welcome: "欢迎回来", titleFallback: "你的 BureauCare", intro: "把重要文件放在一个安全的地方，并获得清晰说明、期限提醒和下一步建议。", newLetter: "新文件", uploadTitle: "上传新文件", uploadText: "上传官方文件或通知，并安全保存在你的账号中。", latestDocuments: "最近文件", entries: "条", noDocuments: "还没有文件。上传第一份文件后，这里就会出现总览。", openDeadlines: "待处理期限", tasks: "任务", noDeadlinesTitle: "目前没有开放期限", noDeadlinesText: "一旦识别到带期限的文件，你的下一步任务会自动显示在这里。" },
   settings: { ...en.settings, section: "设置", title: "账号与语言", intro: "设置你的姓名如何出现在回复中，以及 BureauCare 还要额外翻译成哪种语言。", currentState: "当前状态", noName: "还没有保存姓名", sessionText: "你可以随时安全退出登录。你的文件会继续保存在受保护区域中。", fullName: "你的姓名", translationLanguage: "翻译语言", save: "保存设置", saving: "正在保存..." },
-  upload: { ...en.upload, badge: "上传文件", title: "将文件安全保存到 BureauCare", intro: "在这里上传官方文件或通知。BureauCare 会解释你接下来需要做什么。", saveInfoTitle: "保存方式", saveInfoText: "你的文件会保存在 Supabase 的私有 documents 存储桶中。每个路径都绑定到你的用户 ID，因此只有你能访问这些文件。", cardTitle: "安全上传文件", allowedFormats: "允许格式：PDF、JPG、JPEG、PNG。最大文件大小：15 MB。", dropzoneTitle: "把文件拖到这里", dropzoneText: "在桌面端，你可以把文件拖放到这里，或者在下方直接选择。", pickFile: "选择文件", submit: "上传文件", submitting: "正在上传文件..." },
+  upload: {
+    ...en.upload,
+    badge: "上传文件",
+    title: "重要文件的入口",
+    heroLine: "上传材料后，BureauCare 会阅读、整理并突出对你重要的内容。",
+    intro:
+      "上传合同、官方函件、发票或其他重要文件。BureauCare 会识别主题、说明内容，并提示合理的下一步。",
+    kindsTitle: "这些材料我们都能认真帮你看",
+    kindsIntro: "从常见函件到冷门附件：对你重要的，就值得放上来。",
+    kindContracts: "合同",
+    kindOfficial: "官方函件与通知",
+    kindInvoices: "发票与账单",
+    kindReminders: "催款与提醒",
+    kindTerminations: "解约与终止",
+    kindForms: "表格与申请",
+    kindTravel: "酒店与行程预订",
+    kindTickets: "机票与电子票",
+    kindsInvitation: "不是冷冰冰的“上传框”，而是请你把在意的那份文件放下就好。",
+    valuePromise:
+      "无论是期限、风险、退款还是单纯想弄懂内容，BureauCare 帮你更快抓住重点，语气克制、不夸大。",
+    journeyTitle: "上传之后会发生什么",
+    journeyStep1: "识别文件类型",
+    journeyStep2: "整理内容要点",
+    journeyStep3: "尽量标出相关期限",
+    journeyStep4: "推荐合适的分析方式",
+    journeyStep5: "用清晰语言说明下一步",
+    trustPillar1: "少点官样文章，多点听得懂的话",
+    trustPillar2: "帮你理清，而不是让你猜",
+    trustPillar3: "我们提示合适入口，决定仍在你手里",
+    trustCardTitle: "我们坚持的几件事",
+    kindOther: "其他重要材料",
+    afterUploadHint:
+      "上传后，BureauCare 会识别文件类型、归纳内容并建议合适的分析——期限、风险与机会一目了然。",
+    saveInfoTitle: "保存方式",
+    saveInfoText: "你的文件会保存在 Supabase 的私有 documents 存储桶中。每个路径都绑定到你的用户 ID，因此只有你能访问这些文件。",
+    cardTitle: "安全上传文件",
+    allowedFormats: "允许格式：PDF、JPG、JPEG、PNG。最大文件大小：15 MB。",
+    dropzoneTitle: "把文件拖到这里",
+    dropzoneText: "在桌面端，你可以把文件拖放到这里，或者在下方直接选择。",
+    pickFile: "选择文件",
+    submit: "上传文件",
+    submitting: "正在上传文件..."
+  },
   tasks: { ...en.tasks, section: "任务", title: "关注你的期限", intro: "这里会告诉你现在最重要的事情、原因，以及如何直接打开对应文件。", none: "目前还没有任务。", topic: "主题", whatToDo: "需要做什么", noLinkedDocument: "没有关联文件", toDocument: "打开文件和下一步", markDone: "标记为完成", openOfficialLink: "打开官方链接" },
   documents: { ...en.documents, badge: "文件", introReady: "这里会用简单的话告诉你，这份文件希望你做什么。", introPending: "文件已上传。分析即将开始。", topBox: "最重要的信息", topTitle: "马上看清现在最重要的事", reactionNeeded: "需要处理", noDirectPressure: "目前没有直接压力", keyPoints: "重点内容", keyPointsText: "最重要的内容会以简短方式展示。", explainTitle: "简单说明", explainText: "简短但清楚，不使用难懂的官方语言。", nextStepsTitle: "你现在应该做什么", nextStepsText: "从这份文件中整理出的下一步建议。", noNextStep: "目前还没有识别到明确的下一步。", ifIgnoredTitle: "如果你不处理", ifIgnoredText: "根据文件可见内容，可能出现的后果。", noClearConsequence: "这份文件里没有明确说明后果。", understandTitle: "理解这份文件", understandText: "BureauCare 会在服务器上读取文件，并用简单语言为你解释。", beforeAnalysis: "分析前", beforeAnalysisText: "我们会查看是谁发来的、内容是什么、你是否需要行动、截止时间，以及最合适的下一步。", analyzeDocument: "分析文件", analyzingDocument: "正在分析文件...", createReply: "生成回复", whereToDoIt: "你可以在哪里办理", kind: "类型", office: "机构", address: "地址", openOfficialLink: "打开官方链接", nextStep: "下一步", nextStepText: "你可以直接在这里准备一份合适的回复。", unknownFileType: "未知文件类型", noDownloadLink: "无法为这个文件生成下载链接。" },
   reply: { ...en.reply, back: "返回文件", badge: "回复生成器", title: "准备合适的回复", intro: "选择语气，然后为这份来信生成一份可直接使用的回复草稿。", unknownSender: "未知发件方", situation: "当前情况", situationText: "这份简化总结会用于生成回复。", note: "提示", noteText: "发送前请简短检查一下草稿。", tone: "回复语气", format: "格式", asLetter: "正式信件", asEmail: "电子邮件", includeName: "在结尾加入我的姓名", create: "生成回复", creating: "正在生成回复...", regenerate: "重新生成回复", regenerating: "正在生成新版本...", previousDrafts: "之前的草稿", german: "德语", neutral: "中性", friendly: "友好", veryFormal: "非常正式", objection: "异议", appeal: "申诉", needMoreTime: "我需要更多时间" }

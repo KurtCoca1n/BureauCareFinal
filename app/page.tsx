@@ -1,5 +1,6 @@
 ﻿import Image from "next/image";
-import { Lock, ShieldCheck, Sparkles, Upload } from "lucide-react";
+import Link from "next/link";
+import { Camera, Lock, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { StartLink } from "@/components/marketing/start-link";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ const marketingCopy = {
     title: "BureauCare erklärt dir Behördendokumente einfach und schreibt die passende Antwort für dich.",
     text: "Lade ein Dokument hoch und verstehe in wenigen Sekunden, was du tun musst. Klar, ruhig und ohne Behördensprache.",
     start: "Starten",
+    cameraCta: "Dokument fotografieren?",
     privacy: "Deine Dokumente sind privat und geschützt.",
     stepTitle: "So funktioniert es",
     stepHeading: "Drei ruhige Schritte",
@@ -36,6 +38,7 @@ const marketingCopy = {
     title: "BureauCare explains official documents in simple language and drafts the right reply for you.",
     text: "Upload a document and understand within seconds what you need to do. Clear, calm and without bureaucratic jargon.",
     start: "Get started",
+    cameraCta: "Snap a document?",
     privacy: "Your documents stay private and protected.",
     stepTitle: "How it works",
     stepHeading: "Three calm steps",
@@ -59,6 +62,7 @@ const marketingCopy = {
     title: "BureauCare resmi belgeleri sana basit莽e a莽谋klar ve uygun yan谋t谋 haz谋rlar.",
     text: "Bir belge yükle ve birka莽 saniye i莽inde ne yapman gerekti臒ini anla. Sakin, a莽谋k ve resmi dil karma艧as谋 olmadan.",
     start: "Ba艧la",
+    cameraCta: "Belgeyi fotografla?",
     privacy: "Belgelerin gizli ve korumal谋 kal谋r.",
     stepTitle: "Nas谋l 莽al谋艧谋r",
     stepHeading: "Ü莽 sakin ad谋m",
@@ -82,6 +86,7 @@ const marketingCopy = {
     title: "BureauCare 锌褉芯褋褌芯 锌芯褟褋薪褞褦 芯褎褨褑褨泄薪褨 写芯泻褍屑械薪褌懈 褌邪 写芯锌芯屑邪谐邪褦 锌褨写谐芯褌褍胁邪褌懈 胁褨写锌芯胁褨写褜.",
     text: "袟邪胁邪薪褌邪卸 写芯泻褍屑械薪褌 褨 蟹邪 泻褨谢褜泻邪 褋械泻褍薪写 蟹褉芯蟹褍屑褨泄, 褖芯 锌芯褌褉褨斜薪芯 蟹褉芯斜懈褌懈. 小锌芯泻褨泄薪芯, 褔褨褌泻芯 泄 斜械蟹 斜褞褉芯泻褉邪褌懈褔薪芯褩 屑芯胁懈.",
     start: "袩芯褔邪褌懈",
+    cameraCta: "袟褉芯斜懈褌懈 褫芯褌芯?",
     privacy: "孝胁芯褩 写芯泻褍屑械薪褌懈 锌褉懈胁邪褌薪褨 泄 蟹邪褏懈褖械薪褨.",
     stepTitle: "携泻 褑械 锌褉邪褑褞褦",
     stepHeading: "孝褉懈 褋锌芯泻褨泄薪褨 泻褉芯泻懈",
@@ -105,6 +110,7 @@ const marketingCopy = {
     title: "BureauCare te explica documentos oficiales de forma simple y redacta la respuesta adecuada para ti.",
     text: "Sube un documento y entiende en pocos segundos qu茅 tienes que hacer. Claro, tranquilo y sin lenguaje burocr谩tico.",
     start: "Empezar",
+    cameraCta: "¿Fotografiar un documento?",
     privacy: "Tus documentos son privados y est谩n protegidos.",
     stepTitle: "C贸mo funciona",
     stepHeading: "Tres pasos tranquilos",
@@ -150,8 +156,16 @@ export default async function LandingPage() {
             </h1>
             <p className="max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">{copy.text}</p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <StartLink href="/login" label={copy.start} />
+            <Link
+              href={`/login?next=${encodeURIComponent("/app/upload?camera=1")}`}
+              prefetch
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 border-[var(--accent)] bg-white/90 px-6 text-sm font-semibold text-[var(--accent-strong)] shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-soft)] active:scale-[0.98]"
+            >
+              <Camera className="h-4 w-4 shrink-0" aria-hidden />
+              {copy.cameraCta}
+            </Link>
             <div className="inline-flex min-h-12 items-center rounded-2xl border border-[var(--line)] bg-white px-5 text-sm text-[var(--muted)]">
               {copy.privacy}
             </div>
