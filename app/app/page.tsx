@@ -1,81 +1,51 @@
 ﻿import Link from "next/link";
-import { ArrowRight, FileText, MapPinned, Target, Upload, WalletCards } from "lucide-react";
+import { ArrowRight, Upload } from "lucide-react";
 import type { Route } from "next";
 
 import { CaseCard } from "@/components/app/case-card";
+import { HomeImpactSection } from "@/components/app/home-impact-section";
+import { HomeExtrasSection } from "@/components/app/home-extras-section";
 import { HomeGreeting } from "@/components/app/home-greeting";
+import { HomeStatusOverview } from "@/components/app/home-status-overview";
 import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
-import { TaskCard } from "@/components/app/task-card";
 import { WeeklyOverview } from "@/components/app/weekly-overview";
 import { WelcomeAssistantPanel } from "@/components/app/welcome-assistant-panel";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { buildHomeCaseSummaryLine, getCasesListCopy } from "@/lib/case-ui";
+import { estimateHomeImpact } from "@/lib/home-impact";
 import { getHomeGreeting } from "@/lib/home-greeting-v2";
-import { getGoalsCopy } from "@/lib/goals-ui";
-import { getCopy, getDateLocale, getReminderCopy, getUsageCopy } from "@/lib/i18n";
+import { getCopy, getDateLocale } from "@/lib/i18n";
 import { normalizePreferredLanguage } from "@/lib/languages";
-import { getMoneyBackFinderCopy } from "@/lib/money-back-finder-ui";
 import { getProfileFirstName } from "@/lib/profile";
 import { buildWelcomeAssistantOverview, syncDerivedWelcomeStatuses } from "@/lib/welcome-assistant";
-import { getWelcomeCopy } from "@/lib/welcome-ui";
 import {
   getAllWelcomeStepDocumentLinks,
   getAllWelcomeStepPreparations,
   getAllWelcomeStepTaskLinks,
-  getCasesWithActionNeeded,
+  getAllCases,
+  getAllTasks,
   getDocumentAnalysisByDocumentId,
   getDocumentsByIds,
-  getGoals,
   getPersonalDataSuggestions,
   getProfile,
-  getRecentDocuments,
   getTaskReminderBuckets,
+  getUsageSummaryForCurrentUser,
   getTasksByIds,
   getUserPersonalData,
   getWelcomeSteps,
-  getWelcomeProfile,
-  getUsageSummaryForCurrentUser
+  getWelcomeProfile
 } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
-function ReminderSection({
-  title,
-  tasks,
-  locale,
-  emptyText
-}: {
-  title: string;
-  tasks: Awaited<ReturnType<typeof getTaskReminderBuckets>>["today"];
-  locale: string;
-  emptyText: string;
-}) {
-  return (
-    <Card className="space-y-4 p-5">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-base font-semibold">{title}</h3>
-        <StatusBadge tone={tasks.length ? "accent" : "neutral"}>{tasks.length}</StatusBadge>
-      </div>
-      {tasks.length ? (
-        <div className="space-y-3">
-          {tasks.slice(0, 3).map((task) => (
-            <TaskCard key={task.id} task={task} compact locale={locale} />
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm leading-6 text-[var(--muted)]">{emptyText}</p>
-      )}
-    </Card>
-  );
-}
-
 export default async function AppHomePage() {
-  const [profile, documents, reminderBuckets, usage, cases, goals, welcomeProfile, welcomeSteps, welcomePreparations, welcomeDocumentLinks, welcomeTaskLinks, personalData] = await Promise.all([
+  const [profile, reminderBuckets, allCases, allTasks, usageSummary, welcomeProfile, welcomeSteps, welcomePreparations, welcomeDocumentLinks, welcomeTaskLinks, personalData] =
+    await Promise.all([
     getProfile(),
-    getRecentDocuments(),
     getTaskReminderBuckets(),
+    getAllCases(),
+    getAllTasks(),
     getUsageSummaryForCurrentUser(),
-    getCasesWithActionNeeded(),
-    getGoals(),
     getWelcomeProfile(),
     getWelcomeSteps(),
     getAllWelcomeStepPreparations(),
@@ -91,12 +61,8 @@ export default async function AppHomePage() {
     getTasksByIds(welcomeTaskLinks.map((item) => item.task_id))
   ]);
   const copy = getCopy(locale);
-  const goalsCopy = getGoalsCopy(locale);
-  const reminderCopy = getReminderCopy(locale);
-  const usageCopy = getUsageCopy(locale);
-  const welcomeCopy = getWelcomeCopy(locale);
-  const refundsCopy = getMoneyBackFinderCopy(locale);
   const dateLocale = getDateLocale(locale);
+  const casesListCopy = getCasesListCopy(locale);
   const greeting = getHomeGreeting(locale, getProfileFirstName(profile));
   const welcomeAnalyses = new Map(
     await Promise.all(welcomeDocuments.map(async (document) => [document.id, await getDocumentAnalysisByDocumentId(document.id)] as const))
@@ -127,228 +93,98 @@ export default async function AppHomePage() {
           personalData
         })
       : null;
-  const homeUi =
-    locale === "zh"
-      ? {
-          actionCasesTitle: "需要处理的案件",
-          allCases: "查看全部案件",
-          noCases: "一旦 BureauCare 识别出关联内容，你的案件就会自动显示在这里。",
-          goalsLink: "查看目标"
-        }
-      : {
-          actionCasesTitle: "Fälle mit Handlungsbedarf",
-          allCases: "Alle Fälle",
-          noCases: "Sobald BureauCare Zusammenhänge erkennt, erscheinen deine Fälle hier automatisch.",
-          goalsLink: goalsCopy.navLabel
-        };
-  const goalsSummaryText =
-    locale === "zh"
-      ? goals.length
-        ? `已保存 ${goals.length} 个目标`
-        : goalsCopy.noGoals
-      : goals.length
-        ? `${goals.length} ${goalsCopy.navLabel.toLowerCase()}`
-        : goalsCopy.noGoals;
+
+  const actionCases = allCases.filter((c) => c.status !== "done" || c.openTasksCount > 0);
+  const previewCases = actionCases.slice(0, 3);
+  const summaryLine = buildHomeCaseSummaryLine(actionCases, casesListCopy);
+
+  const completedTasksCount = allTasks.filter((task) => task.status === "done").length;
+  const impact = estimateHomeImpact({
+    analyzedDocumentsCount: usageSummary?.analysisCount ?? 0,
+    createdRepliesCount: usageSummary?.replyCount ?? 0,
+    completedTasksCount,
+    casesCount: allCases.length
+  });
 
   return (
     <div className="space-y-10">
+      <div className="space-y-6">
         <HomeGreeting
-        locale={locale}
-        fullName={getProfileFirstName(profile)}
-        greeting={greeting.greeting}
-        greetings={greeting.greetings}
-        initialSupportLine={greeting.supportLine}
-        supportLines={greeting.supportLines}
-      />
+          locale={locale}
+          fullName={getProfileFirstName(profile)}
+          greetingBase={greeting.greetingBase}
+          greetings={greeting.greetings}
+          initialSupportLine={greeting.supportLine}
+          supportLines={greeting.supportLines}
+          initialPhase={greeting.phase}
+        />
+        <HomeExtrasSection locale={locale} />
+        <HomeImpactSection
+          locale={normalizedLocale}
+          moneyEur={impact.moneyEur}
+          timeMinutes={impact.timeMinutes}
+          nervesPercent={impact.nervesPercent}
+        />
+      </div>
 
       <WeeklyOverview locale={locale} dateLocale={dateLocale} />
 
-      <div className="grid gap-8 2xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <div className="space-y-12">
-          <div className="grid gap-5 xl:grid-cols-3">
-            <Link href="/app/upload">
-              <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <StatusBadge tone="accent">{copy.home.newLetter}</StatusBadge>
-                    <h2 className="text-xl font-semibold">{copy.home.uploadTitle}</h2>
-                    <p className="text-sm leading-6 text-[var(--muted)]">{copy.home.uploadText}</p>
-                  </div>
-                  <div className="rounded-2xl bg-[var(--accent-soft)] p-3 text-[var(--accent)]">
-                    <Upload className="h-5 w-5" />
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center text-sm font-medium text-[var(--accent)]">
-                  {copy.home.uploadTitle}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </Card>
-            </Link>
+      <div className="space-y-10">
+        <Link href="/app/upload" className="block">
+          <Card className="group border-2 border-[var(--accent)]/25 bg-[var(--surface-strong)] p-6 shadow-[0_14px_40px_rgba(44,122,123,0.08)] transition hover:border-[var(--accent)]/40 hover:shadow-[0_18px_48px_rgba(44,122,123,0.12)] sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 space-y-2">
+                <StatusBadge tone="accent">{copy.home.newLetter}</StatusBadge>
+                <h2 className="text-[1.35rem] font-semibold tracking-[-0.03em] sm:text-2xl">{copy.home.uploadTitle}</h2>
+                <p className="max-w-xl text-sm leading-relaxed text-[var(--muted)]">{copy.home.uploadText}</p>
+                <p className="text-sm font-medium leading-relaxed text-[var(--foreground)]/80">{copy.home.uploadActionHint}</p>
+              </div>
+              <div className="rounded-2xl bg-[var(--accent-soft)] p-3.5 text-[var(--accent)] transition group-hover:scale-[1.03]">
+                <Upload className="h-6 w-6" aria-hidden />
+              </div>
+            </div>
+            <div className="mt-6 inline-flex items-center text-sm font-semibold text-[var(--accent-strong)]">
+              {copy.home.uploadTitle}
+              <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden />
+            </div>
+          </Card>
+        </Link>
 
-            <Link href={"/app/goals" as Route}>
-              <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <StatusBadge tone="success">{goalsCopy.navLabel}</StatusBadge>
-                    <h2 className="text-xl font-semibold">{goalsCopy.plannerTitle}</h2>
-                    <p className="text-sm leading-6 text-[var(--muted)]">{goalsSummaryText}</p>
-                  </div>
-                  <div className="rounded-2xl bg-[rgba(123,191,159,0.16)] p-3 text-[var(--success)]">
-                    <Target className="h-5 w-5" />
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center text-sm font-medium text-[var(--success)]">
-                  {homeUi.goalsLink}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </Card>
-            </Link>
+        {welcomeOverview ? <WelcomeAssistantPanel locale={normalizedLocale} overview={welcomeOverview} /> : null}
 
-            <Link href={"/app/refunds" as Route}>
-              <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <StatusBadge tone="warning">{refundsCopy.homeBadge}</StatusBadge>
-                    <h2 className="text-xl font-semibold">{refundsCopy.homeTitle}</h2>
-                    <p className="text-sm leading-6 text-[var(--muted)]">{refundsCopy.homeText}</p>
-                  </div>
-                  <div className="rounded-2xl bg-[rgba(232,220,207,0.34)] p-3 text-[#8e7a54]">
-                    <WalletCards className="h-5 w-5" />
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center text-sm font-medium text-[#8e7a54]">
-                  {refundsCopy.homeAction}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </Card>
+        <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} />
+
+        <HomeStatusOverview locale={locale} buckets={reminderBuckets} />
+
+        <section className="rounded-[22px] border border-[var(--line)] bg-[linear-gradient(165deg,rgba(255,255,255,0.96),rgba(246,250,249,0.88))] p-4 shadow-[0_10px_28px_rgba(43,43,43,0.04)] sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1">
+              <h2 className="text-base font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                {casesListCopy.homeActionTitle}
+              </h2>
+              {actionCases.length > 0 ? (
+                <p className="text-sm leading-snug text-[var(--muted)]">{summaryLine}</p>
+              ) : (
+                <p className="text-sm leading-snug text-[var(--muted)]">{casesListCopy.homeNoCases}</p>
+              )}
+            </div>
+            <Link
+              href={"/app/cases" as Route}
+              className="shrink-0 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-strong)]"
+            >
+              {casesListCopy.homeAllCases}
             </Link>
           </div>
 
-          <Link href={"/app/welcome" as Route}>
-            <Card className="border-[var(--line-strong)] bg-[var(--surface-strong)] p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <StatusBadge tone="accent">{welcomeCopy.homeBadge}</StatusBadge>
-                  <h2 className="text-xl font-semibold">{welcomeCopy.homeTitle}</h2>
-                  <p className="text-sm leading-6 text-[var(--muted)]">
-                    {welcomeProfile ? welcomeCopy.pageIntro : welcomeCopy.homeText}
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-[rgba(174,193,233,0.18)] p-3 text-[#6f8ecb]">
-                  <MapPinned className="h-5 w-5" />
-                </div>
-              </div>
-              <div className="mt-6 inline-flex items-center text-sm font-medium text-[#6f8ecb]">
-                {welcomeCopy.homeAction}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </div>
-            </Card>
-          </Link>
-
-          {welcomeOverview ? <WelcomeAssistantPanel locale={normalizedLocale} overview={welcomeOverview} /> : null}
-
-          <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} />
-
-          <section className="space-y-5 pt-2">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">{copy.home.openDeadlines}</h2>
-              <StatusBadge tone="neutral">
-                {reminderBuckets.overdue.length + reminderBuckets.today.length + reminderBuckets.soon.length + reminderBuckets.open.length}
-              </StatusBadge>
+          {previewCases.length > 0 ? (
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {previewCases.map((caseItem) => (
+                <CaseCard key={caseItem.id} caseItem={caseItem} locale={locale} compact />
+              ))}
             </div>
-            <div className="grid gap-4 xl:grid-cols-3">
-              <ReminderSection title={reminderCopy.overdue} tasks={reminderBuckets.overdue} locale={locale} emptyText={reminderCopy.noItems} />
-              <ReminderSection title={reminderCopy.dueToday} tasks={reminderBuckets.today} locale={locale} emptyText={reminderCopy.noItems} />
-              <ReminderSection title={reminderCopy.dueSoon} tasks={reminderBuckets.soon} locale={locale} emptyText={reminderCopy.noItems} />
-            </div>
-          </section>
-
-          <section className="space-y-5">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">{homeUi.actionCasesTitle}</h2>
-              <Link href={"/app/cases" as Route} className="text-sm font-medium text-[var(--accent)]">
-                {homeUi.allCases}
-              </Link>
-            </div>
-            {cases.length ? (
-              <div className="grid gap-4 lg:grid-cols-2">
-                {cases.map((caseItem) => (
-                  <CaseCard key={caseItem.id} caseItem={caseItem} locale={locale} />
-                ))}
-              </div>
-            ) : (
-              <Card className="p-5 text-sm text-[var(--muted)]">{homeUi.noCases}</Card>
-            )}
-          </section>
-
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{copy.home.latestDocuments}</h2>
-              <span className="text-sm text-[var(--muted)]">
-                {documents.length} {copy.home.entries}
-              </span>
-            </div>
-            <div className="grid gap-3 lg:auto-rows-fr lg:grid-cols-2">
-              {documents.length ? (
-                documents.map((document) => (
-                  <Link key={document.id} href={`/app/documents/${document.id}` as Route}>
-                    <Card className="flex h-full items-center justify-between gap-3 p-4">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="rounded-2xl bg-[var(--accent-soft)] p-3 text-[var(--accent)]">
-                          <FileText className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="break-words font-medium">{document.original_filename}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
-                            <span>{new Date(document.created_at).toLocaleDateString(dateLocale)}</span>
-                            <StatusBadge tone="success">{copy.common.uploaded}</StatusBadge>
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-[var(--muted)]" />
-                    </Card>
-                  </Link>
-                ))
-              ) : (
-                <Card className="p-4 text-sm text-[var(--muted)] lg:col-span-2">{copy.home.noDocuments}</Card>
-              )}
-            </div>
-          </section>
-        </div>
-
-        <aside className="space-y-4 2xl:sticky 2xl:top-6">
-          {usage ? (
-            <Card className="space-y-4 border-[var(--line-strong)] bg-[var(--surface-strong)] p-5">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">{usageCopy.title}</h2>
-                <p className="text-sm leading-6 text-[var(--muted)]">{usageCopy.note}</p>
-              </div>
-              <div className="grid gap-3">
-                <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm font-semibold">
-                    {usage.analysisCount} / {usage.analysisLimit ?? usageCopy.unlimited}
-                  </p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">{usageCopy.analyses}</p>
-                </div>
-                <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm font-semibold">
-                    {usage.replyCount} / {usage.replyLimit ?? usageCopy.unlimited}
-                  </p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">{usageCopy.replies}</p>
-                </div>
-                <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm font-semibold">{goals.length}</p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">{goalsCopy.navLabel}</p>
-                </div>
-              </div>
-            </Card>
           ) : null}
-
-          <ReminderSection title={reminderCopy.openLater} tasks={reminderBuckets.open} locale={locale} emptyText={reminderCopy.noItems} />
-          <ReminderSection title={reminderCopy.completed} tasks={reminderBuckets.done} locale={locale} emptyText={reminderCopy.noItems} />
-        </aside>
+        </section>
       </div>
     </div>
   );
 }
-

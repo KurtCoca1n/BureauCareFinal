@@ -2,12 +2,12 @@ import { AlertTriangle, FileBadge2, Scale, ShieldAlert } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { analysisIndicatesContract } from "@/lib/contract-document";
 import { getContractAnalysisCopy, getContractGuidanceText } from "@/lib/contract-analysis-ui";
 import type { DocumentAnalysisRecord } from "@/lib/types";
 
 function hasContractAnalysis(analysis: DocumentAnalysisRecord) {
-  const documentType = (analysis.document_type ?? "").toLowerCase();
-  return documentType.includes("vertrag") || !!analysis.contract_type || !!analysis.contract_summary_simple;
+  return analysisIndicatesContract(analysis);
 }
 
 function getRiskTone(value: string | null | undefined) {

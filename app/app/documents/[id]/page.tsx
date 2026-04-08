@@ -17,6 +17,7 @@ import type { Route } from "next";
 import { AnalyzeDocumentForm } from "@/components/app/analyze-document-form";
 import { ContractClauseExplorer } from "@/components/app/contract-clause-explorer";
 import { DocumentSentForm, DocumentWaitingForm } from "@/components/app/case-status-form";
+import { ContractActionsPanel } from "@/components/app/contract-actions-panel";
 import { ContractAnalysisPanel } from "@/components/app/contract-analysis-panel";
 import { ContractQuestionGenerator } from "@/components/app/contract-question-generator";
 import { DocumentSummaryTabs } from "@/components/app/document-summary-tabs";
@@ -148,6 +149,12 @@ export default async function DocumentDetailPage({
           {analysis?.summary_simple ? (
             <>
               <ContractAnalysisPanel analysis={analysis} locale={locale} />
+              <ContractActionsPanel
+                document={document}
+                analysis={analysis}
+                kindDetection={kindDetection}
+                locale={locale}
+              />
               <div id="contract-clause-explorer" className="scroll-mt-24">
                 <ContractClauseExplorer clauses={analysis.contract_flagged_clauses ?? []} documentId={document.id} locale={locale} />
               </div>

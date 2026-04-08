@@ -11,7 +11,7 @@ export function PageShell({
 }) {
   return (
     <main
-      className={cn("mx-auto flex min-h-screen w-full max-w-[1280px] flex-col px-4 pt-6 sm:px-5 lg:px-6 lg:pb-10", className)}
+      className={cn("mx-auto flex min-h-screen w-full max-w-[min(100%,90rem)] flex-col px-4 pt-6 sm:px-5 lg:px-6 lg:pb-10", className)}
       style={{ paddingBottom: "var(--bottom-nav-offset)" }}
     >
       {children}

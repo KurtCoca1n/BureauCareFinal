@@ -167,6 +167,8 @@ export function getHomeGreeting(localeInput: string | null | undefined, fullName
 
   return {
     phase,
+    /** Begrüßung ohne Namen (für zweizeilige Home-Darstellung) */
+    greetingBase,
     greeting: joinGreetingName(greetingBase, fullName, locale),
     supportLine,
     greetings: [...phaseCopy.greetings],

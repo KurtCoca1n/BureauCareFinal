@@ -1,13 +1,13 @@
-﻿import { CaseCard } from "@/components/app/case-card";
+﻿import { CasesPageClient } from "@/components/app/cases-page-client";
 import { Card } from "@/components/ui/card";
-import { getCaseText } from "@/lib/case-ui";
+import { getCasesListCopy } from "@/lib/case-ui";
 import { getAllCases, getProfile } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
 
 export default async function CasesPage() {
   const [cases, profile] = await Promise.all([getAllCases(), getProfile()]);
   const locale = await getRequestLanguage(profile?.preferred_language);
-  const caseText = getCaseText(locale);
+  const listCopy = getCasesListCopy(locale);
   const pageCopy =
     locale === "en"
       ? {
@@ -47,20 +47,16 @@ export default async function CasesPage() {
 
   return (
     <div className="space-y-6">
-      <section className="space-y-2 pt-3">
+      <section className="space-y-3 pt-2">
         <h1 className="page-title page-title-accent text-4xl sm:text-5xl">{pageCopy.title}</h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted)] sm:text-[0.9375rem]">{listCopy.pageSubtitle}</p>
       </section>
 
       {cases.length ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {cases.map((caseItem) => (
-            <CaseCard key={caseItem.id} caseItem={caseItem} locale={locale} />
-          ))}
-        </div>
+        <CasesPageClient cases={cases} locale={locale} copy={listCopy} />
       ) : (
-        <Card className="p-5 text-sm text-[var(--muted)]">{pageCopy.empty}</Card>
+        <Card className="p-5 text-sm leading-relaxed text-[var(--muted)]">{pageCopy.empty}</Card>
       )}
     </div>
   );
 }
-

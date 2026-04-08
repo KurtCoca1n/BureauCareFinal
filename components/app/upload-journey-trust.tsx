@@ -1,21 +1,26 @@
-import { CircleCheck, HeartHandshake } from "lucide-react";
+"use client";
 
+import { useState } from "react";
+import { CircleCheck } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export type UploadJourneyTrustCopy = {
-  trustCardTitle: string;
-  journeyTitle: string;
+  journeyHeading: string;
+  journeyPeekLine: string;
   journeyStep1: string;
   journeyStep2: string;
   journeyStep3: string;
   journeyStep4: string;
   journeyStep5: string;
-  trustPillar1: string;
-  trustPillar2: string;
-  trustPillar3: string;
+  expandMore: string;
+  expandLess: string;
 };
 
 export function UploadJourneyTrust({ copy }: { copy: UploadJourneyTrustCopy }) {
+  const [expanded, setExpanded] = useState(false);
+
   const steps = [
     copy.journeyStep1,
     copy.journeyStep2,
@@ -23,47 +28,43 @@ export function UploadJourneyTrust({ copy }: { copy: UploadJourneyTrustCopy }) {
     copy.journeyStep4,
     copy.journeyStep5
   ];
-  const pillars = [copy.trustPillar1, copy.trustPillar2, copy.trustPillar3];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_minmax(0,340px)] lg:items-start">
-      <Card className="space-y-5 border-[var(--line)] bg-white/95 p-6 sm:p-7 shadow-[0_12px_36px_rgba(43,43,43,0.04)]">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-          <CircleCheck className="h-3.5 w-3.5 text-[var(--accent)]" />
-          {copy.journeyTitle}
+    <Card className="border-[var(--line)] bg-white/92 p-5 shadow-[0_10px_28px_rgba(43,43,43,0.03)] sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="min-w-0 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+            <CircleCheck className="h-3.5 w-3.5 shrink-0 text-[var(--accent)]" aria-hidden />
+            {copy.journeyHeading}
+          </div>
+          <p className="text-sm leading-relaxed text-[var(--muted)]">{copy.journeyPeekLine}</p>
         </div>
-        <ol className="flex flex-col gap-2 md:grid md:grid-cols-5 md:gap-2">
+        <Button
+          type="button"
+          variant="secondary"
+          className="min-h-10 shrink-0 self-start px-4 py-2 text-xs sm:self-center"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+        >
+          {expanded ? copy.expandLess : copy.expandMore}
+        </Button>
+      </div>
+
+      {expanded ? (
+        <ol className="mt-5 space-y-2" aria-label={copy.journeyHeading}>
           {steps.map((label, index) => (
             <li
               key={label}
-              className="flex flex-row items-center gap-3 rounded-[18px] border border-[var(--line)] bg-[rgba(246,250,249,0.45)] px-4 py-3 md:flex-col md:gap-2 md:px-3 md:py-4 md:text-center"
+              className="flex gap-3 rounded-[16px] border border-[var(--line)] bg-[rgba(246,250,249,0.5)] px-3.5 py-2.5"
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[rgba(95,163,163,0.14)] text-xs font-semibold tabular-nums text-[var(--accent)] md:h-8 md:w-8">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[rgba(95,163,163,0.14)] text-xs font-semibold tabular-nums text-[var(--accent)]">
                 {index + 1}
               </span>
-              <span className="text-sm font-medium leading-snug text-[var(--foreground)]/95 md:text-[13px]">{label}</span>
+              <span className="text-sm font-medium leading-snug text-[var(--foreground)]/95">{label}</span>
             </li>
           ))}
         </ol>
-      </Card>
-
-      <Card className="space-y-4 border border-[rgba(95,163,163,0.12)] bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(238,246,245,0.5))] p-6 shadow-[0_10px_32px_rgba(95,163,163,0.06)]">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-          <HeartHandshake className="h-3.5 w-3.5 text-[var(--accent)]" />
-          {copy.trustCardTitle}
-        </div>
-        <ul className="space-y-3">
-          {pillars.map((line) => (
-            <li
-              key={line}
-              className="flex gap-3 rounded-[18px] border border-[var(--line)] bg-white/90 px-4 py-3 text-sm leading-snug text-[var(--foreground)]/90"
-            >
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)] opacity-80" aria-hidden />
-              <span>{line}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
-    </div>
+      ) : null}
+    </Card>
   );
 }

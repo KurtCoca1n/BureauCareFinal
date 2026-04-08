@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Brain,
@@ -84,8 +84,47 @@ export function ProcessesBrowser({ locale }: { locale: string }) {
 
   const activeAuthority = processAuthorities.find((authority) => authority.id === selectedAuthorityId) ?? null;
   const bestMatchProcedure = searchOutcome.bestMatch?.procedure ?? null;
-  const highlightedProcedure = bestMatchProcedure ?? visibleProcedures[0] ?? null;
   const hasActiveSearch = normalizedQuery.length > 0;
+
+  /** Standardansicht „beliebte Vorgänge“: keine Behörde-Auswahl, keine Suche. */
+  const isPopularOverview = !selectedAuthorityId && !normalizedQuery;
+
+  const proceduresForGrid = useMemo(() => {
+    if (isPopularOverview) {
+      return visibleProcedures.slice(0, 4);
+    }
+    return visibleProcedures;
+  }, [visibleProcedures, isPopularOverview]);
+
+  const [spotlightIndex, setSpotlightIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isPopularOverview) {
+      setSpotlightIndex(0);
+      return;
+    }
+    if (proceduresForGrid.length === 0) {
+      return;
+    }
+    const intervalMs = 10_000;
+    const id = window.setInterval(() => {
+      setSpotlightIndex((i) => (i + 1) % proceduresForGrid.length);
+    }, intervalMs);
+    return () => window.clearInterval(id);
+  }, [isPopularOverview, proceduresForGrid.length]);
+
+  useEffect(() => {
+    setSpotlightIndex(0);
+  }, [selectedAuthorityId, normalizedQuery]);
+
+  const highlightedProcedure = bestMatchProcedure ?? visibleProcedures[0] ?? null;
+
+  const spotlightSafeIndex =
+    proceduresForGrid.length > 0 ? spotlightIndex % proceduresForGrid.length : 0;
+  const asideProcedure =
+    isPopularOverview && proceduresForGrid.length > 0
+      ? proceduresForGrid[spotlightSafeIndex] ?? null
+      : highlightedProcedure;
 
   return (
     <div className="space-y-8">
@@ -251,20 +290,21 @@ export function ProcessesBrowser({ locale }: { locale: string }) {
                 {activeAuthority ? getAuthorityLabel(activeAuthority, locale) : hasActiveSearch ? copy.alternativeMatchesLabel : copy.authoritySectionHint}
               </p>
             </div>
-            <StatusBadge tone={visibleProcedures.length ? "accent" : "neutral"}>
-              {visibleProcedures.length} {copy.sampleCountLabel}
+            <StatusBadge tone={proceduresForGrid.length ? "accent" : "neutral"}>
+              {proceduresForGrid.length} {copy.sampleCountLabel}
             </StatusBadge>
           </div>
 
-          {visibleProcedures.length ? (
+          {proceduresForGrid.length ? (
             <div className="grid gap-4 lg:grid-cols-2">
-              {visibleProcedures.map((procedure) => {
-                const isSelected = highlightedProcedure?.id === procedure.id;
+              {proceduresForGrid.map((procedure) => {
                 const relatedAuthorities = procedure.authorityIds
                   .map((authorityId) => processAuthorities.find((authority) => authority.id === authorityId))
                   .filter((authority): authority is ProcessAuthority => Boolean(authority));
                 const isBestMatch = bestMatchProcedure?.id === procedure.id;
-                const isHighlighted = highlightedProcedure?.id === procedure.id;
+                const isHighlighted = isPopularOverview
+                  ? asideProcedure?.id === procedure.id
+                  : highlightedProcedure?.id === procedure.id;
 
                 return (
                   <Link
@@ -317,18 +357,20 @@ export function ProcessesBrowser({ locale }: { locale: string }) {
 
         <aside>
           <Card className="border-[var(--line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,252,250,0.94))] p-6 xl:sticky xl:top-6">
-            {highlightedProcedure ? (
-              <div className="space-y-5">
+            {asideProcedure ? (
+              <div key={asideProcedure.id} className="bureaucare-spotlight-enter space-y-5">
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
-                    <StatusBadge tone="accent">{bestMatchProcedure?.id === highlightedProcedure.id ? copy.bestMatchLabel : copy.openPlaceholder}</StatusBadge>
-                    <StatusBadge tone="success">{getProcedureAvailabilityLabel(highlightedProcedure, locale)}</StatusBadge>
+                    <StatusBadge tone="accent">
+                      {bestMatchProcedure?.id === asideProcedure.id ? copy.bestMatchLabel : copy.openPlaceholder}
+                    </StatusBadge>
+                    <StatusBadge tone="success">{getProcedureAvailabilityLabel(asideProcedure, locale)}</StatusBadge>
                   </div>
-                  <h2 className="text-2xl font-semibold tracking-[-0.04em]">{getProcedureTitle(highlightedProcedure, locale)}</h2>
-                  <p className="text-sm leading-6 text-[var(--muted)]">{getProcedureSubtitle(highlightedProcedure, locale)}</p>
+                  <h2 className="text-2xl font-semibold tracking-[-0.04em]">{getProcedureTitle(asideProcedure, locale)}</h2>
+                  <p className="text-sm leading-6 text-[var(--muted)]">{getProcedureSubtitle(asideProcedure, locale)}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {highlightedProcedure.authorityIds.map((authorityId) => {
+                  {asideProcedure.authorityIds.map((authorityId) => {
                     const authority = processAuthorities.find((entry) => entry.id === authorityId);
                     if (!authority) return null;
 
@@ -342,7 +384,7 @@ export function ProcessesBrowser({ locale }: { locale: string }) {
                 <div className="rounded-[24px] border border-[var(--line)] bg-white/80 p-4">
                   <p className="text-sm font-semibold text-[var(--foreground)]">{copy.authorityLabel}</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    {highlightedProcedure.authorityIds
+                    {asideProcedure.authorityIds
                       .map((authorityId) => processAuthorities.find((entry) => entry.id === authorityId))
                       .filter((authority): authority is ProcessAuthority => Boolean(authority))
                       .map((authority) => getAuthorityLabel(authority, locale))
@@ -353,7 +395,7 @@ export function ProcessesBrowser({ locale }: { locale: string }) {
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{copy.comingSoon}</p>
                 </div>
                 <Link
-                  href={getProcedureHref(highlightedProcedure.id) as Route}
+                  href={getProcedureHref(asideProcedure.id) as Route}
                   className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[var(--line-strong)] bg-white px-5 py-3 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)]"
                 >
                   {copy.openPlaceholder}

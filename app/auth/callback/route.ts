@@ -1,8 +1,15 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from "next/server";
 
+import { getClientEnv } from "@/lib/env";
 import { normalizePreferredLanguage } from "@/lib/languages";
-import { createClient } from "@/lib/supabase/server";
 
+type CookieToSet = { name: string; value: string; options: CookieOptions };
+
+/**
+ * Email / PKCE callback: session cookies must be written onto the same
+ * NextResponse that is returned, otherwise the browser never stores the session.
+ */
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
@@ -10,39 +17,58 @@ export async function GET(request: NextRequest) {
   const type = url.searchParams.get("type");
   const locale = normalizePreferredLanguage(url.searchParams.get("locale"));
 
-  const redirectUrl = request.nextUrl.clone();
-  redirectUrl.pathname = "/login/confirmed";
-  redirectUrl.searchParams.set("locale", locale);
+  const env = getClientEnv();
 
-  const supabase = await createClient();
+  const redirectToConfirmed = (status: string) => {
+    const u = request.nextUrl.clone();
+    u.pathname = "/login/confirmed";
+    u.searchParams.set("locale", locale);
+    u.searchParams.set("status", status);
+    return u;
+  };
+
+  const createSupabase = (response: NextResponse) =>
+    createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
+        }
+      }
+    });
 
   if (code) {
+    const response = NextResponse.redirect(redirectToConfirmed("success"));
+    const supabase = createSupabase(response);
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    redirectUrl.searchParams.set("status", error ? "invalid" : "success");
-    return NextResponse.redirect(redirectUrl);
+    if (error) {
+      return NextResponse.redirect(redirectToConfirmed("invalid"));
+    }
+    return response;
   }
 
   if (tokenHash && type) {
+    const response = NextResponse.redirect(redirectToConfirmed("success"));
+    const supabase = createSupabase(response);
     const { error } = await supabase.auth.verifyOtp({
       token_hash: tokenHash,
       type: type as "signup" | "recovery" | "invite" | "email_change" | "email"
     });
 
-    redirectUrl.searchParams.set(
-      "status",
-      error?.message?.toLowerCase().includes("already")
+    if (error) {
+      const status = error.message?.toLowerCase().includes("already")
         ? "already"
-        : error?.message?.toLowerCase().includes("expired")
+        : error.message?.toLowerCase().includes("expired")
           ? "expired"
-          : error
-            ? "invalid"
-            : "success"
-    );
-
-    return NextResponse.redirect(redirectUrl);
+          : "invalid";
+      return NextResponse.redirect(redirectToConfirmed(status));
+    }
+    return response;
   }
 
-  redirectUrl.searchParams.set("status", "invalid");
-  return NextResponse.redirect(redirectUrl);
+  return NextResponse.redirect(redirectToConfirmed("invalid"));
 }

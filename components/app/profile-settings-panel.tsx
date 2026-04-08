@@ -41,11 +41,11 @@ export function ProfileSettingsPanel({
   const fullNamePreview = [firstNameValue.trim(), lastNameValue.trim()].filter(Boolean).join(" ");
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.12fr)_minmax(300px,0.88fr)]">
-      <Card className="space-y-6 p-5 sm:p-6">
+    <div className="flex min-w-0 flex-col gap-8">
+      <Card className="space-y-6 p-5 sm:p-6 lg:p-7">
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.basicCardTitle}</h3>
-          <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.basicCardText}</p>
+          <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.basicCardText}</p>
         </div>
 
         <form action={formAction} className="space-y-5">
@@ -118,8 +118,8 @@ export function ProfileSettingsPanel({
         </form>
       </Card>
 
-      <div className="space-y-5">
-        <Card className="space-y-4 p-5 sm:p-6">
+      <div className="space-y-6">
+        <Card className="space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="space-y-1">
             <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.title}</h3>
             <p className="text-sm leading-6 text-[var(--muted)]">{copy.intro}</p>
@@ -159,7 +159,7 @@ export function ProfileSettingsPanel({
           </div>
         </Card>
 
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.signatureTitle}</h3>
             <p className="text-sm leading-6 text-[var(--muted)]">{copy.signatureText}</p>
@@ -172,7 +172,7 @@ export function ProfileSettingsPanel({
           </div>
         </Card>
 
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.languageTitle}</h3>
             <p className="text-sm leading-6 text-[var(--muted)]">{copy.languageText}</p>
@@ -182,20 +182,20 @@ export function ProfileSettingsPanel({
               <Globe className="h-4 w-4 text-[var(--muted)]" />
               <span className="text-sm font-medium text-[var(--foreground)]">{preferredLanguageLabel}</span>
             </div>
-            <Link href="/app/settings?section=language" className="text-sm font-semibold text-[var(--accent)]">
+            <Link href="/app/settings?section=profile#settings-language" className="text-sm font-semibold text-[var(--accent)]">
               {copy.languageAction}
             </Link>
           </div>
         </Card>
 
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.emailChangeTitle}</h3>
             <p className="text-sm leading-6 text-[var(--muted)]">{copy.emailChangeText}</p>
           </div>
           <Link
             href="/app/settings?section=security"
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(232,220,207,0.85)] bg-[rgba(232,220,207,0.32)] px-5 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[rgba(232,220,207,0.48)]"
+            className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(232,220,207,0.85)] bg-[rgba(232,220,207,0.32)] px-5 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:bg-[rgba(232,220,207,0.48)]"
           >
             <ShieldCheck className="mr-2 h-4 w-4" />
             {copy.emailChangeAction}

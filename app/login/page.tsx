@@ -1,9 +1,20 @@
-﻿import Link from "next/link";
+﻿import { ArrowLeft, Eye, Lock, Shield } from "lucide-react";
+import { Inter } from "next/font/google";
+import Link from "next/link";
 
 import { AuthForm } from "@/components/auth/auth-form";
 import { PageShell } from "@/components/ui/page-shell";
 import { getAuthCopy } from "@/lib/auth-copy";
 import { getRequestLanguage } from "@/lib/request-locale";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"]
+});
+
+const trustIcons = [Shield, Lock, Eye] as const;
 
 export default async function LoginPage({
   searchParams
@@ -15,42 +26,71 @@ export default async function LoginPage({
   const copy = getAuthCopy(locale).loginPage;
 
   return (
-    <PageShell className="justify-center px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
-      <div className="relative mx-auto grid w-full max-w-[1160px] gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(430px,520px)] lg:items-center">
-        <div className="pointer-events-none absolute inset-x-6 top-8 -z-10 h-44 rounded-[40px] bg-[radial-gradient(circle_at_top,rgba(111,168,220,0.22),transparent_72%)] blur-3xl sm:inset-x-12 lg:top-14" />
+    <PageShell
+      className={cn(
+        inter.className,
+        "login-page justify-start px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-16"
+      )}
+    >
+      <div className="relative mx-auto grid w-full max-w-[1160px] gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(430px,520px)] lg:items-start lg:gap-14">
+        <div
+          className="pointer-events-none absolute inset-x-4 top-6 -z-10 h-56 rounded-[48px] bg-[radial-gradient(circle_at_top,rgba(255,200,200,0.32),transparent_70%)] blur-3xl sm:inset-x-10 lg:top-10"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute bottom-0 left-1/2 -z-10 h-64 w-[min(100%,520px)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(180,200,245,0.22),transparent_68%)] blur-3xl"
+          aria-hidden
+        />
 
-        <section className="relative overflow-hidden rounded-[40px] border border-white/55 bg-[linear-gradient(145deg,rgba(255,255,255,0.84),rgba(239,247,252,0.7))] p-6 shadow-[0_30px_88px_rgba(41,64,90,0.09)] backdrop-blur-[12px] sm:p-8 lg:p-10">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),transparent)]" />
-          <div className="relative space-y-8">
-            <Link href="/" className="inline-flex items-center text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]">
-              {copy.back}
+        <section className="login-welcome-panel relative overflow-hidden rounded-[40px] border border-white/75 bg-[linear-gradient(152deg,rgba(255,244,244,0.96),rgba(248,236,240,0.55)_45%,rgba(232,240,252,0.94))] p-7 shadow-[0_1px_0_rgba(255,255,255,0.85)_inset,0_10px_28px_rgba(25,40,60,0.08),0_28px_72px_rgba(41,64,90,0.14),0_56px_140px_rgba(41,64,90,0.1)] ring-1 ring-black/[0.04] backdrop-blur-[14px] sm:p-9 lg:p-11">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(255,248,248,0.5),transparent)]" />
+          <div className="relative flex flex-col gap-10">
+            <Link
+              href="/"
+              className="login-back-link group inline-flex w-fit items-center gap-2 text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+            >
+              <ArrowLeft
+                className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-x-1"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span>{copy.back}</span>
             </Link>
 
-            <div className="space-y-5">
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/58 px-4 py-2 shadow-[0_10px_24px_rgba(25,40,60,0.05)] backdrop-blur">
-                <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_0_6px_rgba(95,163,163,0.14)]" />
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-strong)]/80">
+            <div className="space-y-7">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/75 bg-white/55 px-4 py-2.5 shadow-[0_12px_32px_rgba(25,40,60,0.06)] backdrop-blur-md">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)] shadow-[0_0_0_6px_rgba(95,163,163,0.15)]" />
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--accent-strong)]/85">
                   {copy.eyebrow}
                 </p>
               </div>
-              <h1 className="max-w-[12ch] text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">
+              <h1 className="max-w-[16ch] text-[2.15rem] font-semibold leading-[1.08] tracking-[-0.045em] text-[var(--foreground)] sm:text-5xl sm:leading-[1.05]">
                 {copy.title}
               </h1>
-              <p className="max-w-[34rem] text-base leading-7 text-[var(--muted)] sm:text-lg">
+              <p className="max-w-[36rem] text-[1.0625rem] leading-[1.65] text-[var(--muted)] sm:text-lg sm:leading-relaxed">
                 {copy.intro}
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              {copy.trustItems.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[24px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.78),rgba(255,255,255,0.62))] px-4 py-4 text-sm leading-6 text-[var(--foreground)] shadow-[0_14px_32px_rgba(25,40,60,0.045)]"
-                >
-                  <div className="mb-3 h-9 w-9 rounded-2xl bg-[rgba(95,163,163,0.1)]" />
-                  {item}
-                </div>
-              ))}
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-3 lg:gap-4">
+              {copy.trustItems.map((item, i) => {
+                const Icon = trustIcons[i] ?? Shield;
+                return (
+                  <div
+                    key={item}
+                    className={cn(
+                      "login-trust-card group flex flex-col rounded-[26px] border border-white/75 bg-[linear-gradient(165deg,rgba(255,255,255,0.92),rgba(244,249,252,0.78))] px-5 py-5 text-sm leading-relaxed text-[var(--foreground)] shadow-[0_14px_38px_rgba(25,40,60,0.055)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_52px_rgba(25,40,60,0.1)]",
+                      i === 0 && "ring-1 ring-white/40",
+                      i === 1 && "shadow-[0_16px_42px_rgba(25,40,60,0.065)]"
+                    )}
+                  >
+                    <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(95,163,163,0.11)] text-[var(--accent-strong)] ring-1 ring-white/60 transition-colors group-hover:bg-[rgba(95,163,163,0.16)]">
+                      <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />
+                    </div>
+                    <p className="text-[0.9375rem] leading-relaxed">{item}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

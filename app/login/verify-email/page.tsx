@@ -54,7 +54,12 @@ export default async function VerifyEmailPage({
               <Link href="/login" className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]">
                 {copy.backToLogin}
               </Link>
-              <span className="text-sm text-[var(--muted)]">{copy.continueLater}</span>
+              <Link
+                href="/"
+                className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              >
+                {copy.continueLater}
+              </Link>
             </div>
 
             <div className="flex items-start gap-3 rounded-[24px] border border-[rgba(95,163,163,0.14)] bg-[linear-gradient(180deg,rgba(95,163,163,0.1),rgba(95,163,163,0.06))] px-4 py-3.5 text-sm leading-6 text-[var(--muted)]">

@@ -32,6 +32,8 @@ type SettingsCopy = {
   preparedTitle: string;
   preparedText: string;
   testerOnly: string;
+  /** Unterüberschriften im gebündelten Profilbereich */
+  profileBlockBasic: string;
   sections: Record<SettingsSectionId, SettingsSectionText>;
 };
 
@@ -47,8 +49,14 @@ const de: SettingsCopy = {
   preparedTitle: "Sauber vorbereitet",
   preparedText: "Dieser Bereich ist in BureauCare bereits strukturell angelegt und wird in den naechsten Schritten gezielt ausgebaut.",
   testerOnly: "Nur fuer berechtigte Accounts sichtbar",
+  profileBlockBasic: "Grunddaten",
   sections: {
-    profile: { title: "Profil", summary: "Name, E-Mail und Kontodaten", description: "Alles rund um dein Konto, deinen Namen und deine grundlegenden Profildaten." },
+    profile: {
+      title: "Profil",
+      summary: "Konto, Angaben, Antworten & Sprache",
+      description:
+        "Hier findest du deine Grunddaten, persoenliche Angaben fuer Antraege, Einstellungen fuer Antworten, Sprache sowie Ziele und Wuensche – alles an einem Ort."
+    },
     "personal-data": { title: "Persoenliche Angaben", summary: "Gespeicherte Angaben fuer spaetere Antraege", description: "Hier geht es um Daten, die BureauCare in spaeteren Antraegen erneut verwenden kann." },
     responses: { title: "Antworten", summary: "Ton, Stil und Signatur", description: "Hier legst du fest, wie BureauCare standardmaessig Antworten fuer dich vorbereitet." },
     language: { title: "Sprache & Uebersetzung", summary: "App-Sprache und Uebersetzungen", description: "Hier legst du fest, in welcher Sprache BureauCare mit dir arbeitet und wie Uebersetzungen genutzt werden." },
@@ -75,8 +83,14 @@ const en: SettingsCopy = {
   preparedTitle: "Prepared cleanly",
   preparedText: "This area already has a clear place in BureauCare and will be expanded step by step next.",
   testerOnly: "Visible only for eligible accounts",
+  profileBlockBasic: "Basic details",
   sections: {
-    profile: { title: "Profile", summary: "Name, email and account details", description: "Everything related to your account, your name and your core profile details." },
+    profile: {
+      title: "Profile",
+      summary: "Account, details, replies & language",
+      description:
+        "Your basic account data, saved personal details for applications, reply preferences, language, and goals — organised in one place."
+    },
     "personal-data": { title: "Personal details", summary: "Saved details for later applications", description: "This area is for details BureauCare can reuse in future applications." },
     responses: { title: "Responses", summary: "Tone, style and signature", description: "Choose how BureauCare should usually prepare replies for you." },
     language: { title: "Language & translation", summary: "App language and translations", description: "Choose how BureauCare works with your languages and translations." },
@@ -103,8 +117,13 @@ const zh: SettingsCopy = {
   preparedTitle: "已准备好",
   preparedText: "这个区域已经在 BureauCare 中有了清晰结构，后续会继续逐步完善。",
   testerOnly: "只对有权限的账号显示",
+  profileBlockBasic: "基础信息",
   sections: {
-    profile: { title: "个人资料", summary: "姓名、邮箱和账号信息", description: "这里集中管理你的账号、姓名和基础资料。" },
+    profile: {
+      title: "个人资料",
+      summary: "账号、资料、回复与语言",
+      description: "在同一处管理基础账号信息、申请用个人资料、回复偏好、语言以及目标与愿望。"
+    },
     "personal-data": { title: "个人信息", summary: "为以后申请保存的信息", description: "这里显示 BureauCare 以后可以重复使用的个人信息。" },
     responses: { title: "回复", summary: "语气、风格和回复方式", description: "以后与回复相关的设置会集中放在这里。" },
     language: { title: "语言与翻译", summary: "应用语言和翻译设置", description: "这里决定 BureauCare 使用什么语言与你协作，以及如何处理翻译。" },
@@ -134,13 +153,14 @@ export function getSettingsCopy(locale: string | null | undefined) {
 
 export function normalizeSettingsSection(value: string | null | undefined): SettingsSectionId {
   switch (value) {
-    case "profile":
     case "personal-data":
     case "responses":
     case "language":
+    case "goals":
+      return "profile";
+    case "profile":
     case "location":
     case "documents":
-    case "goals":
     case "notifications":
     case "security":
     case "usage":

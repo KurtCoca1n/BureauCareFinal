@@ -61,6 +61,20 @@ type Copy = {
     tasks: string;
     noDeadlinesTitle: string;
     noDeadlinesText: string;
+    extrasSectionTitle: string;
+    extrasSectionIntro: string;
+    extraRefundsBlurb: string;
+    extraWelcomeBlurb: string;
+    extraGoalsBlurb: string;
+    /** Label nur für den Welcome-Button auf der Startseite (Extras-Kachel) */
+    extrasWelcomeButton: string;
+    statusOverviewTitle: string;
+    statusOpenLabel: string;
+    statusCriticalLabel: string;
+    statusDoneLabel: string;
+    statusToTasks: string;
+    uploadActionHint: string;
+    documentsEmptyCompact: string;
   };
   settings: {
     section: string;
@@ -106,6 +120,18 @@ type Copy = {
     afterUploadHint: string;
     saveInfoTitle: string;
     saveInfoText: string;
+    /** Kurzer Vertrauenssatz auf der Upload-Seite */
+    saveInfoLine: string;
+    /** Eine Zeile unter der Headline */
+    uploadSubline: string;
+    /** Kompakter Hinweis wenn Kategorien eingeklappt */
+    kindsPeekLine: string;
+    expandMore: string;
+    expandLess: string;
+    /** Titel für Ablauf nach Upload (kompakt) */
+    journeyHeading: string;
+    /** Eine Zeile, wenn der Ablauf eingeklappt ist */
+    journeyPeekLine: string;
     cardTitle: string;
     allowedFormats: string;
     dropzoneTitle: string;
@@ -197,16 +223,49 @@ const de: Copy = {
   common: { uploaded: "Hochgeladen", analysisAvailable: "Analyse verfügbar", analysisPending: "Analyse ausstehend", unknown: "Unbekannt", noClearDeadline: "Keine klare Frist", deadline: "Frist", subject: "Thema", sender: "Absender", urgency: "Dringlichkeit", statusOpen: "Offen", statusDone: "Erledigt", document: "Dokument", openDocument: "Dokument öffnen", saveInProgress: "Wird gespeichert...", moreDetails: "Mehr Details", shortExplained: "Kurz erklärt", signOut: "Abmelden", dateUploaded: "Hochgeladen am", currentStatus: "Aktueller Stand", name: "Name", language: "Sprache", session: "Sitzung" },
   urgency: { high: "Hoch", medium: "Mittel", low: "Niedrig", unclear: "Noch unklar" },
   actionMode: { online: "Online möglich", onSite: "Vor Ort", byPost: "Per Post", byPhone: "Telefonisch" },
-  home: { welcome: "Willkommen zurück", titleFallback: "Dein BureauCare", intro: "Alle wichtigen Dokumente an einem geschützten Ort, mit klaren Erklärungen, Fristen und nächsten Schritten.", newLetter: "Neues Dokument", uploadTitle: "Neues Dokument hochladen", uploadText: "Lade ein amtliches Dokument oder ein offizielles Schreiben hoch und speichere es sicher in deinem Konto.", latestDocuments: "Letzte Dokumente", entries: "Einträge", noDocuments: "Noch keine Dokumente vorhanden. Lade dein erstes Dokument hoch, um hier eine Übersicht zu sehen.", openDeadlines: "Offene Fristen", tasks: "Aufgaben", noDeadlinesTitle: "Noch keine offenen Fristen", noDeadlinesText: "Sobald ein Dokument mit Frist erkannt wird, erscheint hier automatisch dein nächster To-do-Punkt." },
+  home: {
+    welcome: "Willkommen zurück",
+    titleFallback: "Dein BureauCare",
+    intro: "Alle wichtigen Dokumente an einem geschützten Ort, mit klaren Erklärungen, Fristen und nächsten Schritten.",
+    newLetter: "Neues Dokument",
+    uploadTitle: "Neues Dokument hochladen",
+    uploadText: "Lade ein amtliches Dokument oder ein offizielles Schreiben hoch und speichere es sicher in deinem Konto.",
+    latestDocuments: "Letzte Dokumente",
+    entries: "Einträge",
+    noDocuments: "Noch keine Dokumente vorhanden. Lade dein erstes Dokument hoch, um hier eine Übersicht zu sehen.",
+    openDeadlines: "Offene Fristen",
+    tasks: "Aufgaben",
+    noDeadlinesTitle: "Noch keine offenen Fristen",
+    noDeadlinesText: "Sobald ein Dokument mit Frist erkannt wird, erscheint hier automatisch dein nächster To-do-Punkt.",
+    extrasSectionTitle: "Weitere praktische Funktionen",
+    extrasSectionIntro: "Alles, was den Alltag mit Bürokratie leichter macht.",
+    extraRefundsBlurb: "Finde mögliche Erstattungen und Ansprüche.",
+    extraWelcomeBlurb: "Hilfen und Orientierung für deinen Start in Deutschland.",
+    extraGoalsBlurb: "Behalte deine nächsten wichtigen Schritte im Blick.",
+    extrasWelcomeButton: "Welcome To Germany",
+    statusOverviewTitle: "Dein Status",
+    statusOpenLabel: "Offen",
+    statusCriticalLabel: "Kritisch",
+    statusDoneLabel: "Erledigt",
+    statusToTasks: "Zu den Aufgaben",
+    uploadActionHint: "Schnell erfassen, sicher ablegen – BureauCare ordnet für dich.",
+    documentsEmptyCompact: "Noch keine Dokumente. Ein erstes Dokument reicht, um loszulegen."
+  },
   settings: { section: "Einstellungen", title: "Konto und Sprache", intro: "Lege fest, wie dein Name in Antworten erscheint und in welche Sprache BureauCare zusätzlich übersetzen soll.", currentState: "Aktueller Stand", noName: "Kein Name hinterlegt", sessionText: "Du kannst dich jederzeit sicher abmelden. Deine Dokumente bleiben in deinem geschützten Bereich.", fullName: "Dein Name", translationLanguage: "Sprache für Übersetzungen", save: "Einstellungen speichern", saving: "Wird gespeichert...", namePlaceholder: "Max Mustermann" },
   upload: {
     badge: "Dokument hochladen",
-    title: "Dein Eingang für wichtige Dokumente",
+    title: "Dokument hochladen",
+    uploadSubline: "Wir zeigen dir sofort, was wichtig ist.",
     heroLine:
       "Lade Unterlagen hoch – BureauCare schaut sie an, ordnet sie ein und macht Wichtiges für dich sichtbar.",
     intro:
       "Lade Verträge, Bescheide, Rechnungen oder andere wichtige Dokumente hoch. BureauCare erkennt, worum es geht, erklärt den Inhalt und zeigt dir den nächsten sinnvollen Schritt.",
-    kindsTitle: "Was wir uns für dich ansehen können",
+    kindsTitle: "Was du hochladen kannst",
+    kindsPeekLine: "Verträge, Bescheide, Rechnungen und mehr.",
+    expandMore: "Mehr anzeigen",
+    expandLess: "Weniger anzeigen",
+    journeyHeading: "Was passiert danach?",
+    journeyPeekLine: "In fünf Schritten – vom Erkennen bis zu deinen nächsten Schritten.",
     kindsIntro: "Vom Alltag bis zur Ausnahme: Wenn es für dich wichtig ist, passt es hierher – ohne feste Systemgrenzen.",
     kindsInvitation: "Kein Formularstau, sondern eine ruhige Einladung: Lad hoch, was dich beschäftigt.",
     kindContracts: "Verträge",
@@ -235,10 +294,11 @@ const de: Copy = {
     saveInfoTitle: "So wird gespeichert",
     saveInfoText:
       "Deine Datei landet im privaten Supabase-Bucket documents. Jeder Pfad wird unter deiner Nutzer-ID gespeichert, damit ausschließlich du Zugriff auf deine Dokumente hast.",
+    saveInfoLine: "Deine Dokumente sind geschützt und nur für dich sichtbar.",
     cardTitle: "Datei sicher hochladen",
     allowedFormats: "Erlaubte Formate: PDF, JPG, JPEG, PNG. Maximale Dateigröße: 15 MB.",
-    dropzoneTitle: "Datei hier hineinziehen",
-    dropzoneText: "Am Desktop kannst du die Datei per Drag & Drop ablegen oder unten direkt auswählen.",
+    dropzoneTitle: "Dokument hier ablegen oder auswählen",
+    dropzoneText: "Ziehe die Datei hierher oder nutze die Buttons unten.",
     pickFile: "Datei auswählen",
     takePhoto: "Dokument fotografieren",
     submit: "Dokument hochladen",
@@ -255,16 +315,50 @@ const en: Copy = {
   common: { ...de.common, analysisAvailable: "Analysis ready", analysisPending: "Analysis pending", unknown: "Unknown", noClearDeadline: "No clear deadline", deadline: "Deadline", subject: "Subject", sender: "Sender", urgency: "Urgency", statusOpen: "Open", statusDone: "Done", document: "Document", openDocument: "Open document", saveInProgress: "Saving...", moreDetails: "More details", shortExplained: "Quick view", signOut: "Sign out", dateUploaded: "Uploaded on", currentStatus: "Current status", language: "Language", session: "Session" },
   urgency: { high: "High", medium: "Medium", low: "Low", unclear: "Still unclear" },
   actionMode: { online: "Online possible", onSite: "In person", byPost: "By mail", byPhone: "By phone" },
-  home: { ...de.home, welcome: "Welcome back", titleFallback: "Your BureauCare", intro: "All important documents in one protected place, with clear explanations, deadlines and next steps.", newLetter: "New document", uploadTitle: "Upload a new document", uploadText: "Upload an official document or notice and keep it safe in your account.", latestDocuments: "Recent documents", entries: "entries", noDocuments: "No documents yet. Upload your first document to see an overview here.", openDeadlines: "Open deadlines", tasks: "tasks", noDeadlinesTitle: "No open deadlines yet", noDeadlinesText: "As soon as a document with a deadline is detected, your next task appears here automatically." },
+  home: {
+    ...de.home,
+    welcome: "Welcome back",
+    titleFallback: "Your BureauCare",
+    intro: "All important documents in one protected place, with clear explanations, deadlines and next steps.",
+    newLetter: "New document",
+    uploadTitle: "Upload a new document",
+    uploadText: "Upload an official document or notice and keep it safe in your account.",
+    latestDocuments: "Recent documents",
+    entries: "entries",
+    noDocuments: "No documents yet. Upload your first document to see an overview here.",
+    openDeadlines: "Open deadlines",
+    tasks: "tasks",
+    noDeadlinesTitle: "No open deadlines yet",
+    noDeadlinesText: "As soon as a document with a deadline is detected, your next task appears here automatically.",
+    extrasSectionTitle: "Further practical functions",
+    extrasSectionIntro: "Everything that makes everyday life a little easier with bureaucracy.",
+    extraRefundsBlurb: "Find possible refunds and claims.",
+    extraWelcomeBlurb: "Guidance and orientation for getting started in Germany.",
+    extraGoalsBlurb: "Keep your next important steps in view.",
+    extrasWelcomeButton: "Welcome To Germany",
+    statusOverviewTitle: "Your status",
+    statusOpenLabel: "Open",
+    statusCriticalLabel: "Critical",
+    statusDoneLabel: "Done",
+    statusToTasks: "Go to tasks",
+    uploadActionHint: "Capture quickly, store safely — BureauCare keeps things sorted.",
+    documentsEmptyCompact: "No documents yet. Upload one file to get started."
+  },
   settings: { ...de.settings, section: "Settings", title: "Account and language", intro: "Choose how your name appears in replies and which language BureauCare should additionally translate into.", currentState: "Current status", noName: "No name saved", sessionText: "You can sign out safely at any time. Your documents stay in your protected area.", fullName: "Your name", translationLanguage: "Translation language", save: "Save settings", saving: "Saving..." },
   upload: {
     ...de.upload,
     badge: "Upload document",
-    title: "Your entry point for important documents",
+    title: "Upload a document",
+    uploadSubline: "We'll show you what matters right away.",
     heroLine: "Upload your papers – BureauCare reads them, sorts them out, and highlights what matters for you.",
     intro:
       "Upload contracts, official letters, invoices or other important documents. BureauCare figures out what it is, explains the content, and suggests a sensible next step.",
-    kindsTitle: "What we can take a careful look at for you",
+    kindsTitle: "What you can upload",
+    kindsPeekLine: "Contracts, official letters, invoices, and more.",
+    expandMore: "Show more",
+    expandLess: "Show less",
+    journeyHeading: "What happens next?",
+    journeyPeekLine: "Five steps—from spotting the type to your next steps.",
     kindsIntro: "From everyday papers to the odd one out: if it matters to you, it belongs here.",
     kindsInvitation: "No cold upload slot – just a calm invite to bring whatever is on your mind.",
     kindContracts: "Contracts",
@@ -293,10 +387,11 @@ const en: Copy = {
     saveInfoTitle: "How it is stored",
     saveInfoText:
       "Your file is stored in the private Supabase bucket documents. Each path is saved under your user ID so only you can access your documents.",
+    saveInfoLine: "Your documents are protected and only visible to you.",
     cardTitle: "Upload file securely",
     allowedFormats: "Allowed formats: PDF, JPG, JPEG, PNG. Maximum file size: 15 MB.",
-    dropzoneTitle: "Drop your file here",
-    dropzoneText: "On desktop you can drag and drop the file here or choose it below.",
+    dropzoneTitle: "Drop or choose your document here",
+    dropzoneText: "Drag the file here or use the buttons below.",
     pickFile: "Choose file",
     takePhoto: "Take a photo",
     submit: "Upload document",
@@ -431,7 +526,13 @@ const es: Copy = {
     openDeadlines: "Plazos abiertos",
     tasks: "tareas",
     noDeadlinesTitle: "Todav铆a no hay plazos abiertos",
-    noDeadlinesText: "En cuanto se detecte un documento con plazo, tu siguiente tarea aparecer谩 aqu铆 autom谩ticamente."
+    noDeadlinesText: "En cuanto se detecte un documento con plazo, tu siguiente tarea aparecer谩 aqu铆 autom谩ticamente.",
+    extrasSectionTitle: "Más funciones prácticas",
+    extrasSectionIntro: "Todo lo que hace un poco más fácil el día a día con la burocracia.",
+    extraRefundsBlurb: "Encuentra posibles devoluciones y reclamaciones.",
+    extraWelcomeBlurb: "Orientación para tus primeros pasos en Alemania.",
+    extraGoalsBlurb: "Mantén a la vista tus próximos pasos importantes.",
+    extrasWelcomeButton: "Welcome To Germany"
   },
   settings: {
     ...en.settings,
@@ -449,12 +550,19 @@ const es: Copy = {
   upload: {
     ...en.upload,
     badge: "Subir documento",
-    title: "Tu punto de entrada para documentos importantes",
+    title: "Subir un documento",
+    uploadSubline: "Te mostramos al instante lo que importa.",
+    kindsTitle: "Qué puedes subir",
+    kindsPeekLine: "Contratos, cartas oficiales, facturas y más.",
+    expandMore: "Ver más",
+    expandLess: "Ver menos",
+    journeyHeading: "Qué ocurre después",
+    journeyPeekLine: "Cinco pasos: del tipo de documento a tus siguientes pasos.",
+    saveInfoLine: "Tus documentos están protegidos y solo tú los ves.",
     heroLine:
       "Sube tus documentos: BureauCare los lee, los ordena y resalta lo que importa.",
     intro:
       "Sube contratos, notificaciones oficiales, facturas u otros documentos importantes. BureauCare identifica de qué se trata, explica el contenido y te propone el siguiente paso razonable.",
-    kindsTitle: "Qué puede ayudarte a entender BureauCare",
     kindsIntro: "Una guía rápida – también valen documentos mixtos o poco habituales.",
     kindContracts: "Contratos",
     kindOfficial: "Cartas de la administración",
@@ -485,8 +593,8 @@ const es: Copy = {
       "Tu archivo se guarda en el bucket privado documents de Supabase. Cada ruta se guarda bajo tu ID de usuario, así que solo tú puedes acceder a tus documentos.",
     cardTitle: "Subir archivo de forma segura",
     allowedFormats: "Formatos permitidos: PDF, JPG, JPEG, PNG. Tamaño máximo: 15 MB.",
-    dropzoneTitle: "Suelta tu archivo aquí",
-    dropzoneText: "En escritorio puedes arrastrar el archivo aquí o elegirlo abajo.",
+    dropzoneTitle: "Deja o elige tu documento aquí",
+    dropzoneText: "Arrastra el archivo aquí o usa los botones de abajo.",
     pickFile: "Elegir archivo",
     submit: "Subir documento",
     submitting: "Subiendo archivo..."
@@ -577,16 +685,44 @@ const zh: Copy = {
   common: { ...en.common, uploaded: "已上传", analysisAvailable: "分析已完成", analysisPending: "分析进行中", unknown: "未知", noClearDeadline: "没有明确期限", deadline: "期限", subject: "主题", sender: "发件方", urgency: "紧急程度", statusOpen: "进行中", statusDone: "已完成", document: "文件", openDocument: "打开文件", saveInProgress: "正在保存...", moreDetails: "更多详情", shortExplained: "简要说明", signOut: "退出登录", dateUploaded: "上传于", currentStatus: "当前状态", name: "姓名", language: "语言", session: "会话" },
   urgency: { high: "高", medium: "中", low: "低", unclear: "暂不明确" },
   actionMode: { online: "可在线办理", onSite: "需要到现场", byPost: "通过邮寄", byPhone: "通过电话" },
-  home: { ...en.home, welcome: "欢迎回来", titleFallback: "你的 BureauCare", intro: "把重要文件放在一个安全的地方，并获得清晰说明、期限提醒和下一步建议。", newLetter: "新文件", uploadTitle: "上传新文件", uploadText: "上传官方文件或通知，并安全保存在你的账号中。", latestDocuments: "最近文件", entries: "条", noDocuments: "还没有文件。上传第一份文件后，这里就会出现总览。", openDeadlines: "待处理期限", tasks: "任务", noDeadlinesTitle: "目前没有开放期限", noDeadlinesText: "一旦识别到带期限的文件，你的下一步任务会自动显示在这里。" },
+  home: {
+    ...en.home,
+    welcome: "欢迎回来",
+    titleFallback: "你的 BureauCare",
+    intro: "把重要文件放在一个安全的地方，并获得清晰说明、期限提醒和下一步建议。",
+    newLetter: "新文件",
+    uploadTitle: "上传新文件",
+    uploadText: "上传官方文件或通知，并安全保存在你的账号中。",
+    latestDocuments: "最近文件",
+    entries: "条",
+    noDocuments: "还没有文件。上传第一份文件后，这里就会出现总览。",
+    openDeadlines: "待处理期限",
+    tasks: "任务",
+    noDeadlinesTitle: "目前没有开放期限",
+    noDeadlinesText: "一旦识别到带期限的文件，你的下一步任务会自动显示在这里。",
+    extrasSectionTitle: "更多实用功能",
+    extrasSectionIntro: "让日常面对官僚流程时更轻松的一切入口。",
+    extraRefundsBlurb: "查找可能的退款与索赔线索。",
+    extraWelcomeBlurb: "在德国起步时的帮助与方向指引。",
+    extraGoalsBlurb: "把接下来重要的步骤看清楚。",
+    extrasWelcomeButton: "Welcome To Germany"
+  },
   settings: { ...en.settings, section: "设置", title: "账号与语言", intro: "设置你的姓名如何出现在回复中，以及 BureauCare 还要额外翻译成哪种语言。", currentState: "当前状态", noName: "还没有保存姓名", sessionText: "你可以随时安全退出登录。你的文件会继续保存在受保护区域中。", fullName: "你的姓名", translationLanguage: "翻译语言", save: "保存设置", saving: "正在保存..." },
   upload: {
     ...en.upload,
     badge: "上传文件",
-    title: "重要文件的入口",
+    title: "上传文档",
+    uploadSubline: "我们会立刻标出对你重要的内容。",
+    kindsTitle: "可以上传什么",
+    kindsPeekLine: "合同、官方函件、发票等。",
+    expandMore: "展开",
+    expandLess: "收起",
+    journeyHeading: "上传之后会怎样",
+    journeyPeekLine: "五个步骤：从识别类型到下一步该怎么做。",
+    saveInfoLine: "你的文件受到保护，仅你本人可见。",
     heroLine: "上传材料后，BureauCare 会阅读、整理并突出对你重要的内容。",
     intro:
       "上传合同、官方函件、发票或其他重要文件。BureauCare 会识别主题、说明内容，并提示合理的下一步。",
-    kindsTitle: "这些材料我们都能认真帮你看",
     kindsIntro: "从常见函件到冷门附件：对你重要的，就值得放上来。",
     kindContracts: "合同",
     kindOfficial: "官方函件与通知",
@@ -616,8 +752,8 @@ const zh: Copy = {
     saveInfoText: "你的文件会保存在 Supabase 的私有 documents 存储桶中。每个路径都绑定到你的用户 ID，因此只有你能访问这些文件。",
     cardTitle: "安全上传文件",
     allowedFormats: "允许格式：PDF、JPG、JPEG、PNG。最大文件大小：15 MB。",
-    dropzoneTitle: "把文件拖到这里",
-    dropzoneText: "在桌面端，你可以把文件拖放到这里，或者在下方直接选择。",
+    dropzoneTitle: "将文档拖放到此处或点击选择",
+    dropzoneText: "把文件拖到这里，或使用下方按钮。",
     pickFile: "选择文件",
     submit: "上传文件",
     submitting: "正在上传文件..."

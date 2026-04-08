@@ -162,7 +162,9 @@ export async function signupAction(_: AuthFormState, formData: FormData): Promis
     maxAge: 60 * 60 * 24 * 365
   });
 
-  redirect(`/login/verify-email?email=${encodeURIComponent(email)}&locale=${encodeURIComponent(preferredLanguage)}`);
+  redirect(
+    `/onboarding?from=signup&email=${encodeURIComponent(email)}&locale=${encodeURIComponent(preferredLanguage)}`
+  );
 }
 
 export async function resendSignupVerificationAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {

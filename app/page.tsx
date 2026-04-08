@@ -1,266 +1,449 @@
-﻿import Image from "next/image";
-import Link from "next/link";
-import { Camera, Lock, ShieldCheck, Sparkles, Upload } from "lucide-react";
+﻿import {
+  CalendarClock,
+  ChevronRight,
+  FileSearch,
+  MessageCircle,
+  PenLine,
+  Shield,
+  Sparkles,
+  Upload
+} from "lucide-react";
+import { Inter } from "next/font/google";
 
 import { StartLink } from "@/components/marketing/start-link";
 import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page-shell";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { getRequestLanguage } from "@/lib/request-locale";
+import { cn } from "@/lib/utils";
 
-const marketingCopy = {
-  de: {
-    badge: "BureauCare V1",
-    title: "BureauCare erklärt dir Behördendokumente einfach und schreibt die passende Antwort für dich.",
-    text: "Lade ein Dokument hoch und verstehe in wenigen Sekunden, was du tun musst. Klar, ruhig und ohne Behördensprache.",
-    start: "Starten",
-    cameraCta: "Dokument fotografieren?",
-    privacy: "Deine Dokumente sind privat und geschützt.",
-    stepTitle: "So funktioniert es",
-    stepHeading: "Drei ruhige Schritte",
-    steps: [
-      ["1", "Dokument hochladen", "PDF oder Bild sicher in deinem geschützten Bereich speichern."],
-      ["2", "Einfach erklärt bekommen", "Das Wichtigste, Fristen und nächste Schritte sofort sehen."],
-      ["3", "Antwort direkt erstellen", "Eine höfliche, nutzbare Antwort auf Deutsch und in deiner Sprache."]
-    ],
-    audience: "Für wen BureauCare gemacht ist",
-    audienceItems: ["Studenten", "Berufstätige", "Selbstständige", "Expats", "Menschen mit wenig Zeit", "Menschen mit Stress durch Bürokratie"],
-    trust: "Vertrauen und Datenschutz",
-    trustText:
-      "Deine Dokumente liegen in einem privaten Speicherbereich. Zugriffsschutz, geschützte Sessions und Row Level Security sorgen dafür, dass nur du deine Unterlagen sehen kannst.",
-    trustCards: [
-      ["Privater Speicher", "Uploads landen nicht öffentlich im Netz, sondern in deinem geschützten Bereich."],
-      ["Ruhiges Produktdesign", "Klare Sprache, viel Weißraum und keine überladene Bürokratie-Oberfläche."]
-    ]
-  },
-  en: {
-    badge: "BureauCare V1",
-    title: "BureauCare explains official documents in simple language and drafts the right reply for you.",
-    text: "Upload a document and understand within seconds what you need to do. Clear, calm and without bureaucratic jargon.",
-    start: "Get started",
-    cameraCta: "Snap a document?",
-    privacy: "Your documents stay private and protected.",
-    stepTitle: "How it works",
-    stepHeading: "Three calm steps",
-    steps: [
-      ["1", "Upload a document", "Store a PDF or image safely in your protected space."],
-      ["2", "Get a simple explanation", "See the key facts, deadlines and next steps immediately."],
-      ["3", "Create a reply", "Get a polite, usable reply in German and your chosen language."]
-    ],
-    audience: "Who BureauCare is for",
-    audienceItems: ["Students", "Professionals", "Freelancers", "Expats", "People short on time", "People stressed by bureaucracy"],
-    trust: "Trust and privacy",
-    trustText:
-      "Your documents stay in a private storage area. Protected sessions and row level security ensure that only you can access them.",
-    trustCards: [
-      ["Private storage", "Uploads are never public and stay inside your protected area."],
-      ["Calm product design", "Clear language, plenty of whitespace and no overloaded bureaucracy interface."]
-    ]
-  },
-  tr: {
-    badge: "BureauCare V1",
-    title: "BureauCare resmi belgeleri sana basit莽e a莽谋klar ve uygun yan谋t谋 haz谋rlar.",
-    text: "Bir belge yükle ve birka莽 saniye i莽inde ne yapman gerekti臒ini anla. Sakin, a莽谋k ve resmi dil karma艧as谋 olmadan.",
-    start: "Ba艧la",
-    cameraCta: "Belgeyi fotografla?",
-    privacy: "Belgelerin gizli ve korumal谋 kal谋r.",
-    stepTitle: "Nas谋l 莽al谋艧谋r",
-    stepHeading: "Ü莽 sakin ad谋m",
-    steps: [
-      ["1", "Belge yükle", "PDF veya görseli güvenli alan谋na kaydet."],
-      ["2", "Basit a莽谋klama al", "Önemli noktalar谋, süreleri ve sonraki ad谋mlar谋 hemen gör."],
-      ["3", "Yan谋t olu艧tur", "Almanca ve se莽ti臒in dilde kullan谋labilir bir yan谋t al."]
-    ],
-    audience: "BureauCare kimler i莽in",
-    audienceItems: ["Ö臒renciler", "脟al谋艧anlar", "Serbest 莽al谋艧anlar", "Expatlar", "Zaman谋 az olanlar", "Bürokrasi stresi ya艧ayanlar"],
-    trust: "Güven ve gizlilik",
-    trustText:
-      "Belgelerin özel bir depolama alan谋nda tutulur. Korumal谋 oturumlar ve Row Level Security sayesinde yaln谋zca sen eri艧ebilirsin.",
-    trustCards: [
-      ["Özel depolama", "Yüklemeler herkese a莽谋k olmaz, korumal谋 alan谋nda kal谋r."],
-      ["Sakin tasar谋m", "A莽谋k dil, bol bo艧luk ve karma艧谋k olmayan bir arayüz."]
-    ]
-  },
-  uk: {
-    badge: "BureauCare V1",
-    title: "BureauCare 锌褉芯褋褌芯 锌芯褟褋薪褞褦 芯褎褨褑褨泄薪褨 写芯泻褍屑械薪褌懈 褌邪 写芯锌芯屑邪谐邪褦 锌褨写谐芯褌褍胁邪褌懈 胁褨写锌芯胁褨写褜.",
-    text: "袟邪胁邪薪褌邪卸 写芯泻褍屑械薪褌 褨 蟹邪 泻褨谢褜泻邪 褋械泻褍薪写 蟹褉芯蟹褍屑褨泄, 褖芯 锌芯褌褉褨斜薪芯 蟹褉芯斜懈褌懈. 小锌芯泻褨泄薪芯, 褔褨褌泻芯 泄 斜械蟹 斜褞褉芯泻褉邪褌懈褔薪芯褩 屑芯胁懈.",
-    start: "袩芯褔邪褌懈",
-    cameraCta: "袟褉芯斜懈褌懈 褫芯褌芯?",
-    privacy: "孝胁芯褩 写芯泻褍屑械薪褌懈 锌褉懈胁邪褌薪褨 泄 蟹邪褏懈褖械薪褨.",
-    stepTitle: "携泻 褑械 锌褉邪褑褞褦",
-    stepHeading: "孝褉懈 褋锌芯泻褨泄薪褨 泻褉芯泻懈",
-    steps: [
-      ["1", "袟邪胁邪薪褌邪卸 写芯泻褍屑械薪褌", "袘械蟹锌械褔薪芯 蟹斜械褉械卸懈 PDF 邪斜芯 蟹芯斜褉邪卸械薪薪褟 褍 蟹邪褏懈褖械薪芯屑褍 锌褉芯褋褌芯褉褨."],
-      ["2", "袨褌褉懈屑邪泄 锌褉芯褋褌械 锌芯褟褋薪械薪薪褟", "袨写褉邪蟹褍 锌芯斜邪褔 胁邪卸谢懈胁械, 褋褌褉芯泻懈 泄 薪邪褋褌褍锌薪褨 泻褉芯泻懈."],
-      ["3", "小褌胁芯褉懈 胁褨写锌芯胁褨写褜", "袨褌褉懈屑邪泄 胁胁褨褔谢懈胁褍 泄 谐芯褌芯胁褍 写芯 胁懈泻芯褉懈褋褌邪薪薪褟 胁褨写锌芯胁褨写褜 薪褨屑械褑褜泻芯褞 褌邪 褋胁芯褦褞 屑芯胁芯褞."]
-    ],
-    audience: "袛谢褟 泻芯谐芯 BureauCare",
-    audienceItems: ["小褌褍写械薪褌懈", "袩褉邪褑褨胁薪懈泻懈", "肖褉懈谢邪薪褋械褉懈", "袝泻褋锌邪褌懈", "袥褞写懈 蟹 薪械褋褌邪褔械褞 褔邪褋褍", "袥褞写懈, 褟泻懈褏 胁懈褋薪邪卸褍褦 斜褞褉芯泻褉邪褌褨褟"],
-    trust: "袛芯胁褨褉邪 褌邪 锌褉懈胁邪褌薪褨褋褌褜",
-    trustText:
-      "孝胁芯褩 写芯泻褍屑械薪褌懈 蟹斜械褉褨谐邪褞褌褜褋褟 褍 锌褉懈胁邪褌薪芯屑褍 褋褏芯胁懈褖褨. 袟邪褏懈褖械薪褨 褋械褋褨褩 褌邪 Row Level Security 谐邪褉邪薪褌褍褞褌褜, 褖芯 写芯褋褌褍锌 屑邪褦褕 谢懈褕械 褌懈.",
-    trustCards: [
-      ["袩褉懈胁邪褌薪械 褋褏芯胁懈褖械", "袟邪胁邪薪褌邪卸械薪薪褟 薪械 褋褌邪褞褌褜 锌褍斜谢褨褔薪懈屑懈 泄 蟹邪谢懈褕邪褞褌褜褋褟 褍 褌胁芯褦屑褍 蟹邪褏懈褖械薪芯屑褍 锌褉芯褋褌芯褉褨."],
-      ["小锌芯泻褨泄薪懈泄 写懈蟹邪泄薪", "袟褉芯蟹褍屑褨谢邪 屑芯胁邪, 斜邪谐邪褌芯 锌褉芯褋褌芯褉褍 泄 卸芯写薪芯谐芯 锌械褉械胁邪薪褌邪卸械薪芯谐芯 褨薪褌械褉褎械泄褋褍."]
-    ]
-  },
-  es: {
-    badge: "BureauCare V1",
-    title: "BureauCare te explica documentos oficiales de forma simple y redacta la respuesta adecuada para ti.",
-    text: "Sube un documento y entiende en pocos segundos qu茅 tienes que hacer. Claro, tranquilo y sin lenguaje burocr谩tico.",
-    start: "Empezar",
-    cameraCta: "¿Fotografiar un documento?",
-    privacy: "Tus documentos son privados y est谩n protegidos.",
-    stepTitle: "C贸mo funciona",
-    stepHeading: "Tres pasos tranquilos",
-    steps: [
-      ["1", "Subir documento", "Guarda un PDF o una imagen de forma segura en tu espacio protegido."],
-      ["2", "Recibir una explicaci贸n simple", "Ve enseguida lo importante, los plazos y los siguientes pasos."],
-      ["3", "Crear una respuesta", "Obt茅n una respuesta educada y 煤til en alem谩n y en tu idioma."]
-    ],
-    audience: "Para qui茅n es BureauCare",
-    audienceItems: ["Estudiantes", "Profesionales", "Aut贸nomos", "Expats", "Personas con poco tiempo", "Personas con estr茅s por la burocracia"],
-    trust: "Confianza y privacidad",
-    trustText:
-      "Tus documentos se guardan en un 谩rea privada. Las sesiones protegidas y Row Level Security garantizan que solo t煤 puedas acceder a ellos.",
-    trustCards: [
-      ["Almacenamiento privado", "Las subidas nunca se publican y permanecen en tu 谩rea protegida."],
-      ["Dise帽o tranquilo", "Lenguaje claro, mucho espacio y una interfaz sin ruido burocr谩tico."]
-    ]
+type LandingCopy = {
+  heroBadge: string;
+  heroTitle: string;
+  heroText: string;
+  heroTrust: string;
+  start: string;
+  audienceEyebrow: string;
+  audienceSupporting: string;
+  howTitle: string;
+  howSubtitle: string;
+  flowSteps: { title: string; text: string }[];
+  keyPoints: { title: string; text: string }[];
+  audienceLine: string;
+  audienceTags: string[];
+  trustTitle: string;
+  trustPoints: { title: string; text: string }[];
+  closingTitle: string;
+  closingText: string;
+  previewLabels: { upload: string; scan: string; reply: string };
+};
+
+const landingDe: LandingCopy = {
+  heroBadge: "Weniger Papierkram. Mehr Leben.",
+  heroTitle: "Behördenbriefe sind kompliziert. Wir machen sie einfach.",
+  heroText:
+    "Lade ein Dokument hoch – als PDF oder Foto. BureauCare fasst zusammen, was wirklich zählt: Fristen, nächste Schritte und der rote Faden. Du bekommst klare Sprache statt Amtsdeutsch und eine Antwort, die du direkt nutzen kannst. Fast wie ein ruhiger Freund, der den Stift übernimmt.",
+  heroTrust: "Privat, sicher – und ohne unnötiges Behördendeutsch.",
+  start: "Starten",
+  audienceEyebrow: "Für wen ist BureauCare?",
+  audienceSupporting:
+    "Ob Studium, Job oder neues Land – wenn Post von Behörden oder Vertragspartnern kommt, solltest du nicht allein mit dem Kleingedruckten sitzen.",
+  howTitle: "So einfach funktioniert’s",
+  howSubtitle: "Drei Schritte, die sich nach Erleichterung anfühlen – nicht nach Prozess.",
+  flowSteps: [
+    {
+      title: "Dokument hochladen",
+      text: "PDF oder Foto. Den Rest übernehmen wir."
+    },
+    {
+      title: "Sofort verstehen",
+      text: "Fristen, Bedeutung und nächste Schritte – ohne Behördensprache."
+    },
+    {
+      title: "Antwort direkt nutzen",
+      text: "Eine klare, höfliche Antwort, die du anpassen und verschicken kannst."
+    }
+  ],
+  keyPoints: [
+    {
+      title: "Endlich verstehen, was da steht",
+      text: "Komplizierte Formulierungen werden in klare Punkte übersetzt – auch wenn du nach Zeile zwei schon genug hast."
+    },
+    {
+      title: "Fristen und nächste Schritte im Blick",
+      text: "Was bis wann fällig ist und was du zuerst erledigen solltest, ohne Kalender-Puzzle."
+    },
+    {
+      title: "Antworten mit Mehrwert",
+      text: "Kein leeres Floskel-Schreiben: Formulierungen, die du wirklich verwenden kannst."
+    },
+    {
+      title: "Zeit und Nerven schonen",
+      text: "Weniger Hin- und Herlesen, mehr Klarheit in wenigen Minuten."
+    },
+    {
+      title: "Deine Daten bleiben bei dir",
+      text: "Privater Bereich, geschützte Verarbeitung – kein öffentliches Ablagechaos."
+    }
+  ],
+  audienceLine: "Für Menschen, die mit Bürokratie eigentlich etwas Besseres vorhaben.",
+  audienceTags: ["Studierende", "Berufstätige", "Selbstständige", "Expats", "Wenig Zeit", "Genug von Formularen"],
+  trustTitle: "Vertrauen, das zur Ruhe passt",
+  trustPoints: [
+    {
+      title: "Nur für dich sichtbar",
+      text: "Deine Dokumente liegen in einem geschützten Bereich – nicht im offenen Netz."
+    },
+    {
+      title: "Sichere Verarbeitung",
+      text: "Sessions und Zugriff sind so abgesichert, dass nur dein Konto deine Unterlagen sieht."
+    },
+    {
+      title: "Klar statt laut",
+      text: "Kein Marketing-Bullshit bei der Sicherheit: sachliche Technik, ruhige Oberfläche."
+    }
+  ],
+  closingTitle: "Probier es mit einem Dokument aus.",
+  closingText: "Ein Upload genügt – den Rest machen wir klar und lesbar.",
+  previewLabels: {
+    upload: "Hochladen",
+    scan: "Fristen & Kernpunkte",
+    reply: "Antwort entwurfen"
   }
-} as const;
+};
+
+const landingEn: LandingCopy = {
+  heroBadge: "Less paperwork. More life.",
+  heroTitle: "Official letters are complicated. We make them simple.",
+  heroText:
+    "Upload a document as PDF or photo. BureauCare highlights what matters: deadlines, next steps, and the thread of the story. You get plain language instead of jargon, plus a reply you can actually use. Like a calm friend who takes the pen.",
+  heroTrust: "Private, secure – without the bureaucratic tone.",
+  start: "Get started",
+  audienceEyebrow: "Who is BureauCare for?",
+  audienceSupporting:
+    "Studies, work, or a new country—when official mail arrives, you should not face the fine print alone.",
+  howTitle: "How it works",
+  howSubtitle: "Three steps that feel like relief – not a process diagram.",
+  flowSteps: [
+    {
+      title: "Upload",
+      text: "PDF or photo. We handle the rest."
+    },
+    {
+      title: "Understand quickly",
+      text: "Deadlines, meaning, and next steps – without officialese."
+    },
+    {
+      title: "Use the reply",
+      text: "A clear, polite draft you can edit and send."
+    }
+  ],
+  keyPoints: [
+    {
+      title: "Finally understand the letter",
+      text: "Dense wording becomes short points – even when line two already annoyed you."
+    },
+    {
+      title: "Deadlines and next steps",
+      text: "See what is due when and what to do first, without calendar puzzles."
+    },
+    {
+      title: "Replies that help",
+      text: "Not empty phrases: wording you can reuse with confidence."
+    },
+    {
+      title: "Save time and stress",
+      text: "Less re-reading, more clarity in a few minutes."
+    },
+    {
+      title: "Your data stays yours",
+      text: "Private storage and protected handling – no public pile of PDFs."
+    }
+  ],
+  audienceLine: "For people who have better plans than fighting bureaucracy all day.",
+  audienceTags: ["Students", "Professionals", "Freelancers", "Expats", "Short on time", "Done with forms"],
+  trustTitle: "Trust that feels calm",
+  trustPoints: [
+    {
+      title: "Visible only to you",
+      text: "Documents stay in a protected space – not scattered on the open web."
+    },
+    {
+      title: "Secure processing",
+      text: "Sessions and access are set up so only your account sees your files."
+    },
+    {
+      title: "Clear, not loud",
+      text: "No security theatre – just solid technology and a quiet interface."
+    }
+  ],
+  closingTitle: "Try it with one document.",
+  closingText: "One upload is enough – we make the rest clear and readable.",
+  previewLabels: {
+    upload: "Upload",
+    scan: "Deadlines & key facts",
+    reply: "Draft reply"
+  }
+};
+
+const keyPointIcons = [FileSearch, CalendarClock, PenLine, Sparkles, Shield] as const;
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"]
+});
 
 export default async function LandingPage() {
   const locale = await getRequestLanguage();
-  const copy = marketingCopy[locale as keyof typeof marketingCopy] ?? marketingCopy.en;
+  const copy = locale === "de" ? landingDe : landingEn;
 
   return (
-    <PageShell className="max-w-6xl gap-16 py-10 lg:gap-24">
-      <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div className="space-y-7">
-          <div className="inline-flex">
-            <Image
-              src="/bureaucare-mark-temp-logo.png"
-              alt="BureauCare"
-              width={260}
-              height={130}
-              priority
-              className="h-auto w-[170px] mix-blend-screen opacity-95 saturate-0 contrast-125 brightness-110 drop-shadow-[0_14px_30px_rgba(43,43,43,0.12)] sm:w-[215px] lg:w-[260px]"
-            />
-          </div>
-          <StatusBadge tone="accent">{copy.badge}</StatusBadge>
-          <div className="space-y-5">
-            <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-0.05em] sm:text-5xl lg:text-6xl">
-              {copy.title}
-            </h1>
-            <p className="max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">{copy.text}</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <StartLink href="/login" label={copy.start} />
-            <Link
-              href={`/login?next=${encodeURIComponent("/app/upload?camera=1")}`}
-              prefetch
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 border-[var(--accent)] bg-white/90 px-6 text-sm font-semibold text-[var(--accent-strong)] shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-soft)] active:scale-[0.98]"
+    <PageShell
+      className={`${inter.className} landing-page max-w-6xl gap-16 py-10 sm:gap-20 sm:py-14 lg:gap-24 lg:py-16`}
+    >
+      {/* SECTION A — Hero */}
+      <section className="landing-hero-shell relative px-6 py-12 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
+        <div className="relative z-[1] grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14">
+          <div className="flex flex-col gap-8">
+            <p
+              className={cn(
+                "landing-animate inline-flex w-fit max-w-full items-center rounded-full border border-[var(--line)] bg-[var(--landing-card)] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]"
+              )}
             >
-              <Camera className="h-4 w-4 shrink-0" aria-hidden />
-              {copy.cameraCta}
-            </Link>
-            <div className="inline-flex min-h-12 items-center rounded-2xl border border-[var(--line)] bg-white px-5 text-sm text-[var(--muted)]">
-              {copy.privacy}
+              {copy.heroBadge}
+            </p>
+            <div className="space-y-6">
+              <h1 className="landing-animate landing-animate-delay-1 max-w-[24ch] text-[2rem] font-medium leading-[1.12] tracking-[-0.03em] text-[var(--foreground)] sm:text-[2.65rem] lg:text-[3rem]">
+                {copy.heroTitle}
+              </h1>
+              <p className="landing-animate landing-animate-delay-2 max-w-xl text-[1.0625rem] leading-[1.7] text-[var(--muted)] sm:text-[1.125rem] sm:leading-[1.75]">
+                {copy.heroText}
+              </p>
+            </div>
+            <div className="landing-animate landing-animate-delay-3 flex flex-col gap-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <StartLink
+                  href="/login"
+                  label={copy.start}
+                  className="landing-cta-primary w-full max-w-[22rem] justify-center sm:w-auto"
+                />
+              </div>
+              <p className="max-w-md text-[0.9375rem] leading-relaxed text-[var(--muted)]">{copy.heroTrust}</p>
             </div>
           </div>
-        </div>
 
-        <Card className="space-y-4 border-[var(--line-strong)] bg-[var(--surface-strong)] p-6 sm:p-7">
-          <div className="flex justify-end">
-            <Image
-              src="/bureaucare-mark-temp-logo.png"
-              alt="BureauCare logo"
-              width={170}
-              height={85}
-              className="h-auto w-[115px] mix-blend-screen opacity-85 saturate-0 contrast-125 brightness-110 sm:w-[140px]"
-            />
-          </div>
-          <div className="grid gap-4">
-            {(
-              [
-                { Icon: Upload, bg: "var(--accent-soft)", color: "var(--accent)", title: copy.steps[0][1], text: copy.steps[0][2] },
-                { Icon: Sparkles, bg: "rgba(123,191,159,0.16)", color: "var(--petrol)", title: copy.steps[1][1], text: copy.steps[1][2] },
-                { Icon: ShieldCheck, bg: "rgba(242,166,90,0.16)", color: "var(--foreground)", title: copy.steps[2][1], text: copy.steps[2][2] }
-              ] as const
-            ).map(
-              ({ Icon, bg, color, title, text }: { Icon: typeof Upload; bg: string; color: string; title: string; text: string }) => {
-              const ItemIcon = Icon;
-
-              return (
-                <div key={title as string} className="rounded-[24px] bg-white p-5 shadow-[var(--shadow-soft)]">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="rounded-2xl p-3" style={{ backgroundColor: bg as string, color: color as string }}>
-                      <ItemIcon className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold break-words">{title}</p>
-                      <p className="mt-1 text-sm text-[var(--muted)] break-words">{text}</p>
+          {/* Hero mock / story stack */}
+          <div className="relative flex min-h-[280px] flex-col justify-center lg:min-h-[300px]">
+            <div className="pointer-events-none absolute -right-6 -top-4 h-44 w-44 rounded-full bg-[rgba(111,168,220,0.2)] blur-3xl" aria-hidden />
+            <div className="pointer-events-none absolute -bottom-6 left-0 h-40 w-40 rounded-full bg-[rgba(232,223,208,0.45)] blur-3xl" aria-hidden />
+            <div className="relative space-y-5">
+              <div
+                className={cn(
+                  "landing-preview-card landing-animate landing-animate-delay-2 rounded-[24px] p-5",
+                  "translate-x-0 sm:translate-x-1"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="rounded-[10px] bg-[rgba(95,163,163,0.12)] p-2.5 text-[var(--accent)]">
+                    <Upload className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium tracking-wide text-[var(--muted)]">{copy.previewLabels.upload}</p>
+                    <p className="mt-1 text-sm font-medium text-[var(--foreground)]">PDF · Scan · Foto</p>
+                  </div>
+                </div>
+              </div>
+              <div
+                className={cn(
+                  "landing-preview-card landing-animate landing-animate-delay-3 rounded-[24px] p-5",
+                  "-translate-x-0 sm:-translate-x-2"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="rounded-[10px] bg-[rgba(95,163,163,0.14)] p-2.5 text-[var(--accent-strong)]">
+                    <CalendarClock className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium tracking-wide text-[var(--muted)]">{copy.previewLabels.scan}</p>
+                    <p className="mt-2 text-sm font-medium leading-snug text-[var(--foreground)]">
+                      {locale === "de" ? "Antwort bis 12. Mai · Frist im Blick" : "Reply by 12 May · deadline visible"}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="rounded-full bg-[rgba(95,163,163,0.14)] px-2.5 py-1 text-xs font-medium text-[var(--accent-strong)]">
+                        {locale === "de" ? "Wichtig" : "Important"}
+                      </span>
+                      <span className="rounded-full bg-[rgba(111,168,220,0.12)] px-2.5 py-1 text-xs font-medium text-[var(--foreground)]/85">
+                        {locale === "de" ? "Nächster Schritt" : "Next step"}
+                      </span>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+              <div
+                className={cn(
+                  "landing-preview-card landing-animate landing-animate-delay-4 rounded-[24px] p-5",
+                  "translate-x-0 sm:translate-x-3"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="rounded-[10px] bg-[rgba(232,223,208,0.65)] p-2.5 text-[var(--accent)]">
+                    <MessageCircle className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium tracking-wide text-[var(--muted)]">{copy.previewLabels.reply}</p>
+                    <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[var(--foreground)]/90">
+                      {locale === "de"
+                        ? "Sehr geehrte Damen und Herren, hiermit möchte ich…"
+                        : "Dear Sir or Madam, I am writing to…"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </Card>
+        </div>
       </section>
 
-      <section className="space-y-5">
-        <div className="space-y-3">
-          <StatusBadge tone="neutral">{copy.stepTitle}</StatusBadge>
-          <h2 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{copy.stepHeading}</h2>
+      {/* SECTION B — How it works */}
+      <section className="landing-hub-panel space-y-10 px-7 py-12 sm:px-10 sm:py-14" aria-labelledby="how-heading">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 id="how-heading" className="text-3xl font-medium tracking-[-0.035em] text-[var(--foreground)] sm:text-[2rem]">
+            {copy.howTitle}
+          </h2>
+          <p className="mt-4 text-[1.0625rem] leading-relaxed text-[var(--muted)]">{copy.howSubtitle}</p>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {copy.steps.map(([step, title, text]: readonly [string, string, string]) => (
-            <Card key={step} className="h-full p-6">
-              <p className="text-sm font-semibold text-[var(--accent)]">{step}</p>
-              <h3 className="mt-3 text-xl font-semibold break-words">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted)] break-words">{text}</p>
-            </Card>
+
+        <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-0">
+          {copy.flowSteps.flatMap((step, index) => {
+            const card = (
+              <Card
+                key={step.title}
+                className={cn(
+                  "landing-section-card h-full flex-1 rounded-[24px] p-7 sm:p-8",
+                  index === 0 ? "landing-section-card-elevated" : ""
+                )}
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[var(--accent)] text-sm font-medium text-white">
+                  {index + 1}
+                </div>
+                <h3 className="mt-6 text-lg font-medium tracking-[-0.02em] text-[var(--foreground)]">{step.title}</h3>
+                <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--muted)]">{step.text}</p>
+              </Card>
+            );
+            if (index >= copy.flowSteps.length - 1) {
+              return [card];
+            }
+            const arrow = (
+              <div
+                key={`flow-arrow-${index}`}
+                className="flex shrink-0 items-center justify-center py-2 md:px-3 md:py-0"
+                aria-hidden
+              >
+                <ChevronRight className="h-7 w-7 rotate-90 text-[var(--muted)]/30 md:rotate-0" strokeWidth={1.5} />
+              </div>
+            );
+            return [card, arrow];
+          })}
+        </div>
+      </section>
+
+      {/* SECTION C — Key points */}
+      <section className="landing-hub-panel space-y-10 px-7 py-12 sm:px-10 sm:py-14" aria-labelledby="benefits-heading">
+        <h2 id="benefits-heading" className="text-center text-3xl font-medium tracking-[-0.035em] text-[var(--foreground)] sm:text-[2rem]">
+          {locale === "de" ? "Was BureauCare für dich tut" : "What BureauCare does for you"}
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
+          {copy.keyPoints.map((point, i) => {
+            const Icon = keyPointIcons[i] ?? Sparkles;
+            const span =
+              i === 0
+                ? "lg:col-span-7"
+                : i === 1
+                  ? "lg:col-span-5"
+                  : i === 2
+                    ? "lg:col-span-4"
+                    : i === 3
+                      ? "lg:col-span-4"
+                      : "lg:col-span-4";
+            return (
+              <Card
+                key={point.title}
+                className={cn(
+                  "landing-section-card rounded-[24px] p-6 sm:p-7",
+                  span,
+                  i === 0 ? "min-h-[140px] lg:min-h-[160px]" : ""
+                )}
+              >
+                <div className="flex gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[rgba(95,163,163,0.1)] text-[var(--accent)]">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-medium leading-snug tracking-[-0.02em] text-[var(--foreground)]">{point.title}</h3>
+                    <p className="mt-2 text-[1.0625rem] leading-relaxed text-[var(--muted)]">{point.text}</p>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* SECTION D — Who it is for (prominent, separate from trust) */}
+      <section className="landing-audience-hub px-8 py-14 text-center sm:px-14 sm:py-16" aria-labelledby="audience-heading">
+        <p className="text-sm font-medium tracking-wide text-[var(--accent-strong)]">{copy.audienceEyebrow}</p>
+        <h2
+          id="audience-heading"
+          className="mx-auto mt-6 max-w-[40rem] text-2xl font-medium leading-snug tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl lg:text-[2.1rem] lg:leading-tight"
+        >
+          {copy.audienceLine}
+        </h2>
+        <p className="mx-auto mt-5 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--muted)]">{copy.audienceSupporting}</p>
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+          {copy.audienceTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(235,242,250,0.72))] px-4 py-2 text-sm font-medium text-[var(--foreground)] shadow-[0_10px_26px_rgba(25,40,60,0.06)]"
+            >
+              {tag}
+            </span>
           ))}
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-        <Card className="space-y-4 p-6">
-          <h2 className="text-2xl font-semibold tracking-[-0.03em]">{copy.audience}</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {copy.audienceItems.map((item: string) => (
-              <div key={item} className="rounded-[22px] bg-white px-4 py-4 text-sm font-medium shadow-[var(--shadow-soft)] break-words">
-                {item}
+      {/* SECTION E — Trust */}
+      <section className="landing-hub-panel px-7 py-12 sm:px-10 sm:py-14" aria-labelledby="trust-heading">
+        <h2 id="trust-heading" className="text-center text-2xl font-medium tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl">
+          {copy.trustTitle}
+        </h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {copy.trustPoints.map((item) => (
+            <div
+              key={item.title}
+              className="landing-section-card rounded-[24px] p-6 sm:p-7"
+            >
+              <div className="mb-4 inline-flex rounded-2xl bg-[rgba(95,163,163,0.1)] p-2 text-[var(--accent)]">
+                <Shield className="h-5 w-5" strokeWidth={1.5} />
               </div>
-            ))}
-          </div>
-        </Card>
+              <h3 className="text-base font-medium text-[var(--foreground)]">{item.title}</h3>
+              <p className="mt-2 text-[1.0625rem] leading-relaxed text-[var(--muted)]">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <Card className="space-y-4 p-6">
-          <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-[var(--accent-soft)] p-3 text-[var(--accent)]">
-              <Lock className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold tracking-[-0.03em]">{copy.trust}</h2>
-              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{copy.trustText}</p>
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            {copy.trustCards.map(([title, text]: readonly [string, string]) => (
-              <div key={title} className="rounded-[22px] bg-white p-4 shadow-[var(--shadow-soft)]">
-                <p className="text-sm font-semibold break-words">{title}</p>
-                <p className="mt-2 text-sm text-[var(--muted)] break-words">{text}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+      {/* SECTION F — Closing CTA */}
+      <section className="landing-closing px-8 py-14 text-center sm:px-12 sm:py-16">
+        <h2 className="text-2xl font-medium tracking-[-0.03em] text-[var(--foreground)] sm:text-3xl">{copy.closingTitle}</h2>
+        <p className="mx-auto mt-4 max-w-lg text-[1.0625rem] leading-relaxed text-[var(--muted)]">{copy.closingText}</p>
+        <div className="mt-8 flex justify-center">
+          <StartLink
+            href="/login"
+            label={copy.start}
+            className="landing-cta-primary w-full max-w-[22rem] justify-center sm:w-auto sm:min-w-[280px]"
+          />
+        </div>
       </section>
     </PageShell>
   );
 }
-
-

@@ -3,8 +3,6 @@ import { UploadDocumentKinds } from "@/components/app/upload-document-kinds";
 import { UploadJourneyTrust } from "@/components/app/upload-journey-trust";
 import { UploadForm } from "@/components/app/upload-form";
 import { Card } from "@/components/ui/card";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { getContractAnalysisCopy } from "@/lib/contract-analysis-ui";
 import { getCopy } from "@/lib/i18n";
 import { getCaseById, getProfile } from "@/lib/queries";
 import { getRequestLanguage } from "@/lib/request-locale";
@@ -22,7 +20,6 @@ export default async function UploadPage({
   const linkedCase = caseId ? await getCaseById(caseId) : null;
   const locale = await getRequestLanguage(profile?.preferred_language);
   const copy = getCopy(locale);
-  const contractCopy = getContractAnalysisCopy(locale);
 
   const caseUploadCopy =
     locale === "en"
@@ -37,51 +34,38 @@ export default async function UploadPage({
               ? { title: "\u8fd9\u6b21\u4e0a\u4f20\u4f1a\u76f4\u63a5\u52a0\u5165\u5230\u4e00\u4e2a\u5df2\u6709\u6848\u4ef6\u4e2d\u3002", fallback: "\u672a\u77e5\u673a\u6784" }
               : { title: "Dieser Upload wird direkt zu einem bestehenden Fall hinzugefugt.", fallback: "Unbekannte Stelle" };
 
+  const kindsCopy = {
+    kindsInvitation: copy.upload.kindsInvitation,
+    kindsTitle: copy.upload.kindsTitle,
+    kindsIntro: copy.upload.kindsIntro,
+    kindsPeekLine: copy.upload.kindsPeekLine,
+    expandMore: copy.upload.expandMore,
+    expandLess: copy.upload.expandLess,
+    kindContracts: copy.upload.kindContracts,
+    kindOfficial: copy.upload.kindOfficial,
+    kindInvoices: copy.upload.kindInvoices,
+    kindReminders: copy.upload.kindReminders,
+    kindTerminations: copy.upload.kindTerminations,
+    kindForms: copy.upload.kindForms,
+    kindTravel: copy.upload.kindTravel,
+    kindTickets: copy.upload.kindTickets,
+    kindOther: copy.upload.kindOther
+  };
+
   return (
-    <div className="space-y-8">
-      <section className="space-y-4 pt-4">
-        <StatusBadge tone="accent">{copy.upload.badge}</StatusBadge>
-        <h1 className="page-title page-title-accent text-3xl sm:text-4xl">{copy.upload.title}</h1>
-        <p className="max-w-2xl text-lg font-medium leading-relaxed text-[var(--foreground)]/90">{copy.upload.heroLine}</p>
-        <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted)]">{copy.upload.intro}</p>
-        <p className="max-w-2xl border-l-2 border-[rgba(95,163,163,0.35)] pl-4 text-sm leading-relaxed text-[var(--foreground)]/88">
-          {copy.upload.valuePromise}
+    <div className="space-y-8 pb-6">
+      <section className="space-y-3 pt-1">
+        <h1 className="page-title page-title-accent text-4xl leading-[1.08] tracking-[-0.04em] sm:text-5xl">
+          {copy.upload.title}
+        </h1>
+        <p className="max-w-xl text-base font-medium leading-relaxed text-[var(--foreground)]/78 sm:text-lg">
+          {copy.upload.uploadSubline}
         </p>
       </section>
 
-      <UploadDocumentKinds
-        copy={{
-          kindsInvitation: copy.upload.kindsInvitation,
-          kindsTitle: copy.upload.kindsTitle,
-          kindsIntro: copy.upload.kindsIntro,
-          kindContracts: copy.upload.kindContracts,
-          kindOfficial: copy.upload.kindOfficial,
-          kindInvoices: copy.upload.kindInvoices,
-          kindReminders: copy.upload.kindReminders,
-          kindTerminations: copy.upload.kindTerminations,
-          kindForms: copy.upload.kindForms,
-          kindTravel: copy.upload.kindTravel,
-          kindTickets: copy.upload.kindTickets,
-          kindOther: copy.upload.kindOther
-        }}
-      />
+      <UploadDocumentKinds copy={kindsCopy} />
 
-      <UploadJourneyTrust
-        copy={{
-          trustCardTitle: copy.upload.trustCardTitle,
-          journeyTitle: copy.upload.journeyTitle,
-          journeyStep1: copy.upload.journeyStep1,
-          journeyStep2: copy.upload.journeyStep2,
-          journeyStep3: copy.upload.journeyStep3,
-          journeyStep4: copy.upload.journeyStep4,
-          journeyStep5: copy.upload.journeyStep5,
-          trustPillar1: copy.upload.trustPillar1,
-          trustPillar2: copy.upload.trustPillar2,
-          trustPillar3: copy.upload.trustPillar3
-        }}
-      />
-
-      <section className="grid gap-8 xl:grid-cols-2 xl:items-stretch">
+      <div className="mx-auto w-full max-w-2xl space-y-4">
         <UploadForm
           caseId={linkedCase?.id ?? null}
           autoOpenCamera={autoOpenCamera}
@@ -93,12 +77,12 @@ export default async function UploadPage({
             pickFile: copy.upload.pickFile,
             takePhoto: copy.upload.takePhoto,
             submit: copy.upload.submit,
-            submitting: copy.upload.submitting,
-            afterUploadHint: copy.upload.afterUploadHint
+            submitting: copy.upload.submitting
           }}
         />
 
         <MobileScanCard
+          compact
           caseId={linkedCase?.id ?? null}
           labels={{
             title:
@@ -223,18 +207,27 @@ export default async function UploadPage({
                         : "Der mobile Upload ist fertig."
           }}
         />
-      </section>
+      </div>
 
-      <Card className="space-y-4 p-5 sm:p-6">
-        <div className="rounded-[20px] border border-[rgba(95,163,163,0.16)] bg-[rgba(238,246,245,0.82)] p-4">
-          <p className="text-sm font-semibold text-[var(--foreground)]">{contractCopy.uploadHintTitle}</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{contractCopy.uploadHintText}</p>
-        </div>
-        <p className="text-sm font-semibold text-[var(--foreground)]/90">{copy.upload.saveInfoTitle}</p>
-        <p className="text-sm leading-7 text-[var(--muted)]">{copy.upload.saveInfoText}</p>
+      <UploadJourneyTrust
+        copy={{
+          journeyHeading: copy.upload.journeyHeading,
+          journeyPeekLine: copy.upload.journeyPeekLine,
+          journeyStep1: copy.upload.journeyStep1,
+          journeyStep2: copy.upload.journeyStep2,
+          journeyStep3: copy.upload.journeyStep3,
+          journeyStep4: copy.upload.journeyStep4,
+          journeyStep5: copy.upload.journeyStep5,
+          expandMore: copy.upload.expandMore,
+          expandLess: copy.upload.expandLess
+        }}
+      />
+
+      <Card className="space-y-4 border-[var(--line)] bg-white/90 p-5 sm:p-6">
+        <p className="text-sm leading-relaxed text-[var(--muted)]">{copy.upload.saveInfoLine}</p>
         {linkedCase ? (
-          <div className="rounded-[20px] border border-[var(--line)] bg-white p-4">
-            <p className="text-sm font-semibold">{caseUploadCopy.title}</p>
+          <div className="rounded-[20px] border border-[var(--line)] bg-[rgba(246,250,249,0.6)] p-4">
+            <p className="text-sm font-semibold text-[var(--foreground)]">{caseUploadCopy.title}</p>
             <p className="mt-2 text-sm text-[var(--muted)]">{linkedCase.title}</p>
             <p className="text-sm text-[var(--muted)]">{linkedCase.organization ?? caseUploadCopy.fallback}</p>
           </div>

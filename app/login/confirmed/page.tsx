@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page-shell";
 import { getAuthCopy } from "@/lib/auth-copy";
 import { normalizePreferredLanguage } from "@/lib/languages";
+import { getCurrentUser } from "@/lib/queries";
 
 const statusToTone = {
   success: "bg-[var(--accent)]",
@@ -21,6 +22,7 @@ export default async function ConfirmedPage({
   const locale = normalizePreferredLanguage(params.locale);
   const copy = getAuthCopy(locale).confirmed;
   const status = params.status === "already" || params.status === "expired" || params.status === "invalid" ? params.status : "success";
+  const sessionUser = await getCurrentUser();
 
   const content =
     status === "already"
@@ -62,6 +64,16 @@ export default async function ConfirmedPage({
                 {copy.goToLogin}
               </Link>
             </div>
+            {status === "success" && sessionUser ? (
+              <p className="text-center">
+                <Link
+                  href="/onboarding"
+                  className="text-sm font-medium text-[var(--accent-strong)] underline-offset-4 transition hover:underline"
+                >
+                  {locale === "de" ? "Kurz durchstarten – persönliche Tour" : "Quick tour — personalized intro"}
+                </Link>
+              </p>
+            ) : null}
           </div>
         </Card>
       </div>

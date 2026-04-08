@@ -61,16 +61,52 @@
   color: var(--foreground);
   font-weight: 700;
   letter-spacing: -0.04em;
-  line-height: 1.08;
+  line-height: 1.12;
   text-wrap: balance;
 }
 
+/* Gradient-Text: genug Zeilenabstand + Innenabstand, sonst schneiden Browser Unterlängen ab */
 .page-title-accent {
   background: linear-gradient(135deg, var(--time-accent-start), var(--time-accent-mid) 58%, var(--time-accent-end));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 14px 30px var(--time-accent-shadow));
+  -webkit-text-fill-color: transparent;
+  padding-block: 0.1em 0.22em;
+  line-height: 1.14;
+  overflow: visible;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  filter: drop-shadow(0 12px 26px var(--time-accent-shadow));
+}
+
+/* Tageszeit-Farben für alle App-Überschriften (Variablen wie bei .page-scene) */
+[data-day-phase="morning"] {
+  --time-accent-start: #ba7a42;
+  --time-accent-mid: #d69b63;
+  --time-accent-end: #f0c187;
+  --time-accent-shadow: rgba(214, 155, 99, 0.22);
+}
+
+[data-day-phase="day"] {
+  --time-accent-start: #3d8a96;
+  --time-accent-mid: #6fa8dc;
+  --time-accent-end: #79b9c7;
+  --time-accent-shadow: rgba(95, 163, 163, 0.2);
+}
+
+[data-day-phase="evening"] {
+  --time-accent-start: #8d6ba8;
+  --time-accent-mid: #b183b2;
+  --time-accent-end: #d4a0b1;
+  --time-accent-shadow: rgba(177, 131, 178, 0.22);
+}
+
+[data-day-phase="night"] {
+  --time-accent-start: #31557f;
+  --time-accent-mid: #4970a7;
+  --time-accent-end: #6b84bf;
+  --time-accent-shadow: rgba(73, 112, 167, 0.22);
 }
 
 .goals-sky {
@@ -132,14 +168,10 @@
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.4);
 }
 
+/* Kein eigener „Spalten“-Hintergrund: ein durchgehender Verlauf sitzt auf body (siehe unten). */
 .page-scene {
   position: relative;
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 22% 6%, var(--time-scene-wash) 0, transparent 30%),
-    radial-gradient(circle at 14% 12%, rgba(255,255,255,0.62) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 82% 18%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
-    radial-gradient(circle at 72% 44%, rgba(255,255,255,0.36) 0 1px, transparent 2px);
+  background: transparent;
 }
 
 .page-scene[data-day-phase="morning"] {
@@ -174,46 +206,6 @@
   --time-scene-wash: rgba(73, 112, 167, 0.1);
 }
 
-.page-scene::before,
-.page-scene::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  border-radius: 9999px;
-  filter: blur(60px);
-  opacity: 0.8;
-  pointer-events: none;
-}
-
-.page-scene::before {
-  top: -36px;
-  left: 0%;
-  width: 360px;
-  height: 280px;
-}
-
-.page-scene::after {
-  top: 88px;
-  right: 1%;
-  width: 320px;
-  height: 250px;
-}
-
-.scene-home::before { background: rgba(143, 172, 225, 0.34); }
-.scene-home::after { background: rgba(189, 179, 224, 0.26); }
-.scene-documents::before { background: rgba(95, 163, 163, 0.32); }
-.scene-documents::after { background: rgba(111, 168, 220, 0.24); }
-.scene-tasks::before { background: rgba(242, 166, 90, 0.28); }
-.scene-tasks::after { background: rgba(232, 220, 207, 0.34); }
-.scene-goals::before { background: rgba(194, 168, 214, 0.34); }
-.scene-goals::after { background: rgba(233, 184, 202, 0.28); }
-.scene-settings::before { background: rgba(145, 154, 171, 0.24); }
-.scene-settings::after { background: rgba(111, 168, 220, 0.22); }
-.scene-cases::before { background: rgba(124, 120, 184, 0.28); }
-.scene-cases::after { background: rgba(95, 163, 163, 0.24); }
-.scene-processes::before { background: rgba(111, 168, 220, 0.28); }
-.scene-processes::after { background: rgba(95, 163, 163, 0.26); }
-
 * {
   box-sizing: border-box;
 }
@@ -225,10 +217,20 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(232, 220, 207, 0.5), transparent 38%),
-    radial-gradient(circle at right top, rgba(111, 168, 220, 0.12), transparent 24%),
-    linear-gradient(180deg, #fcfbf8 0%, var(--background) 100%);
+  min-height: 100dvh;
+  /* Ein durchgehender Hintergrund über die volle Breite: warm rötlich → blau (Palette wie --danger / --soft-blue / Szene) */
+  background-color: #e0e6ee;
+  background-image: linear-gradient(
+    90deg,
+    #ecd8d3 0%,
+    #e4dcd8 14%,
+    #dde3ec 36%,
+    #d4dff0 58%,
+    #cad8f2 78%,
+    #c2d2ef 100%
+  );
+  background-attachment: fixed;
+  background-size: cover;
   color: var(--foreground);
   font-family: "Manrope", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif;
   line-height: 1.5;
@@ -300,4 +302,32 @@ select {
   box-shadow: 0 26px 56px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
   padding: 1rem;
+}
+
+/* Sanfte Einblendung für rotierenden Vorgangs-Spotlight (Anträge & Vorgänge) */
+@keyframes bureaucare-spotlight-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bureaucare-spotlight-enter {
+  animation: bureaucare-spotlight-enter 0.45s ease-out;
+}
+
+/* Einstellungen: volle nutzbare Breite, keine Wörter mitten im Wort umbrechen */
+.settings-content-panel {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: manual;
+}
+
+.settings-content-panel .settings-profile-stack {
+  word-break: normal;
+  overflow-wrap: normal;
 }

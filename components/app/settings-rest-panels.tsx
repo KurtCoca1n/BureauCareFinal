@@ -125,7 +125,7 @@ export function LanguageSettingsPanel({
       <Card className="space-y-6 p-5 sm:p-6">
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.language.title}</h3>
-          <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.language.intro}</p>
+          <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.language.intro}</p>
         </div>
         <form action={formAction} className="space-y-5">
           <label className="block space-y-2">
@@ -231,7 +231,7 @@ export function DocumentsSettingsPanel({ locale, preferences }: { locale: string
     <Card className="space-y-6 p-5 sm:p-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.documents.title}</h3>
-        <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.documents.intro}</p>
+        <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.documents.intro}</p>
       </div>
       <form action={formAction} className="space-y-4">
         {copy.documents.toggles.map((toggle, index) => (
@@ -253,7 +253,7 @@ export function LocationSettingsPanel({ locale, preferences }: { locale: string;
     <Card className="space-y-6 p-5 sm:p-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.location.title}</h3>
-        <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.location.intro}</p>
+        <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.location.intro}</p>
       </div>
       <form action={formAction} className="space-y-4">
         <ToggleField name="locationEnabled" defaultChecked={preferences.enabled} label={copy.location.title} description={copy.location.localInfo} />
@@ -285,7 +285,7 @@ export function GoalsSettingsPanel({ locale, preferences }: { locale: string; pr
     <Card className="space-y-6 p-5 sm:p-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.goals.title}</h3>
-        <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.goals.intro}</p>
+        <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.goals.intro}</p>
       </div>
       <form action={formAction} className="space-y-4">
         {copy.goals.toggles.map((toggle, index) => (
@@ -319,7 +319,7 @@ export function NotificationsSettingsPanel({
     <Card className="space-y-6 p-5 sm:p-6">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.notifications.title}</h3>
-        <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.notifications.intro}</p>
+        <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.notifications.intro}</p>
       </div>
       <form action={formAction} className="space-y-4">
         {rows.map((row) => {

@@ -8,7 +8,6 @@ export type AuthCopy = {
     intro: string;
     trustItems: string[];
     form: {
-      badge: string;
       title: string;
       text: string;
       loginTab: string;
@@ -65,61 +64,62 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
     loginPage: {
       back: "Zur Startseite",
       eyebrow: "Sicherer Zugang",
-      title: "Willkommen bei BureauCare",
-      intro: "Melde dich sicher an und behalte deine Dokumente, Antraege und naechsten Schritte an einem ruhigen Ort im Blick.",
+      title: "Dein ruhiger Ort für Bürokratie.",
+      intro:
+        "Melde dich an und behalte Dokumente, Anträge und nächste Schritte an einem Ort – klar sortiert, ohne zusätzlichen Lärm.",
       trustItems: [
-        "Deine Dokumente werden geschuetzt gespeichert.",
+        "Deine Dokumente werden geschützt gespeichert.",
         "Nur du hast Zugriff auf deine Daten.",
         "BureauCare gibt nichts ohne deine Zustimmung weiter."
       ],
       form: {
-        badge: "BureauCare",
-        title: "Sicher und ruhig einsteigen",
-        text: "Ein Konto reicht, damit du deine Unterlagen sicher verwalten und spaetere Antraege schneller starten kannst.",
+        title: "Dein Einstieg ohne Bürokratie-Stress.",
+        text: "Ein Konto, und du hast deine Dokumente, Anträge und nächsten Schritte an einem Ort.",
         loginTab: "Anmelden",
         signupTab: "Registrieren",
         loginTitle: "Anmelden",
-        loginText: "Greife sicher auf deine Dokumente und laufenden Vorgaenge zu.",
+        loginText: "Greife sicher auf deine Dokumente und laufenden Vorgänge zu.",
         signupTitle: "Registrieren",
-        signupText: "Erstelle in wenigen Sekunden dein Konto und starte spaeter schneller in neue Antraege.",
+        signupText: "Erstelle in wenigen Sekunden dein Konto und starte später schneller in neue Anträge.",
         email: "E-Mail",
         password: "Passwort",
-        fullName: "Vollstaendiger Name",
+        fullName: "Vollständiger Name",
         language: "Sprache",
         emailPlaceholder: "name@beispiel.de",
         namePlaceholder: "Max Mustermann",
         passwordPlaceholder: "Mindestens 8 Zeichen",
         passwordHint: "Mindestens 8 Zeichen.",
         login: "Anmelden",
-        loginPending: "Anmeldung laeuft...",
+        loginPending: "Anmeldung läuft…",
         signup: "Konto erstellen",
-        signupPending: "Konto wird erstellt...",
+        signupPending: "Konto wird erstellt…",
         forgotPassword: "Passwort vergessen?",
-        trustNote: "Deine Angaben werden nur fuer dein Konto und spaetere Antraege genutzt."
+        trustNote: "Deine Angaben werden nur für dein Konto und spätere Anträge genutzt."
       }
     },
     verifyEmail: {
       eyebrow: "Nur noch ein Schritt",
-      title: "Bitte bestaetige deine E-Mail",
-      intro: "Wir haben dir eine E-Mail geschickt. Bitte oeffne den Link darin, damit dein Konto sicher freigeschaltet wird.",
+      title: "Bitte bestätige deine E-Mail",
+      intro:
+        "Wir haben dir eine E-Mail geschickt. Bitte öffne den Link darin, damit dein Konto sicher freigeschaltet wird.",
       sentToLabel: "Gesendet an",
-      spamHint: "Falls nichts ankommt, pruefe bitte auch deinen Spam-Ordner.",
+      spamHint: "Falls nichts ankommt, prüfe bitte auch deinen Spam-Ordner.",
       resend: "E-Mail erneut senden",
-      resendPending: "Wird erneut gesendet...",
+      resendPending: "Wird erneut gesendet…",
       resendSuccess: "Wir haben dir eine neue E-Mail geschickt.",
-      backToLogin: "Zurueck zum Login",
-      continueLater: "Spaeter weitermachen",
-      trustNote: "Wir verwenden deine E-Mail nur fuer dein Konto und wichtige Sicherheitsnachrichten."
+      backToLogin: "Zurück zum Login",
+      continueLater: "Später weitermachen",
+      trustNote: "Wir verwenden deine E-Mail nur für dein Konto und wichtige Sicherheitsnachrichten."
     },
     confirmed: {
-      successTitle: "Dein Konto ist bestaetigt",
-      successText: "Deine E-Mail wurde erfolgreich bestaetigt. Du kannst BureauCare jetzt sicher nutzen.",
-      alreadyTitle: "Dein Konto ist bereits bestaetigt",
-      alreadyText: "Diese E-Mail wurde schon bestaetigt. Du kannst dich direkt anmelden oder weiter in die App gehen.",
-      expiredTitle: "Dieser Link ist nicht mehr gueltig",
-      expiredText: "Bitte fordere einfach eine neue Bestaetigungs-E-Mail an und versuche es noch einmal.",
-      invalidTitle: "Bestaetigung nicht moeglich",
-      invalidText: "Der Link war unvollstaendig oder konnte nicht mehr verarbeitet werden.",
+      successTitle: "Dein Konto ist bestätigt",
+      successText: "Deine E-Mail wurde erfolgreich bestätigt. Du kannst BureauCare jetzt sicher nutzen.",
+      alreadyTitle: "Dein Konto ist bereits bestätigt",
+      alreadyText: "Diese E-Mail wurde schon bestätigt. Du kannst dich direkt anmelden oder weiter in die App gehen.",
+      expiredTitle: "Dieser Link ist nicht mehr gültig",
+      expiredText: "Bitte fordere einfach eine neue Bestätigungs-E-Mail an und versuche es noch einmal.",
+      invalidTitle: "Bestätigung nicht möglich",
+      invalidText: "Der Link war unvollständig oder konnte nicht mehr verarbeitet werden.",
       openApp: "Zur App",
       goToLogin: "Zum Login"
     }
@@ -128,17 +128,17 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
     loginPage: {
       back: "Back to start",
       eyebrow: "Secure access",
-      title: "Welcome to BureauCare",
-      intro: "Sign in safely and keep your documents, applications, and next steps in one calm place.",
+      title: "Your quiet place for paperwork.",
+      intro:
+        "Sign in and keep documents, applications, and next steps in one place—organized, without the noise.",
       trustItems: [
         "Your documents are stored securely.",
         "Only you can access your data.",
         "BureauCare never shares anything without your permission."
       ],
       form: {
-        badge: "BureauCare",
-        title: "Start calmly and securely",
-        text: "One account is enough to manage your documents safely and start future applications faster.",
+        title: "Your calm entry—without the bureaucracy stress.",
+        text: "One account keeps your documents, applications, and next steps in one clear place.",
         loginTab: "Sign in",
         signupTab: "Register",
         loginTitle: "Sign in",
@@ -199,7 +199,6 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         "BureauCare iznin olmadan hicbir seyi paylasmaz."
       ],
       form: {
-        badge: "BureauCare",
         title: "Sakin ve guvenli basla",
         text: "Belgelerini guvenle yonetmek ve gelecekteki basvurulari daha hizli baslatmak icin tek bir hesap yeterlidir.",
         loginTab: "Giris yap",
@@ -262,7 +261,6 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         "BureauCare nichoho ne peredaie bez tvoiei zghody."
       ],
       form: {
-        badge: "BureauCare",
         title: "Spokiinyi ta bezpechnyi start",
         text: "Odnoho akaunta dostatno, shchob bezpechno keruvaty dokumentamy ta shvydshe pochaty maibutni zaiavy.",
         loginTab: "Uviity",
@@ -325,7 +323,6 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         "BureauCare no comparte nada sin tu permiso."
       ],
       form: {
-        badge: "BureauCare",
         title: "Empieza con calma y seguridad",
         text: "Una sola cuenta es suficiente para gestionar tus documentos y empezar futuros tramites mas rapido.",
         loginTab: "Entrar",
@@ -388,7 +385,6 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         "未经你的同意，BureauCare 不会共享任何内容。"
       ],
       form: {
-        badge: "BureauCare",
         title: "安心开始，安全使用",
         text: "一个账号就可以安全管理你的文件，也能让之后的申请更快开始。",
         loginTab: "登录",

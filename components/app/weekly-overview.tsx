@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarClock, Check, ClipboardList, Flag } from "lucide-react";
+import { CalendarClock, Check, ChevronDown, ChevronUp, ClipboardList, Flag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -80,6 +80,7 @@ export function WeeklyOverview({ locale, dateLocale }: Props) {
   const labels = weeklyOverviewLabels(lang);
   const referenceNow = useMemo(() => new Date(), []);
 
+  const [expanded, setExpanded] = useState(false);
   const [items, setItems] = useState<WeeklyOverviewItem[]>(() => getWeeklyOverviewMockItems(referenceNow));
 
   const sorted = useMemo(() => sortWeeklyOverviewItems(items), [items]);
@@ -102,68 +103,84 @@ export function WeeklyOverview({ locale, dateLocale }: Props) {
 
   return (
     <Card className="border border-[rgba(95,163,163,0.14)] bg-[linear-gradient(168deg,rgba(255,255,255,0.99),rgba(246,250,249,0.88))] p-5 shadow-[0_18px_44px_rgba(43,43,43,0.04)] hover:translate-y-0 hover:shadow-[0_18px_44px_rgba(43,43,43,0.04)] sm:p-7">
-      <div className="flex flex-col gap-6 sm:gap-7">
-        <header className="space-y-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-            <div className="min-w-0 space-y-1.5">
-              <h2 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-[1.65rem]">
-                {labels.title}
-              </h2>
-              <p className="max-w-lg text-sm leading-relaxed text-[var(--muted)]">{labels.subtitle}</p>
-              <p
-                className="pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--foreground)]/55"
-                aria-label={summaryCompact}
-              >
-                {summaryCompact}
-              </p>
-            </div>
-            <div className="flex flex-shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+      <div className="flex flex-col gap-5 sm:gap-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="min-w-0 space-y-2">
+            <h2 className="text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-[1.4rem]">
+              {labels.title}
+            </h2>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">{summaryCompact}</p>
+          </div>
+          <div className="flex flex-shrink-0 flex-col gap-3 sm:items-end">
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               <StatusBadge tone={stats.openCount ? "accent" : "success"}>{labels.openChip(stats.openCount)}</StatusBadge>
               {stats.criticalDeadlineCount > 0 ? (
                 <StatusBadge tone="warning">{labels.criticalChip(stats.criticalDeadlineCount)}</StatusBadge>
               ) : null}
               <StatusBadge tone="neutral">{labels.appointmentsChip(stats.appointmentsThisWeekCount)}</StatusBadge>
             </div>
-          </div>
-
-          <div className="space-y-2 rounded-[22px] border border-[var(--line)] bg-white/92 px-4 py-3 sm:px-5">
-            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
-              <span>{labels.progress(stats.doneCount, stats.total)}</span>
-              <span className="tabular-nums text-[var(--foreground)]/80">{progressPct}%</span>
-            </div>
-            <div
-              className="h-1.5 overflow-hidden rounded-full bg-[rgba(232,220,207,0.55)]"
-              role="progressbar"
-              aria-valuenow={stats.doneCount}
-              aria-valuemin={0}
-              aria-valuemax={stats.total}
-              aria-label={labels.progress(stats.doneCount, stats.total)}
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full min-h-11 justify-center gap-2 sm:w-auto"
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+              aria-controls="weekly-overview-details"
+              id="weekly-overview-toggle"
             >
-              <div
-                className={cn(
-                  "h-full rounded-full transition-[width] duration-500 ease-out",
-                  progressPct >= 100
-                    ? "bg-[linear-gradient(90deg,var(--success-soft),rgba(123,191,159,0.95))]"
-                    : "bg-[image:var(--accent-gradient)]"
-                )}
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
+              {expanded ? (
+                <>
+                  <ChevronUp className="h-4 w-4 shrink-0" aria-hidden />
+                  {labels.collapseDetails}
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4 shrink-0" aria-hidden />
+                  {labels.expandDetails}
+                </>
+              )}
+            </Button>
           </div>
+        </div>
 
-          <p
-            className={cn(
-              "text-sm font-medium leading-relaxed",
-              stats.openCount === 0 && stats.total > 0
-                ? "text-[var(--petrol)]"
-                : "text-[var(--foreground)]/88"
-            )}
-          >
-            {microcopy}
-          </p>
-        </header>
+        {expanded ? (
+          <div id="weekly-overview-details" className="flex flex-col gap-6 border-t border-[var(--line)] pt-6 sm:gap-7">
+            <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted)]">{labels.subtitle}</p>
+            <div className="space-y-2 rounded-[22px] border border-[var(--line)] bg-white/92 px-4 py-3 sm:px-5">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+                <span>{labels.progress(stats.doneCount, stats.total)}</span>
+                <span className="tabular-nums text-[var(--foreground)]/80">{progressPct}%</span>
+              </div>
+              <div
+                className="h-1.5 overflow-hidden rounded-full bg-[rgba(232,220,207,0.55)]"
+                role="progressbar"
+                aria-valuenow={stats.doneCount}
+                aria-valuemin={0}
+                aria-valuemax={stats.total}
+                aria-label={labels.progress(stats.doneCount, stats.total)}
+              >
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-[width] duration-500 ease-out",
+                    progressPct >= 100
+                      ? "bg-[linear-gradient(90deg,var(--success-soft),rgba(123,191,159,0.95))]"
+                      : "bg-[image:var(--accent-gradient)]"
+                  )}
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+            </div>
 
-        <ul className="flex flex-col gap-4">
+            <p
+              className={cn(
+                "text-sm font-medium leading-relaxed",
+                stats.openCount === 0 && stats.total > 0 ? "text-[var(--petrol)]" : "text-[var(--foreground)]/88"
+              )}
+            >
+              {microcopy}
+            </p>
+
+            <ul className="flex flex-col gap-4">
           {sorted.map((item) => {
             const Icon = typeIcon(item.type);
             const typeLabel =
@@ -296,7 +313,9 @@ export function WeeklyOverview({ locale, dateLocale }: Props) {
               </li>
             );
           })}
-        </ul>
+            </ul>
+          </div>
+        ) : null}
       </div>
     </Card>
   );

@@ -1,5 +1,6 @@
 ﻿import { normalizePreferredLanguage } from "@/lib/languages";
 import type { CaseEventType, CaseStatus, DocumentStatus } from "@/lib/types";
+import type { CaseOverview } from "@/lib/queries";
 
 export function getCasesNavLabel(locale: string | null | undefined) {
   switch (normalizePreferredLanguage(locale)) {
@@ -482,4 +483,180 @@ export function getCaseOverviewLabels(locale: string | null | undefined) {
         none: "—"
       };
   }
+}
+
+export type CasesListCopy = {
+  pageSubtitle: string;
+  filterAll: string;
+  filterOpen: string;
+  filterImportant: string;
+  filterDone: string;
+  filterEmpty: string;
+  priorityHigh: string;
+  prioritySoon: string;
+  priorityOpen: string;
+  priorityDone: string;
+  homeActionTitle: string;
+  homeAllCases: string;
+  homeNoCases: string;
+  homeSummaryNone: string;
+  /** {count} = eine Zahl */
+  homeSummaryTotal: string;
+  homeSummaryImportant: string;
+  homeSummaryWaiting: string;
+  homeSummaryOpen: string;
+};
+
+export function getCasesListCopy(locale: string | null | undefined): CasesListCopy {
+  switch (normalizePreferredLanguage(locale)) {
+    case "en":
+      return {
+        pageSubtitle:
+          "Important matters in one place — with a clear view of what still needs your attention.",
+        filterAll: "All",
+        filterOpen: "Open",
+        filterImportant: "Priority",
+        filterDone: "Done",
+        filterEmpty: "No cases in this view.",
+        priorityHigh: "Needs attention",
+        prioritySoon: "Follow up soon",
+        priorityOpen: "Open",
+        priorityDone: "Settled",
+        homeActionTitle: "Cases needing attention",
+        homeAllCases: "All cases",
+        homeNoCases: "When BureauCare spots something relevant, your cases will show up here.",
+        homeSummaryNone: "Nothing pending right now.",
+        homeSummaryTotal: "{count} active",
+        homeSummaryImportant: "{count} priority",
+        homeSummaryWaiting: "{count} awaiting reply",
+        homeSummaryOpen: "{count} open"
+      };
+    case "tr":
+      return {
+        pageSubtitle:
+          "Önemli süreçler tek yerde — neyin hâlâ seni beklediğini net görmek için.",
+        filterAll: "Tümü",
+        filterOpen: "Açık",
+        filterImportant: "Öncelikli",
+        filterDone: "Tamamlandı",
+        filterEmpty: "Bu görünümde dosya yok.",
+        priorityHigh: "İşlem gerekli",
+        prioritySoon: "Yakında bak",
+        priorityOpen: "Açık",
+        priorityDone: "Tamamlandı",
+        homeActionTitle: "İşlem gerektiren dosyalar",
+        homeAllCases: "Tüm dosyalar",
+        homeNoCases: "BureauCare bir şey yakaladığında dosyaların burada görünür.",
+        homeSummaryNone: "Şu an bekleyen yok.",
+        homeSummaryTotal: "{count} aktif",
+        homeSummaryImportant: "{count} öncelikli",
+        homeSummaryWaiting: "{count} yanıt bekliyor",
+        homeSummaryOpen: "{count} açık"
+      };
+    case "uk":
+      return {
+        pageSubtitle:
+          "Усі важливі процеси в одному місці — зрозуміло, що ще потребує твоєї уваги.",
+        filterAll: "Усі",
+        filterOpen: "Відкриті",
+        filterImportant: "Пріоритет",
+        filterDone: "Виконано",
+        filterEmpty: "У цьому вигляді справ немає.",
+        priorityHigh: "Потрібна дія",
+        prioritySoon: "Незабаром переглянути",
+        priorityOpen: "Відкрито",
+        priorityDone: "Завершено",
+        homeActionTitle: "Справа з потребою дій",
+        homeAllCases: "Усі справи",
+        homeSummaryNone: "Зараз нічого не очікує.",
+        homeSummaryTotal: "{count} активних",
+        homeSummaryImportant: "{count} пріоритетних",
+        homeSummaryWaiting: "{count} очікують відповіді",
+        homeSummaryOpen: "{count} відкритих",
+        homeNoCases: "Коли BureauCare знайде щось важливе, справи зʼявляться тут."
+      };
+    case "es":
+      return {
+        pageSubtitle:
+          "Los asuntos importantes en un solo sitio, con claridad sobre lo que sigue pendiente.",
+        filterAll: "Todos",
+        filterOpen: "Abiertos",
+        filterImportant: "Prioridad",
+        filterDone: "Hechos",
+        filterEmpty: "No hay casos en esta vista.",
+        priorityHigh: "Requiere acción",
+        prioritySoon: "Revisar pronto",
+        priorityOpen: "Abierto",
+        priorityDone: "Cerrado",
+        homeActionTitle: "Casos que requieren acción",
+        homeAllCases: "Todos los casos",
+        homeNoCases: "Cuando BureauCare detecte algo relevante, tus casos aparecerán aquí.",
+        homeSummaryNone: "Nada pendiente ahora mismo.",
+        homeSummaryTotal: "{count} activos",
+        homeSummaryImportant: "{count} prioritarios",
+        homeSummaryWaiting: "{count} esperando respuesta",
+        homeSummaryOpen: "{count} abiertos"
+      };
+    case "zh":
+      return {
+        pageSubtitle: "重要事项集中在一处，清楚显示仍需你处理的内容。",
+        filterAll: "全部",
+        filterOpen: "进行中",
+        filterImportant: "优先",
+        filterDone: "已完成",
+        filterEmpty: "此视图下没有案件。",
+        priorityHigh: "需要处理",
+        prioritySoon: "尽快跟进",
+        priorityOpen: "待处理",
+        priorityDone: "已结束",
+        homeActionTitle: "需要跟进的案件",
+        homeAllCases: "全部案件",
+        homeNoCases: "当 BureauCare 识别到相关内容时，案件会显示在这里。",
+        homeSummaryNone: "目前没有待处理项。",
+        homeSummaryTotal: "{count} 个进行中",
+        homeSummaryImportant: "{count} 个优先",
+        homeSummaryWaiting: "{count} 个等待回复",
+        homeSummaryOpen: "{count} 个待办"
+      };
+    default:
+      return {
+        pageSubtitle:
+          "Alle wichtigen Vorgänge an einem Ort – mit klarem Überblick über offenen Handlungsbedarf.",
+        filterAll: "Alle",
+        filterOpen: "Offen",
+        filterImportant: "Wichtig",
+        filterDone: "Erledigt",
+        filterEmpty: "Keine Fälle in dieser Ansicht.",
+        priorityHigh: "Handlungsbedarf",
+        prioritySoon: "Bald prüfen",
+        priorityOpen: "Offen",
+        priorityDone: "Erledigt",
+        homeActionTitle: "Fälle mit Handlungsbedarf",
+        homeAllCases: "Alle Fälle",
+        homeNoCases: "Sobald BureauCare Zusammenhänge erkennt, erscheinen deine Fälle hier automatisch.",
+        homeSummaryNone: "Aktuell nichts Offenes.",
+        homeSummaryTotal: "{count} aktiv",
+        homeSummaryImportant: "{count} mit Priorität",
+        homeSummaryWaiting: "{count} warten auf Antwort",
+        homeSummaryOpen: "{count} offen"
+      };
+  }
+}
+
+/** Kompakte Einzeile für die Home-Zusammenfassung (nur aktive / handlungsrelevante Fälle). */
+export function buildHomeCaseSummaryLine(cases: CaseOverview[], copy: CasesListCopy): string {
+  const active = cases.filter((c) => c.status !== "done");
+  if (active.length === 0) {
+    return copy.homeSummaryNone;
+  }
+  const important = active.filter((c) => c.status === "in_progress" || c.openTasksCount > 0).length;
+  const waiting = active.filter((c) => c.status === "waiting").length;
+  const parts: string[] = [copy.homeSummaryTotal.replace("{count}", String(active.length))];
+  if (important > 0) {
+    parts.push(copy.homeSummaryImportant.replace("{count}", String(important)));
+  }
+  if (waiting > 0) {
+    parts.push(copy.homeSummaryWaiting.replace("{count}", String(waiting)));
+  }
+  return parts.join(" · ");
 }

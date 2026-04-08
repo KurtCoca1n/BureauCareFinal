@@ -68,11 +68,11 @@ export function ResponseSettingsPanel({
   }, [includeSignatureValue, locale, selectedTone, signatureValue, styleNoteValue]);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)]">
-      <Card className="space-y-6 p-5 sm:p-6">
+    <div className="flex min-w-0 flex-col gap-8">
+      <Card className="min-w-0 space-y-6 p-5 sm:p-6 lg:p-7">
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-[var(--foreground)]">{copy.toneTitle}</h3>
-          <p className="max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.intro}</p>
+          <p className="max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.intro}</p>
         </div>
 
         <form action={formAction} className="space-y-6">
@@ -91,16 +91,16 @@ export function ResponseSettingsPanel({
                     type="button"
                     onClick={() => setSelectedTone(option.value)}
                     className={[
-                      "rounded-[24px] border p-4 text-left transition duration-300",
+                      "min-w-0 rounded-[24px] border p-4 text-left transition duration-300",
                       active
                         ? "border-[rgba(165,192,217,0.92)] bg-[linear-gradient(180deg,rgba(239,245,250,0.98),rgba(255,255,255,0.98))] shadow-[0_18px_36px_rgba(29,58,90,0.08)]"
-                        : "border-[rgba(223,229,236,0.94)] bg-[rgba(255,255,255,0.92)] hover:-translate-y-0.5 hover:border-[rgba(208,220,234,0.92)]"
+                        : "border-[rgba(223,229,236,0.94)] bg-[rgba(255,255,255,0.92)] hover:border-[rgba(208,220,234,0.92)]"
                     ].join(" ")}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1.5">
+                      <div className="min-w-0 flex-1 space-y-1.5">
                         <p className="font-semibold text-[var(--foreground)]">{option.label}</p>
-                        <p className="text-sm leading-6 text-[var(--muted)]">{option.description}</p>
+                        <p className="text-sm leading-relaxed text-[var(--muted)]">{option.description}</p>
                       </div>
                       {active ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent)]" /> : null}
                     </div>
@@ -171,15 +171,15 @@ export function ResponseSettingsPanel({
                     type="button"
                     onClick={() => setTranslationModeValue(mode)}
                     className={[
-                      "rounded-[24px] border p-4 text-left transition duration-300",
+                      "min-w-0 rounded-[24px] border p-4 text-left transition duration-300",
                       active
                         ? "border-[rgba(165,192,217,0.92)] bg-[linear-gradient(180deg,rgba(239,245,250,0.98),rgba(255,255,255,0.98))] shadow-[0_18px_36px_rgba(29,58,90,0.08)]"
-                        : "border-[rgba(223,229,236,0.94)] bg-[rgba(255,255,255,0.92)] hover:-translate-y-0.5 hover:border-[rgba(208,220,234,0.92)]"
+                        : "border-[rgba(223,229,236,0.94)] bg-[rgba(255,255,255,0.92)] hover:border-[rgba(208,220,234,0.92)]"
                     ].join(" ")}
                   >
-                    <div className="space-y-1.5">
+                    <div className="min-w-0 space-y-1.5">
                       <p className="font-semibold text-[var(--foreground)]">{option.label}</p>
-                      <p className="text-sm leading-6 text-[var(--muted)]">{option.description}</p>
+                      <p className="text-sm leading-relaxed text-[var(--muted)]">{option.description}</p>
                     </div>
                   </button>
                 );
@@ -207,8 +207,8 @@ export function ResponseSettingsPanel({
         </form>
       </Card>
 
-      <div className="space-y-5">
-        <Card className="space-y-4 p-5 sm:p-6">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-2">
+        <Card className="min-w-0 space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-[rgba(187,171,223,0.17)] p-3 text-[rgba(108,92,152,0.95)]">
               <MessageSquareQuote className="h-5 w-5" />
@@ -223,7 +223,7 @@ export function ResponseSettingsPanel({
           </div>
         </Card>
 
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="min-w-0 space-y-4 p-5 sm:p-6 lg:p-7">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-[rgba(191,214,200,0.18)] p-3 text-[rgba(78,132,104,0.94)]">
               <Sparkles className="h-5 w-5" />
@@ -238,7 +238,7 @@ export function ResponseSettingsPanel({
           </StatusBadge>
         </Card>
 
-        <Card className="space-y-4 p-5 sm:p-6">
+        <Card className="min-w-0 space-y-4 p-5 sm:p-6 lg:p-7 lg:col-span-2">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-[rgba(159,201,219,0.18)] p-3 text-[rgba(62,125,150,0.95)]">
               <Languages className="h-5 w-5" />

@@ -155,8 +155,12 @@ export function MyDataOverview({
               <ShieldCheck className="h-4 w-4" />
               {copy.title}
             </div>
-            <h1 className="page-title page-title-accent text-3xl sm:text-5xl">{copy.title}</h1>
-            <p className="max-w-3xl text-sm leading-7 text-[var(--foreground)]/86">{copy.intro}</p>
+            {embedded ? (
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">{copy.title}</h2>
+            ) : (
+              <h1 className="page-title page-title-accent text-3xl sm:text-5xl">{copy.title}</h1>
+            )}
+            <p className="max-w-none text-sm leading-relaxed text-[var(--foreground)]/86">{copy.intro}</p>
           </div>
           <div className="mt-6 rounded-[24px] border border-[rgba(214,224,235,0.92)] bg-[rgba(247,250,252,0.92)] p-4 sm:p-5">
             <div className="space-y-2">
@@ -167,7 +171,7 @@ export function MyDataOverview({
           <div className="mt-6 flex flex-wrap gap-3">
             {showSettingsLink ? (
               <Link
-                href="/app/settings?section=personal-data"
+                href="/app/settings?section=profile#settings-personal-data"
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(232,220,207,0.85)] bg-[rgba(232,220,207,0.32)] px-5 text-sm font-semibold text-[var(--foreground)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[rgba(232,220,207,0.48)]"
               >
                 {copy.backToSettings}
@@ -189,24 +193,24 @@ export function MyDataOverview({
       {!hasAnyValues ? (
         <Card className="p-8">
           <h2 className="text-xl font-semibold">{copy.pageEmptyTitle}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">{copy.pageEmptyText}</p>
+          <p className="mt-3 max-w-none text-sm leading-relaxed text-[var(--muted)]">{copy.pageEmptyText}</p>
         </Card>
       ) : null}
 
       {showSuggestions ? <PersonalDataSuggestionsSection locale={locale} suggestions={suggestions} compact /> : null}
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className={embedded ? "grid grid-cols-1 gap-6" : "grid gap-6 xl:grid-cols-2"}>
         {myDataSections.map((section) => {
           const rows = getSectionFieldRows(section, record);
           const sectionMeta = getSectionMetaSummary(section.key, record);
           const isEditing = editingSection === section.key;
 
           return (
-            <Card key={section.key} className="flex h-full flex-col border-[var(--line)] p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
+            <Card key={section.key} className="flex h-full min-w-0 flex-col border-[var(--line)] p-6">
+              <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1 space-y-2">
                   <h2 className="text-xl font-semibold tracking-[-0.02em]">{getMyDataText(locale, section.title)}</h2>
-                  <p className="text-sm leading-6 text-[var(--muted)]">{getMyDataText(locale, section.description)}</p>
+                  <p className="text-sm leading-relaxed text-[var(--muted)]">{getMyDataText(locale, section.description)}</p>
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-[rgba(79,102,125,0.72)]">{copy.reuseHint}</p>
                   {sectionMeta ? (
                     <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">

@@ -225,7 +225,9 @@ export function weeklyOverviewLabels(locale: "de" | "en") {
     priorityLow: "Low",
     due: "Due",
     markDone: "Done",
-    undo: "Undo"
+    undo: "Undo",
+    expandDetails: "Show week",
+    collapseDetails: "Hide week"
   };
   if (locale === "en") return en;
   return {
@@ -246,7 +248,9 @@ export function weeklyOverviewLabels(locale: "de" | "en") {
     priorityLow: "Niedrig",
     due: "Fällig",
     markDone: "Erledigt",
-    undo: "Zurücknehmen"
+    undo: "Zurücknehmen",
+    expandDetails: "Woche anzeigen",
+    collapseDetails: "Einklappen"
   };
 }
 
