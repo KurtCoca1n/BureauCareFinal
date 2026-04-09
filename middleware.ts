@@ -1,11 +1,14 @@
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 import { LOCALE_COOKIE_NAME } from "@/lib/request-locale";
 import { normalizeBrowserLanguage } from "@/lib/languages";
-import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
+  // Keep middleware as light as possible.
+  // Auth gating happens in server layouts/pages (e.g. `app/app/layout.tsx`),
+  // so we avoid an extra Supabase roundtrip here which slows down navigation.
+  const response = NextResponse.next({ request });
 
   if (!request.cookies.get(LOCALE_COOKIE_NAME)) {
     const detectedLocale = normalizeBrowserLanguage(request.headers.get("accept-language"));

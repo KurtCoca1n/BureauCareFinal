@@ -149,6 +149,15 @@ export function AppNavigation({ locale }: { locale: string }) {
                   key={item.href}
                   href={item.href as Route}
                   prefetch
+                  data-tour={
+                    item.href === "/app/cases"
+                      ? "nav-cases"
+                      : item.href === "/app/processes"
+                        ? "nav-processes"
+                        : item.href === "/app"
+                          ? "nav-home"
+                          : undefined
+                  }
                   className={cn(
                     "flex min-h-[3.35rem] items-center gap-3.5 rounded-[22px] border border-transparent px-4 text-[0.9375rem] font-semibold leading-snug transition duration-300 ease-out active:scale-[0.99] sm:text-base",
                     item.idleClass,
@@ -177,6 +186,15 @@ export function AppNavigation({ locale }: { locale: string }) {
                 key={item.href}
                 href={item.href as Route}
                 prefetch
+                data-tour={
+                  item.href === "/app/cases"
+                    ? "nav-cases"
+                    : item.href === "/app/processes"
+                      ? "nav-processes"
+                      : item.href === "/app"
+                        ? "nav-home"
+                        : undefined
+                }
                 className={cn(
                   "flex min-w-[84px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border border-transparent px-3 py-2.5 text-[12px] font-semibold leading-tight transition duration-300 ease-out active:scale-[0.98] sm:min-w-[88px] sm:text-[13px]",
                   item.idleClass,

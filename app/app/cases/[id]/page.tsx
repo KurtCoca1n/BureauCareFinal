@@ -16,8 +16,18 @@ import {
   getDocumentStatusLabel
 } from "@/lib/case-ui";
 import { getDateLocale } from "@/lib/i18n";
-import { getCaseById, getCaseEvents, getDocumentsByCaseId, getProfile, getTasksByCaseId } from "@/lib/queries";
+import {
+  getCaseById,
+  getCaseEvents,
+  getDocumentsByCaseId,
+  getLatestDocumentAnalysesMap,
+  getProfile,
+  getTasksByCaseId
+} from "@/lib/queries";
+import { normalizePreferredLanguage } from "@/lib/languages";
+import { buildCasePrioritySignals, computeTrafficLightForDocument, resolveCaseTrafficLight } from "@/lib/traffic-light-priority";
 import { getRequestLanguage } from "@/lib/request-locale";
+import { TrafficLightBadge } from "@/components/ui/traffic-light-badge";
 
 function caseDetailStatusTone(status: string) {
   if (status === "done") return "success" as const;
@@ -40,6 +50,15 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
     notFound();
   }
 
+  const analysesMap = await getLatestDocumentAnalysesMap(documents.map((d) => d.id));
+  const caseSignals = buildCasePrioritySignals(documents, tasks, analysesMap);
+  const caseTraffic = resolveCaseTrafficLight({
+    status: caseItem.status,
+    openTasksCount: tasks.filter((t) => t.status !== "done").length,
+    nearestDeadlineIso: caseSignals.nearestDeadlineIso,
+    hasOfficialOrUrgentDocument: caseSignals.hasOfficialOrUrgentDocument
+  });
+
   const locale = await getRequestLanguage(profile?.preferred_language);
   const dateLocale = getDateLocale(locale as never);
   const caseText = getCaseText(locale);
@@ -47,6 +66,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
   const brief = parseCaseBrief(caseItem.case_brief);
   const primaryDocId = brief?.primary_document_id;
   const primaryDoc = primaryDocId ? documents.find((d) => d.id === primaryDocId) ?? documents[0] : documents[0];
+  const trafficLang = normalizePreferredLanguage(locale) === "de" ? "de" : "en";
 
   return (
     <div className="space-y-6">
@@ -56,6 +76,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
           <StatusBadge tone={caseDetailStatusTone(caseItem.status)}>
             {getCaseStatusLabel(caseItem.status, locale)}
           </StatusBadge>
+          <TrafficLightBadge level={caseTraffic.level} lang={trafficLang} settled={caseTraffic.settled} />
         </div>
         <h1 className="page-title page-title-accent text-3xl sm:text-4xl">{caseItem.title}</h1>
       </section>
@@ -161,20 +182,24 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             </div>
             <div className="grid gap-3">
               {documents.length ? (
-                documents.map((document) => (
-                  <Link key={document.id} href={`/app/documents/${document.id}` as Route}>
-                    <div className="flex items-center justify-between rounded-[22px] border border-[var(--line)] bg-white p-4">
-                      <div>
-                        <p className="font-medium">{document.original_filename}</p>
-                        <p className="mt-1 text-sm text-[var(--muted)]">{document.subject ?? document.sender ?? "Dokument"}</p>
+                documents.map((document) => {
+                  const docTraffic = computeTrafficLightForDocument(document, analysesMap.get(document.id) ?? null, new Date());
+                  return (
+                    <Link key={document.id} href={`/app/documents/${document.id}` as Route}>
+                      <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[var(--line)] bg-white p-4">
+                        <div className="min-w-0">
+                          <p className="font-medium">{document.original_filename}</p>
+                          <p className="mt-1 text-sm text-[var(--muted)]">{document.subject ?? document.sender ?? "Dokument"}</p>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                          <TrafficLightBadge level={docTraffic.level} lang={trafficLang} settled={docTraffic.settled} />
+                          <StatusBadge tone="neutral">{getDocumentStatusLabel(document.status, locale)}</StatusBadge>
+                          <ArrowRight className="h-4 w-4 text-[var(--muted)]" />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <StatusBadge tone="neutral">{getDocumentStatusLabel(document.status, locale)}</StatusBadge>
-                        <ArrowRight className="h-4 w-4 text-[var(--muted)]" />
-                      </div>
-                    </div>
-                  </Link>
-                ))
+                    </Link>
+                  );
+                })
               ) : (
                 <p className="text-sm text-[var(--muted)]">{caseText.noDocuments}</p>
               )}

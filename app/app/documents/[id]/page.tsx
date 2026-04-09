@@ -25,11 +25,14 @@ import { NearbyHelpLinks } from "@/components/app/nearby-help-links";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { TrafficLightBadge } from "@/components/ui/traffic-light-badge";
 import { getCaseStatusLabel, getCaseText, getDocumentStatusLabel } from "@/lib/case-ui";
 import { normalizeDocumentKindDetection } from "@/lib/document-kind";
 import { looksLikePotentiallyIncompleteDocument } from "@/lib/document-name";
 import { getDocumentTypeLabel } from "@/lib/file-types";
 import { getCopy, getDateLocale, getDocumentTrustCopy, getUsageCopy } from "@/lib/i18n";
+import { normalizePreferredLanguage } from "@/lib/languages";
+import { computeTrafficLightForDocument } from "@/lib/traffic-light-priority";
 import { getGeneralExplainPreAnalyzeBanner, getOptionalContractDepthHint } from "@/lib/general-explain-flow-ui";
 import { getNoticeScannerPreAnalyzeBanner } from "@/lib/notice-scanner-flow-ui";
 import {
@@ -131,6 +134,8 @@ export default async function DocumentDetailPage({
   const kindDetection = normalizeDocumentKindDetection(document.kind_detection);
   const contractDepthHint =
     analysis?.summary_simple && analysis ? getOptionalContractDepthHint(locale, kindDetection, analysis) : null;
+  const trafficLang = normalizePreferredLanguage(locale) === "de" ? "de" : "en";
+  const docTraffic = computeTrafficLightForDocument(document, analysis, new Date());
 
   return (
     <div className="space-y-6">
@@ -140,6 +145,7 @@ export default async function DocumentDetailPage({
           <StatusBadge tone="neutral">
             {pageCount} {trustCopy.pageCountSuffix}
           </StatusBadge>
+          <TrafficLightBadge level={docTraffic.level} lang={trafficLang} settled={docTraffic.settled} />
         </div>
         <h1 className="page-title page-title-accent text-3xl sm:text-4xl">{document.original_filename}</h1>
       </section>

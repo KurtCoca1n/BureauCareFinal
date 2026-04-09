@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { EmailConfirmedCheckForm } from "@/components/auth/email-confirmed-check-form";
 import { ResendVerificationForm } from "@/components/auth/resend-verification-form";
 import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page-shell";
@@ -15,6 +16,7 @@ export default async function VerifyEmailPage({
   const locale = normalizePreferredLanguage(params.locale);
   const copy = getAuthCopy(locale).verifyEmail;
   const email = params.email ?? "";
+  const loginHref = `/login?next=${encodeURIComponent("/onboarding")}`;
 
   return (
     <PageShell className="justify-center px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
@@ -40,6 +42,15 @@ export default async function VerifyEmailPage({
               </div>
             ) : null}
 
+            <div className="space-y-4 rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(255,255,255,0.72))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] sm:p-6">
+              <EmailConfirmedCheckForm
+                email={email}
+                locale={locale}
+                label={locale === "de" ? "E‑Mail bestätigen" : "Confirm email"}
+                pendingLabel={locale === "de" ? "Prüfe…" : "Checking…"}
+              />
+            </div>
+
             <div className="space-y-4 rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.76),rgba(255,255,255,0.66))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] sm:p-6">
               <p className="text-sm leading-6 text-[var(--muted)]">{copy.spamHint}</p>
               <ResendVerificationForm
@@ -55,7 +66,7 @@ export default async function VerifyEmailPage({
                 {copy.backToLogin}
               </Link>
               <Link
-                href="/"
+                href={loginHref}
                 className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
               >
                 {copy.continueLater}

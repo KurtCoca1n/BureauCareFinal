@@ -88,12 +88,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "name@beispiel.de",
         namePlaceholder: "Max Mustermann",
         passwordPlaceholder: "Mindestens 8 Zeichen",
-        passwordHint: "Mindestens 8 Zeichen.",
+        passwordHint: "Bitte wähle ein sicheres Passwort mit mindestens 8 Zeichen.",
         login: "Anmelden",
         loginPending: "Anmeldung läuft…",
         signup: "Konto erstellen",
         signupPending: "Konto wird erstellt…",
-        forgotPassword: "Passwort vergessen?",
+        forgotPassword: "Passwort vergessen? (Link senden)",
         trustNote: "Deine Angaben werden nur für dein Konto und spätere Anträge genutzt."
       }
     },
@@ -108,7 +108,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "Wird erneut gesendet…",
       resendSuccess: "Wir haben dir eine neue E-Mail geschickt.",
       backToLogin: "Zurück zum Login",
-      continueLater: "Später weitermachen",
+      continueLater: "Jetzt anmelden",
       trustNote: "Wir verwenden deine E-Mail nur für dein Konto und wichtige Sicherheitsnachrichten."
     },
     confirmed: {
@@ -152,12 +152,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "name@example.com",
         namePlaceholder: "Alex Example",
         passwordPlaceholder: "At least 8 characters",
-        passwordHint: "At least 8 characters.",
+        passwordHint: "Please choose a secure password with at least 8 characters.",
         login: "Sign in",
         loginPending: "Signing in...",
         signup: "Create account",
         signupPending: "Creating account...",
-        forgotPassword: "Forgot password?",
+        forgotPassword: "Forgot password? (Send link)",
         trustNote: "Your details are only used for your account and future applications."
       }
     },
@@ -171,7 +171,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "Sending again...",
       resendSuccess: "We sent you a new email.",
       backToLogin: "Back to login",
-      continueLater: "Continue later",
+      continueLater: "Log in now",
       trustNote: "We only use your email for your account and important security messages."
     },
     confirmed: {
@@ -214,12 +214,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "isim@ornek.de",
         namePlaceholder: "Ali Ornek",
         passwordPlaceholder: "En az 8 karakter",
-        passwordHint: "En az 8 karakter.",
+        passwordHint: "Lütfen en az 8 karakterli güvenli bir şifre seç.",
         login: "Giris yap",
         loginPending: "Giris yapiliyor...",
         signup: "Hesap olustur",
         signupPending: "Hesap olusturuluyor...",
-        forgotPassword: "Sifremi unuttum",
+        forgotPassword: "Sifremi unuttum (Link gonder)",
         trustNote: "Bilgilerin sadece hesabin ve gelecekteki basvurular icin kullanilir."
       }
     },
@@ -233,7 +233,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "Tekrar gonderiliyor...",
       resendSuccess: "Sana yeni bir e-posta gonderdik.",
       backToLogin: "Logine don",
-      continueLater: "Daha sonra devam et",
+      continueLater: "Simdi giris yap",
       trustNote: "E-postani sadece hesabin ve onemli guvenlik mesajlari icin kullaniriz."
     },
     confirmed: {
@@ -276,12 +276,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "name@example.com",
         namePlaceholder: "Olena Pryklad",
         passwordPlaceholder: "Shchonaimenshe 8 symvoliv",
-        passwordHint: "Shchonaimenshe 8 symvoliv.",
+        passwordHint: "Bud laska, obery bezpechnyi parol shchonaimenshe z 8 symvoliv.",
         login: "Uviity",
         loginPending: "Vkhid...",
         signup: "Stvoryty akaunt",
         signupPending: "Stvorennia akaunta...",
-        forgotPassword: "Zabuly parol?",
+        forgotPassword: "Zabuly parol? (Nadislaty posylannia)",
         trustNote: "Tvoi dani vykorystovuiutsia lyshe dlia tvoho akaunta ta maibutnikh zaiav."
       }
     },
@@ -295,7 +295,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "Povtorne nadsylannia...",
       resendSuccess: "My nadisly tobi novyi lyst.",
       backToLogin: "Nazad do loginu",
-      continueLater: "Prodovzhyty piznishe",
+      continueLater: "Uviity zaraz",
       trustNote: "My vykorystovuiemo tvii email lyshe dlia akaunta ta vazhlyvykh bezpekhovykh povidomlen."
     },
     confirmed: {
@@ -338,12 +338,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "nombre@ejemplo.com",
         namePlaceholder: "Lucia Ejemplo",
         passwordPlaceholder: "Al menos 8 caracteres",
-        passwordHint: "Al menos 8 caracteres.",
+        passwordHint: "Elige una contraseña segura con al menos 8 caracteres.",
         login: "Entrar",
         loginPending: "Entrando...",
         signup: "Crear cuenta",
         signupPending: "Creando cuenta...",
-        forgotPassword: "Olvide mi contrasena",
+        forgotPassword: "Olvide mi contrasena (Enviar enlace)",
         trustNote: "Tus datos solo se usan para tu cuenta y tus futuros tramites."
       }
     },
@@ -357,7 +357,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "Se esta enviando otra vez...",
       resendSuccess: "Te enviamos un nuevo correo.",
       backToLogin: "Volver al login",
-      continueLater: "Continuar mas tarde",
+      continueLater: "Entrar ahora",
       trustNote: "Solo usamos tu correo para tu cuenta y mensajes de seguridad importantes."
     },
     confirmed: {
@@ -400,12 +400,12 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
         emailPlaceholder: "name@example.com",
         namePlaceholder: "张三",
         passwordPlaceholder: "至少 8 个字符",
-        passwordHint: "至少 8 个字符。",
+        passwordHint: "请选择至少 8 个字符的安全密码。",
         login: "登录",
         loginPending: "正在登录...",
         signup: "创建账号",
         signupPending: "正在创建账号...",
-        forgotPassword: "忘记密码？",
+        forgotPassword: "忘记密码？(发送链接)",
         trustNote: "这些信息只会用于你的账号和之后的申请。"
       }
     },
@@ -419,7 +419,7 @@ const copy: Record<SupportedLanguage, AuthCopy> = {
       resendPending: "正在重新发送...",
       resendSuccess: "我们已经重新向你发送了一封邮件。",
       backToLogin: "返回登录",
-      continueLater: "稍后继续",
+      continueLater: "现在登录",
       trustNote: "我们只会将你的邮箱用于账号和重要的安全通知。"
     },
     confirmed: {

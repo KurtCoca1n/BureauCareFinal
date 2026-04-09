@@ -5,7 +5,11 @@ import type { Route } from "next";
 import { TaskCompleteForm } from "@/components/app/task-complete-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { TrafficLightBadge } from "@/components/ui/traffic-light-badge";
 import { getCopy, getDateLocale, getReminderCopy } from "@/lib/i18n";
+import { normalizePreferredLanguage } from "@/lib/languages";
+import { getOptionalTaskTip } from "@/lib/task-tips";
+import { computeTrafficLightForTask } from "@/lib/traffic-light-priority";
 import type { TaskRecord } from "@/lib/types";
 
 function getTaskHref(task: TaskRecord) {
@@ -20,6 +24,9 @@ export function TaskCard({ task, compact = false, locale = "de" }: { task: TaskR
   const href = getTaskHref(task);
   const copy = getCopy(locale);
   const reminderCopy = getReminderCopy(locale);
+  const trafficLang = normalizePreferredLanguage(locale) === "de" ? "de" : "en";
+  const traffic = computeTrafficLightForTask(task, new Date());
+  const tip = getOptionalTaskTip(task, trafficLang);
   const mapsHref = task.action_location_address
     ? (`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.action_location_address)}` as const)
     : null;
@@ -65,6 +72,7 @@ export function TaskCard({ task, compact = false, locale = "de" }: { task: TaskR
               <StatusBadge tone={task.status === "done" ? "success" : "accent"}>
                 {task.status === "done" ? copy.common.statusDone : copy.common.statusOpen}
               </StatusBadge>
+              <TrafficLightBadge level={traffic.level} lang={trafficLang} settled={traffic.settled} />
               {task.due_date ? (
                 <StatusBadge tone={dueTone}>
                   {copy.common.deadline}{" "}
@@ -101,6 +109,15 @@ export function TaskCard({ task, compact = false, locale = "de" }: { task: TaskR
       ) : null}
 
       {task.importance_reason ? <p className="text-sm leading-6 text-[var(--muted)]">{task.importance_reason}</p> : null}
+
+      {tip ? (
+        <p className="text-xs leading-relaxed text-[var(--muted)]/90">
+          <span className="mr-1" aria-hidden>
+            💡
+          </span>
+          {tip}
+        </p>
+      ) : null}
 
       {!compact && (modeLabel || task.action_location_name || task.action_url) ? (
         <div className="flex flex-wrap gap-2">

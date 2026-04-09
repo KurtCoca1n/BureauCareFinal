@@ -65,10 +65,11 @@ export function buildPersonalDataSuggestions(
   }
 
   const drafts: SuggestionDraft[] = [];
-  const housing = record.household_details;
-  const income = record.income_details;
-  const family = record.family_details;
-  const residency = record.residency_details;
+  /** Teilbereiche fehlen in der DB oft komplett — ohne Defaults entsteht ein 500er auf der Home-Seite. */
+  const housing = record.household_details ?? {};
+  const income = record.income_details ?? {};
+  const family = record.family_details ?? {};
+  const residency = record.residency_details ?? {};
   const monthlyIncome = typeof income.monthly_income_approx === "number" ? income.monthly_income_approx : null;
   const monthlyRent = typeof housing.monthly_rent === "number" ? housing.monthly_rent : null;
   const householdSize = typeof housing.household_size === "number" ? housing.household_size : null;

@@ -138,8 +138,8 @@ const de: OnboardingCopy = {
   guestClosing: {
     headline: "Fast geschafft.",
     sub: "Bitte bestätige noch deine E-Mail-Adresse – dann ist dein Konto bereit. Den Link haben wir dir geschickt.",
-    primary: "Zur E-Mail-Bestätigung",
-    secondary: "Später einloggen"
+    primary: "E-Mail bestätigen",
+    secondary: "Jetzt anmelden"
   }
 };
 
@@ -246,7 +246,7 @@ const en: OnboardingCopy = {
     headline: "Almost there.",
     sub: "Please confirm your email address to finish setting up your account. We sent you a link.",
     primary: "Confirm email",
-    secondary: "Log in later"
+    secondary: "Log in now"
   }
 };
 

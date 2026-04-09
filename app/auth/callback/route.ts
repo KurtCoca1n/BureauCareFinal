@@ -27,6 +27,12 @@ export async function GET(request: NextRequest) {
     return u;
   };
 
+  const redirectToResetPassword = () => {
+    const u = request.nextUrl.clone();
+    u.pathname = "/login/reset-password";
+    return u;
+  };
+
   const createSupabase = (response: NextResponse) =>
     createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
       cookies: {
@@ -52,7 +58,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (tokenHash && type) {
-    const response = NextResponse.redirect(redirectToConfirmed("success"));
+    const response = NextResponse.redirect(type === "recovery" ? redirectToResetPassword() : redirectToConfirmed("success"));
     const supabase = createSupabase(response);
     const { error } = await supabase.auth.verifyOtp({
       token_hash: tokenHash,

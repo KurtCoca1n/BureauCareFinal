@@ -1,12 +1,14 @@
 ﻿import { ArrowLeft, Eye, Lock, Shield } from "lucide-react";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { AuthForm } from "@/components/auth/auth-form";
 import { PageShell } from "@/components/ui/page-shell";
 import { getAuthCopy } from "@/lib/auth-copy";
 import { getRequestLanguage } from "@/lib/request-locale";
 import { cn } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/queries";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,6 +25,10 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const locale = await getRequestLanguage();
+  const user = await getCurrentUser();
+  if (user) {
+    redirect("/app");
+  }
   const copy = getAuthCopy(locale).loginPage;
 
   return (

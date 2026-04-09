@@ -4,6 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getClientEnv } from "@/lib/env";
 
 export async function updateSession(request: NextRequest) {
+  // NOTE: This helper is kept for backwards compatibility.
+  // We intentionally avoid `supabase.auth.getUser()` here because it triggers a network roundtrip
+  // on every request and slows down route transitions. Auth gating is handled in server code
+  // (layouts/pages/actions) where necessary.
   const env = getClientEnv();
   type CookieToSet = {
     name: string;
@@ -35,26 +39,8 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user && request.nextUrl.pathname.startsWith("/app")) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  const isAuthStatusPage =
-    request.nextUrl.pathname === "/login/verify-email" || request.nextUrl.pathname === "/login/confirmed";
-
-  if (user && request.nextUrl.pathname === "/login" && !isAuthStatusPage) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/app";
-    redirectUrl.search = "";
-    return NextResponse.redirect(redirectUrl);
-  }
+  // Touch the session once to allow cookie refresh if needed (no network call).
+  await supabase.auth.getSession();
 
   return response;
 }

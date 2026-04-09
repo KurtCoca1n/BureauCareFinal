@@ -1,17 +1,33 @@
 ﻿"use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import type { Route } from "next";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { loginAction, signupAction, type AuthFormState } from "@/lib/actions/auth";
+import { loginAction, requestPasswordResetAction, signupAction, type AuthFormState } from "@/lib/actions/auth";
 import { LANGUAGE_OPTIONS, type SupportedLanguage } from "@/lib/languages";
 import { cn } from "@/lib/utils";
 
 const initialState: AuthFormState = { error: "", success: "" };
 
 type AuthTab = "login" | "signup";
+
+const MIN_PASSWORD_LENGTH = 8;
+
+function passwordScore(pw: string) {
+  const p = pw.trim();
+  if (!p) return { level: "empty" as const, label: "", pct: 0 };
+  if (p.length < MIN_PASSWORD_LENGTH) {
+    return { level: "weak" as const, label: `Noch ${MIN_PASSWORD_LENGTH - p.length} Zeichen`, pct: Math.round((p.length / MIN_PASSWORD_LENGTH) * 70) };
+  }
+  // Simple, low-friction heuristic: length drives most of the security benefit.
+  if (p.length < 14) return { level: "ok" as const, label: "Gut", pct: 82 };
+  return { level: "strong" as const, label: "Sehr gut", pct: 100 };
+}
 
 export function AuthForm({
   nextPath,
@@ -50,6 +66,47 @@ export function AuthForm({
   const [activeTab, setActiveTab] = useState<AuthTab>("login");
   const [loginState, loginFormAction, loginPending] = useActionState(loginAction, initialState);
   const [signupState, signupFormAction, signupPending] = useActionState(signupAction, initialState);
+  const [resetState, resetFormAction, resetPending] = useActionState(requestPasswordResetAction, initialState);
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupPasswordRepeat, setSignupPasswordRepeat] = useState("");
+  const pw = useMemo(() => passwordScore(signupPassword), [signupPassword]);
+  const [signupCooldownUntil, setSignupCooldownUntil] = useState<number | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showSignupPasswordRepeat, setShowSignupPasswordRepeat] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
+  const signupCooldownRemainingSec = useMemo(() => {
+    if (!signupCooldownUntil) return 0;
+    return Math.max(0, Math.ceil((signupCooldownUntil - nowMs) / 1000));
+  }, [signupCooldownUntil, nowMs]);
+
+  const signupPasswordsMatch = useMemo(() => {
+    const a = signupPassword.trim();
+    const b = signupPasswordRepeat.trim();
+    if (!a && !b) return true;
+    if (!a || !b) return true;
+    return a === b;
+  }, [signupPassword, signupPasswordRepeat]);
+
+  useEffect(() => {
+    if (signupState.code !== "RATE_LIMITED") return;
+
+    // Low-friction backoff: discourage repeated clicks after rate limit.
+    const ms = 30_000;
+    setSignupCooldownUntil(Date.now() + ms);
+  }, [signupState.code]);
+
+  useEffect(() => {
+    if (!signupCooldownUntil) return;
+    const t = window.setInterval(() => setNowMs(Date.now()), 250);
+    return () => window.clearInterval(t);
+  }, [signupCooldownUntil]);
+
+  useEffect(() => {
+    if (!signupCooldownUntil) return;
+    if (signupCooldownRemainingSec <= 0) setSignupCooldownUntil(null);
+  }, [signupCooldownRemainingSec, signupCooldownUntil]);
 
   const activePanel = useMemo(
     () =>
@@ -118,46 +175,91 @@ export function AuthForm({
           </div>
 
           {activeTab === "login" ? (
-            <form action={loginFormAction} className="space-y-5">
-              <input type="hidden" name="next" value={nextPath?.startsWith("/app") ? nextPath : "/app"} />
-              <input type="hidden" name="locale" value={locale} />
-              <label className="block space-y-2.5">
-                <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.email}</span>
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder={copy.emailPlaceholder}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="block space-y-2.5">
-                <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.password}</span>
-                <Input
-                  name="password"
-                  type="password"
-                  required
-                  minLength={8}
-                  placeholder={copy.passwordPlaceholder}
-                  className={inputClassName}
-                />
-              </label>
-              <div className="flex justify-end pt-0.5">
+            resetMode ? (
+              <form key="reset" action={resetFormAction} className="space-y-5">
+                <input type="hidden" name="locale" value={locale} />
+                <label className="block space-y-2.5">
+                  <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.email}</span>
+                  <Input name="email" type="email" required placeholder={copy.emailPlaceholder} className={inputClassName} />
+                </label>
+                {resetState.error ? <p className="text-sm text-[var(--danger)]">{resetState.error}</p> : null}
+                {resetState.success ? <p className="text-sm text-[var(--accent)]">{resetState.success}</p> : null}
+                <Button type="submit" className={primaryBtnClassName} disabled={resetPending}>
+                  {resetPending ? (locale === "de" ? "Sende Link…" : "Sending link…") : locale === "de" ? "Link senden" : "Send link"}
+                </Button>
                 <button
                   type="button"
-                  className="text-sm font-medium text-[var(--muted)] underline-offset-4 transition-colors hover:text-[var(--foreground)] hover:underline"
+                  onClick={() => setResetMode(false)}
+                  className="w-full text-sm font-medium text-[var(--muted)] underline-offset-4 transition-colors hover:text-[var(--foreground)] hover:underline"
                 >
-                  {copy.forgotPassword}
+                  {locale === "de" ? "Zurück zum Login" : "Back to sign in"}
                 </button>
-              </div>
-              {loginState.error ? <p className="text-sm text-[var(--danger)]">{loginState.error}</p> : null}
-              {loginState.success ? <p className="text-sm text-[var(--accent)]">{loginState.success}</p> : null}
-              <Button type="submit" className={primaryBtnClassName} disabled={loginPending}>
-                {loginPending ? copy.loginPending : copy.login}
-              </Button>
-            </form>
+              </form>
+            ) : (
+              <form key="login" action={loginFormAction} className="space-y-5">
+                <input type="hidden" name="next" value={nextPath?.startsWith("/app") ? nextPath : "/app"} />
+                <input type="hidden" name="locale" value={locale} />
+                <label className="block space-y-2.5">
+                  <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.email}</span>
+                  <Input name="email" type="email" required placeholder={copy.emailPlaceholder} className={inputClassName} />
+                </label>
+                <label className="block space-y-2.5">
+                  <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.password}</span>
+                  <div className="relative">
+                    <Input
+                      name="password"
+                      type={showLoginPassword ? "text" : "password"}
+                      required
+                      minLength={MIN_PASSWORD_LENGTH}
+                      placeholder={copy.passwordPlaceholder}
+                      className={cn(inputClassName, "pr-20")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl p-2 text-[var(--muted)] transition hover:text-[var(--foreground)]"
+                      aria-label={
+                        showLoginPassword
+                          ? locale === "de"
+                            ? "Passwort verbergen"
+                            : "Hide password"
+                          : locale === "de"
+                            ? "Passwort anzeigen"
+                            : "Show password"
+                      }
+                    >
+                      {showLoginPassword ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
+                    </button>
+                  </div>
+                </label>
+                <div className="flex justify-end pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setResetMode(true)}
+                    className="text-sm font-medium text-[var(--muted)] underline-offset-4 transition-colors hover:text-[var(--foreground)] hover:underline"
+                  >
+                    {copy.forgotPassword}
+                  </button>
+                </div>
+                {loginState.error ? <p className="text-sm text-[var(--danger)]">{loginState.error}</p> : null}
+                {loginState.success ? <p className="text-sm text-[var(--accent)]">{loginState.success}</p> : null}
+                {loginState.code === "EMAIL_NOT_CONFIRMED" && loginState.email ? (
+                  <p className="text-sm">
+                    <Link
+                      href={`/login/verify-email?email=${encodeURIComponent(loginState.email)}&locale=${encodeURIComponent(locale)}` as Route}
+                      className="font-medium text-[var(--accent-strong)] underline-offset-4 transition hover:underline"
+                    >
+                      {locale === "de" ? "Bestätigungs-E-Mail nochmal ansehen / neu senden" : "Review / resend confirmation email"}
+                    </Link>
+                  </p>
+                ) : null}
+                <Button type="submit" className={primaryBtnClassName} disabled={loginPending}>
+                  {loginPending ? copy.loginPending : copy.login}
+                </Button>
+              </form>
+            )
           ) : (
-            <form action={signupFormAction} className="space-y-5">
+            <form key="signup" action={signupFormAction} className="space-y-5">
               <input type="hidden" name="browserLanguage" value={locale} />
               <label className="block space-y-2.5">
                 <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.fullName}</span>
@@ -180,15 +282,99 @@ export function AuthForm({
               </label>
               <label className="block space-y-2.5">
                 <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.password}</span>
-                <Input
-                  name="password"
-                  type="password"
-                  required
-                  minLength={8}
-                  placeholder={copy.passwordPlaceholder}
-                  className={inputClassName}
-                />
-                <p className="text-sm text-[var(--muted)]">{copy.passwordHint}</p>
+                <div className="relative">
+                  <Input
+                    name="password"
+                    type={showSignupPassword ? "text" : "password"}
+                    required
+                    minLength={MIN_PASSWORD_LENGTH}
+                    placeholder={copy.passwordPlaceholder}
+                    className={cn(inputClassName, "pr-20")}
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl p-2 text-[var(--muted)] transition hover:text-[var(--foreground)]"
+                    aria-label={
+                      showSignupPassword
+                        ? locale === "de"
+                          ? "Passwort verbergen"
+                          : "Hide password"
+                        : locale === "de"
+                          ? "Passwort anzeigen"
+                          : "Show password"
+                    }
+                  >
+                    {showSignupPassword ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-[var(--muted)]">{copy.passwordHint}</p>
+                  {pw.level !== "empty" ? (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-medium text-[var(--muted)]">
+                        <span>
+                          {locale === "de" ? "Passwort-Stärke" : "Password strength"}
+                        </span>
+                        <span className="tabular-nums">{pw.label}</span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(232,220,207,0.55)]">
+                        <div
+                          className={cn(
+                            "h-full rounded-full transition-[width] duration-300 ease-out",
+                            pw.level === "weak"
+                              ? "bg-[rgba(242,166,90,0.9)]"
+                              : pw.level === "ok"
+                                ? "bg-[image:var(--accent-gradient)]"
+                                : "bg-[rgba(123,191,159,0.95)]"
+                          )}
+                          style={{ width: `${pw.pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </label>
+
+              <label className="block space-y-2.5">
+                <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">
+                  {locale === "de" ? "Passwort wiederholen" : "Repeat password"}
+                </span>
+                <div className="relative">
+                  <Input
+                    name="passwordRepeat"
+                    type={showSignupPasswordRepeat ? "text" : "password"}
+                    required
+                    minLength={MIN_PASSWORD_LENGTH}
+                    placeholder={locale === "de" ? "Nochmal eingeben" : "Enter again"}
+                    className={cn(inputClassName, "pr-20")}
+                    value={signupPasswordRepeat}
+                    onChange={(e) => setSignupPasswordRepeat(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPasswordRepeat((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl p-2 text-[var(--muted)] transition hover:text-[var(--foreground)]"
+                    aria-label={
+                      showSignupPasswordRepeat
+                        ? locale === "de"
+                          ? "Passwort verbergen"
+                          : "Hide password"
+                        : locale === "de"
+                          ? "Passwort anzeigen"
+                          : "Show password"
+                    }
+                  >
+                    {showSignupPasswordRepeat ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
+                  </button>
+                </div>
+                {!signupPasswordsMatch ? (
+                  <p className="text-xs text-[var(--danger)]">
+                    {locale === "de" ? "Die Passwörter stimmen nicht überein." : "Passwords do not match."}
+                  </p>
+                ) : null}
               </label>
               <label className="block space-y-2.5">
                 <span className="text-sm font-medium tracking-wide text-[var(--foreground)]">{copy.language}</span>
@@ -205,8 +391,24 @@ export function AuthForm({
                 </select>
               </label>
               {signupState.error ? <p className="text-sm text-[var(--danger)]">{signupState.error}</p> : null}
+              {signupCooldownRemainingSec > 0 ? (
+                <p className="text-xs text-[var(--muted)]">
+                  {locale === "de"
+                    ? `Du kannst es in ${signupCooldownRemainingSec}s nochmal versuchen.`
+                    : `You can try again in ${signupCooldownRemainingSec}s.`}
+                </p>
+              ) : null}
               {signupState.success ? <p className="text-sm text-[var(--accent)]">{signupState.success}</p> : null}
-              <Button type="submit" className={primaryBtnClassName} disabled={signupPending}>
+              <Button
+                type="submit"
+                className={primaryBtnClassName}
+                disabled={
+                  signupPending ||
+                  signupCooldownRemainingSec > 0 ||
+                  !signupPasswordsMatch ||
+                  (signupPassword.trim().length > 0 && signupPassword.trim().length < MIN_PASSWORD_LENGTH)
+                }
+              >
                 {signupPending ? copy.signupPending : copy.signup}
               </Button>
             </form>

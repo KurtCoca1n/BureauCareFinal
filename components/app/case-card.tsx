@@ -3,43 +3,24 @@ import { ArrowUpRight, Clock3, FolderOpen } from "lucide-react";
 import type { Route } from "next";
 
 import { Card } from "@/components/ui/card";
+import { TrafficLightBadge } from "@/components/ui/traffic-light-badge";
 import { getCaseListPrimaryAndTopic } from "@/lib/case-card-display";
-import { getCaseText, getCasesListCopy } from "@/lib/case-ui";
-import { getCaseAttentionLevel } from "@/lib/case-priority";
+import { getCaseText } from "@/lib/case-ui";
+import { normalizePreferredLanguage } from "@/lib/languages";
 import { parseCaseBrief } from "@/lib/case-brief";
 import { getDateLocale } from "@/lib/i18n";
+import { resolveCaseTrafficLight, type TrafficLightLevel } from "@/lib/traffic-light-priority";
 import type { CaseOverview } from "@/lib/queries";
 
-function attentionBarClass(level: ReturnType<typeof getCaseAttentionLevel>) {
+function trafficBarClass(level: TrafficLightLevel, settled: boolean) {
+  if (settled) return "bg-[rgba(123,191,159,0.32)]";
   switch (level) {
     case "high":
-      return "bg-[rgba(95,163,163,0.35)]";
-    case "soon":
-      return "bg-[rgba(242,166,90,0.38)]";
-    case "open":
-      return "bg-[rgba(111,168,220,0.28)]";
-    case "done":
-      return "bg-[rgba(123,191,159,0.32)]";
+      return "bg-[rgba(185,110,110,0.26)]";
+    case "medium":
+      return "bg-[rgba(242,166,90,0.36)]";
     default:
-      return "bg-[var(--line)]";
-  }
-}
-
-function priorityLabel(
-  level: ReturnType<typeof getCaseAttentionLevel>,
-  copy: ReturnType<typeof getCasesListCopy>
-) {
-  switch (level) {
-    case "high":
-      return copy.priorityHigh;
-    case "soon":
-      return copy.prioritySoon;
-    case "open":
-      return copy.priorityOpen;
-    case "done":
-      return copy.priorityDone;
-    default:
-      return copy.priorityOpen;
+      return "bg-[rgba(123,191,159,0.26)]";
   }
 }
 
@@ -52,16 +33,16 @@ export function CaseCard({
   locale?: string;
   compact?: boolean;
 }) {
-  const listCopy = getCasesListCopy(locale);
   const legacy = getCaseText(locale);
   const brief = parseCaseBrief(caseItem.case_brief);
-  const attention = getCaseAttentionLevel(caseItem);
   const { primary, topic } = getCaseListPrimaryAndTopic(caseItem, brief, legacy.unknownOrganization);
+  const traffic = resolveCaseTrafficLight(caseItem, new Date());
+  const lang = normalizePreferredLanguage(locale) === "de" ? "de" : "en";
 
   return (
     <Link href={`/app/cases/${caseItem.id}` as Route}>
       <Card className="group flex h-full flex-col overflow-hidden border-[var(--line)] p-0 shadow-[0_8px_26px_rgba(43,43,43,0.04)] transition hover:border-[rgba(95,163,163,0.28)] hover:shadow-[0_12px_32px_rgba(95,163,163,0.07)]">
-        <div className={`h-1 w-full ${attentionBarClass(attention)}`} aria-hidden />
+        <div className={`h-1 w-full ${trafficBarClass(traffic.level, traffic.settled)}`} aria-hidden />
         <div className={compact ? "flex flex-1 flex-col gap-2 p-3.5" : "flex flex-1 flex-col gap-2.5 p-4 sm:p-4"}>
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-1 items-start gap-2">
@@ -71,22 +52,8 @@ export function CaseCard({
                 <FolderOpen className={compact ? "h-3 w-3" : "h-3.5 w-3.5"} aria-hidden />
               </div>
               <div className="min-w-0 space-y-1">
-                <div className="flex flex-wrap items-center gap-1">
-                  <span
-                    className={`inline-flex max-w-full rounded-full border px-1.5 py-0.5 font-medium leading-none text-[var(--foreground)]/90 ${compact ? "text-[10px]" : "text-[11px]"}`}
-                    style={{
-                      borderColor:
-                        attention === "high"
-                          ? "rgba(95,163,163,0.35)"
-                          : attention === "soon"
-                            ? "rgba(242,166,90,0.4)"
-                            : attention === "done"
-                              ? "rgba(123,191,159,0.45)"
-                              : "rgba(111,168,220,0.35)"
-                    }}
-                  >
-                    {priorityLabel(attention, listCopy)}
-                  </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <TrafficLightBadge level={traffic.level} lang={lang} settled={traffic.settled} />
                   {caseItem.openTasksCount > 0 ? (
                     <span className={`text-[var(--muted)] ${compact ? "text-[10px]" : "text-[11px]"}`}>
                       {caseItem.openTasksCount} {legacy.openCount}

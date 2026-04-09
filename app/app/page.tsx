@@ -5,9 +5,12 @@ import type { Route } from "next";
 import { CaseCard } from "@/components/app/case-card";
 import { HomeImpactSection } from "@/components/app/home-impact-section";
 import { HomeExtrasSection } from "@/components/app/home-extras-section";
+import { HomeIntentSearch } from "@/components/app/home-intent-search";
 import { HomeGreeting } from "@/components/app/home-greeting";
+import { HomeGuidedTour } from "@/components/app/home-guided-tour";
 import { HomeStatusOverview } from "@/components/app/home-status-overview";
 import { PersonalDataSuggestionsSection } from "@/components/app/personal-data-suggestions-section";
+import { Terminradar } from "@/components/app/terminradar";
 import { WeeklyOverview } from "@/components/app/weekly-overview";
 import { WelcomeAssistantPanel } from "@/components/app/welcome-assistant-panel";
 import { Card } from "@/components/ui/card";
@@ -33,18 +36,24 @@ import {
   getUsageSummaryForCurrentUser,
   getTasksByIds,
   getUserPersonalData,
+  getWeeklyOverviewDocumentsContext,
   getWelcomeSteps,
   getWelcomeProfile
 } from "@/lib/queries";
+import { buildTerminradarItems } from "@/lib/terminradar";
+import { buildWeeklyOverviewItems } from "@/lib/weekly-overview";
 import { getRequestLanguage } from "@/lib/request-locale";
 
+export const dynamic = "force-dynamic";
+
 export default async function AppHomePage() {
-  const [profile, reminderBuckets, allCases, allTasks, usageSummary, welcomeProfile, welcomeSteps, welcomePreparations, welcomeDocumentLinks, welcomeTaskLinks, personalData] =
+  const [profile, reminderBuckets, allCases, allTasks, weeklyDocs, usageSummary, welcomeProfile, welcomeSteps, welcomePreparations, welcomeDocumentLinks, welcomeTaskLinks, personalData] =
     await Promise.all([
     getProfile(),
     getTaskReminderBuckets(),
     getAllCases(),
     getAllTasks(),
+    getWeeklyOverviewDocumentsContext(),
     getUsageSummaryForCurrentUser(),
     getWelcomeProfile(),
     getWelcomeSteps(),
@@ -106,9 +115,27 @@ export default async function AppHomePage() {
     casesCount: allCases.length
   });
 
+  const weeklyLang = normalizedLocale === "en" ? "en" : "de";
+  const weeklyOverviewItems = buildWeeklyOverviewItems({
+    tasks: allTasks,
+    cases: allCases,
+    documents: weeklyDocs.documents,
+    analysesByDocumentId: weeklyDocs.analysesByDocumentId,
+    draftsByDocumentId: weeklyDocs.draftsByDocumentId,
+    lang: weeklyLang
+  });
+
+  const terminradarItems = buildTerminradarItems({
+    tasks: allTasks,
+    documents: weeklyDocs.documents,
+    analysesByDocumentId: weeklyDocs.analysesByDocumentId,
+    limit: 4,
+    reference: new Date()
+  });
+
   return (
     <div className="space-y-10">
-      <div className="space-y-6">
+      <div className="space-y-6" data-tour="home-overview">
         <HomeGreeting
           locale={locale}
           fullName={getProfileFirstName(profile)}
@@ -118,7 +145,15 @@ export default async function AppHomePage() {
           supportLines={greeting.supportLines}
           initialPhase={greeting.phase}
         />
-        <HomeExtrasSection locale={locale} />
+        <HomeIntentSearch locale={locale} />
+        <HomeExtrasSection
+          locale={locale}
+          profile={profile}
+          welcomeProfile={welcomeProfile}
+          usageSummary={usageSummary}
+          openTasksCount={allTasks.filter((t) => t.status !== "done").length}
+          openCasesCount={allCases.filter((c) => c.status !== "done").length}
+        />
         <HomeImpactSection
           locale={normalizedLocale}
           moneyEur={impact.moneyEur}
@@ -127,10 +162,12 @@ export default async function AppHomePage() {
         />
       </div>
 
-      <WeeklyOverview locale={locale} dateLocale={dateLocale} />
+      <div data-tour="home-weekly">
+        <WeeklyOverview locale={locale} dateLocale={dateLocale} items={weeklyOverviewItems} />
+      </div>
 
       <div className="space-y-10">
-        <Link href="/app/upload" className="block">
+        <Link href="/app/upload" className="block" data-tour="home-upload">
           <Card className="group border-2 border-[var(--accent)]/25 bg-[var(--surface-strong)] p-6 shadow-[0_14px_40px_rgba(44,122,123,0.08)] transition hover:border-[var(--accent)]/40 hover:shadow-[0_18px_48px_rgba(44,122,123,0.12)] sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 space-y-2">
@@ -149,6 +186,10 @@ export default async function AppHomePage() {
             </div>
           </Card>
         </Link>
+
+        <Terminradar locale={locale} dateLocale={dateLocale} items={terminradarItems} />
+
+        <HomeGuidedTour />
 
         {welcomeOverview ? <WelcomeAssistantPanel locale={normalizedLocale} overview={welcomeOverview} /> : null}
 

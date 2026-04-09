@@ -25,6 +25,7 @@ import type {
   UserPersonalDataRecord,
   TaskRecord
 } from "@/lib/types";
+import { buildCasePrioritySignals } from "@/lib/traffic-light-priority";
 import { getMonthlyUsageSummary } from "@/lib/usage";
 
 export const getCurrentUser = cache(async () => {
@@ -81,6 +82,37 @@ export async function getDocumentAnalysisByDocumentId(documentId: string) {
   return (data as DocumentAnalysisRecord | null) ?? null;
 }
 
+const DOCUMENT_ID_IN_CHUNK_SIZE = 120;
+
+function uniqueDocumentIds(ids: string[]): string[] {
+  return [...new Set(ids.filter((id) => typeof id === "string" && id.length > 0))];
+}
+
+/** Neueste Analyse pro Dokument — für Ampel & Fallkontext (gechunkt, tolerant bei DB-Fehlern). */
+export async function getLatestDocumentAnalysesMap(documentIds: string[]): Promise<Map<string, DocumentAnalysisRecord>> {
+  const map = new Map<string, DocumentAnalysisRecord>();
+  const ids = uniqueDocumentIds(documentIds);
+  if (!ids.length) {
+    return map;
+  }
+  const supabase = await createClient();
+  for (let i = 0; i < ids.length; i += DOCUMENT_ID_IN_CHUNK_SIZE) {
+    const chunk = ids.slice(i, i + DOCUMENT_ID_IN_CHUNK_SIZE);
+    const { data, error } = await supabase.from("document_analyses").select("*").in("document_id", chunk);
+    if (error) {
+      console.error("getLatestDocumentAnalysesMap chunk failed", { chunkSize: chunk.length, message: error.message });
+      continue;
+    }
+    for (const row of (data as DocumentAnalysisRecord[] | null) ?? []) {
+      const cur = map.get(row.document_id);
+      if (!cur || new Date(row.created_at) > new Date(cur.created_at)) {
+        map.set(row.document_id, row);
+      }
+    }
+  }
+  return map;
+}
+
 export async function getDraftRepliesByDocumentId(documentId: string) {
   const supabase = await createClient();
   const { data } = await supabase
@@ -121,6 +153,10 @@ export type CaseOverview = CaseRecord & {
   openTasksCount: number;
   latestActivityAt: string;
   latestDocumentSubject: string | null;
+  /** Nächste relevante Frist aus offenen Aufgaben + Dokumentanalysen (YYYY-MM-DD). */
+  nearestDeadlineIso: string | null;
+  /** Amtsschreiben / hohe Dringlichkeit laut Analyse oder Erkennung. */
+  hasOfficialOrUrgentDocument: boolean;
 };
 
 export async function getAllCases() {
@@ -137,6 +173,14 @@ export async function getAllCases() {
   const documentRows = (documents as DocumentRecord[] | null) ?? [];
   const eventRows = (events as CaseEventRecord[] | null) ?? [];
 
+  const allDocIds = documentRows.map((d) => d.id);
+  let analysesByDocumentId = new Map<string, DocumentAnalysisRecord>();
+  try {
+    analysesByDocumentId = await getLatestDocumentAnalysesMap(allDocIds);
+  } catch (e) {
+    console.error("getAllCases: loading document analyses failed", e);
+  }
+
   return caseRows.map((caseRecord) => {
     const caseTasks = taskRows.filter((task) => task.document_id && documentRows.some((doc) => doc.id === task.document_id && doc.case_id === caseRecord.id));
     const caseDocuments = documentRows.filter((document) => document.case_id === caseRecord.id);
@@ -145,11 +189,20 @@ export async function getAllCases() {
       .filter((event) => event.case_id === caseRecord.id)
       .sort((a, b) => +new Date(b.event_date) - +new Date(a.event_date))[0];
 
+    let signals = { nearestDeadlineIso: null as string | null, hasOfficialOrUrgentDocument: false };
+    try {
+      signals = buildCasePrioritySignals(caseDocuments, caseTasks, analysesByDocumentId);
+    } catch (e) {
+      console.error("buildCasePrioritySignals failed", { caseId: caseRecord.id, e });
+    }
+
     return {
       ...caseRecord,
       openTasksCount: caseTasks.filter((task) => task.status !== "done").length,
       latestActivityAt: latestEvent?.event_date ?? latestDocument?.created_at ?? caseRecord.updated_at,
-      latestDocumentSubject: latestDocument?.subject ?? null
+      latestDocumentSubject: latestDocument?.subject ?? null,
+      nearestDeadlineIso: signals.nearestDeadlineIso,
+      hasOfficialOrUrgentDocument: signals.hasOfficialOrUrgentDocument
     } satisfies CaseOverview;
   });
 }
@@ -241,8 +294,13 @@ export async function getUserPersonalData() {
 }
 
 export async function getPersonalDataSuggestions(locale: string | null | undefined) {
-  const personalData = await getUserPersonalData();
-  return buildPersonalDataSuggestions(personalData, locale) as PersonalDataSuggestion[];
+  try {
+    const personalData = await getUserPersonalData();
+    return buildPersonalDataSuggestions(personalData, locale) as PersonalDataSuggestion[];
+  } catch (error) {
+    console.error("getPersonalDataSuggestions failed", error);
+    return [];
+  }
 }
 
 export async function getUserSettings() {
@@ -532,3 +590,38 @@ export async function getProcessSessionBySlug(processSlug: string) {
 
   return (data as ProcessSessionRecord | null) ?? null;
 }
+
+/** Dokumente plus jeweils neueste Analyse und neuester Entwurfsantwort — für „Deine Woche“ auf der Home-Seite. */
+export const getWeeklyOverviewDocumentsContext = cache(async () => {
+  const supabase = await createClient();
+  const { data: documents } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
+  const docs = (documents as DocumentRecord[] | null) ?? [];
+  const analysesByDocumentId = new Map<string, DocumentAnalysisRecord>();
+  const draftsByDocumentId = new Map<string, DraftReplyRecord>();
+  const docIds = uniqueDocumentIds(docs.map((d) => d.id));
+  if (!docIds.length) {
+    return { documents: docs, analysesByDocumentId, draftsByDocumentId };
+  }
+
+  const analysesMap = await getLatestDocumentAnalysesMap(docIds);
+  for (const [k, v] of analysesMap) {
+    analysesByDocumentId.set(k, v);
+  }
+
+  for (let i = 0; i < docIds.length; i += DOCUMENT_ID_IN_CHUNK_SIZE) {
+    const chunk = docIds.slice(i, i + DOCUMENT_ID_IN_CHUNK_SIZE);
+    const { data, error } = await supabase.from("draft_replies").select("*").in("document_id", chunk);
+    if (error) {
+      console.error("getWeeklyOverviewDocumentsContext draft_replies chunk failed", error.message);
+      continue;
+    }
+    for (const row of (data as DraftReplyRecord[] | null) ?? []) {
+      const cur = draftsByDocumentId.get(row.document_id);
+      if (!cur || new Date(row.created_at) > new Date(cur.created_at)) {
+        draftsByDocumentId.set(row.document_id, row);
+      }
+    }
+  }
+
+  return { documents: docs, analysesByDocumentId, draftsByDocumentId };
+});
